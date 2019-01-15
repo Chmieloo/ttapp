@@ -4,7 +4,7 @@ WORKDIR /usr/app
 
 # Install deps
 COPY ./package.json ./
-RUN npm install && npm cache clean
+RUN npm install && npm cache clean --force
 
 COPY . .
 
