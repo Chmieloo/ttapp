@@ -32,3 +32,5 @@ services:
       - ./config/web/site.conf:/etc/nginx/conf.d/default.conf
     links:
       - php-fpm
+    depends_on:
+      - mysql
