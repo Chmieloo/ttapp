@@ -1,6 +1,6 @@
 version: '2'
 services:
-  mysql:
+  database:
     image: mysql:latest
     command: mysqld --sql_mode="" 
     volumes:
@@ -17,7 +17,9 @@ services:
       - MYSQL_DATABASE=ttapp
 
   php-fpm:
-    image: php:7.2-fpm
+    build:
+      context: .
+      dockerfile: ./config/php/Dockerfile
     volumes:
       - ./api:/var/www
     ports:
@@ -33,4 +35,4 @@ services:
     links:
       - php-fpm
     depends_on:
-      - mysql
+      - database

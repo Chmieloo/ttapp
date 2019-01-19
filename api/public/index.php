@@ -1,24 +1,27 @@
 <?php
 
-use App\Resource;
+use App\Kernel;
+use Symfony\Component\Debug\Debug;
+use Symfony\Component\HttpFoundation\Request;
 
-require_once '../vendor/autoload.php';
+require dirname(__DIR__).'/config/bootstrap.php';
 
-$app = new Slim\App();
+if ($_SERVER['APP_DEBUG']) {
+    umask(0000);
 
-$app->get('/{resource}/{id}', function ($request, $response) {
-    $resource = $request->getAttribute('resource');
-    $id = $request->getAttribute('id');
+    Debug::enable();
+}
 
-    $resource = Resource::load($resource);
+if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
+    Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+}
 
-    if ($resource === null) {
-        Resource::response(Resource::STATUS_NOT_FOUND);
-    } else {
-        $resource->get($id);
-    }
+if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false) {
+    Request::setTrustedHosts([$trustedHosts]);
+}
 
-    #return $response->withJson(['1'=>'2']);
-});
-
-$app->run();
+$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+$request = Request::createFromGlobals();
+$response = $kernel->handle($request);
+$response->send();
+$kernel->terminate($request, $response);

@@ -1,0 +1,7 @@
+player:
+  path: /players/{id}
+  controller: App\Controller\PlayerController::getPlayerById
+
+players:
+  path: /players
+  controller: App\Controller\PlayerController::getPlayers
