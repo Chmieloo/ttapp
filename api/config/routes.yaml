@@ -5,3 +5,11 @@ player:
 players:
   path: /players
   controller: App\Controller\PlayerController::getPlayers
+
+match_mode:
+  path: /matches/modes/{id}
+  controller: App\Controller\MatchModeController::getMatchModeById
+
+match_modes:
+  path: /matches/modes
+  controller: App\Controller\MatchModeController::getMatchModes
