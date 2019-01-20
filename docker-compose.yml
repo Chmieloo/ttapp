@@ -36,17 +36,3 @@ services:
       - php-fpm
     depends_on:
       - database
-
-  app:
-    build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
-    ports:
-      - "3000:3000"
-      - "9229:9229" 
-    volumes:
-      - ./frontend:/home/app
-      - /home/app/node_modules
-    depends_on:
-      - database
-    command: npm run start 
