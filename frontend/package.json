@@ -12,6 +12,7 @@
         "axios": "^0.18.0",
         "debug": "~4.1.0",
         "nodemon": "^1.17.3",
-        "underscore": "^1.9.0"
+        "underscore": "^1.9.0",
+        "pug": "2.0.3"
     }
 }

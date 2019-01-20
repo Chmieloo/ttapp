@@ -1,25 +1,24 @@
-const express = require('express')
-const axios = require('axios')
-const app = express()
-const port = 3000
+const express = require('express');
+const axios = require('axios');
+const app = express();
+const port = 3000;
+
+var router = express.Router();
+var _ = require('underscore');
 
 var router = express.Router();
 
-app.get('/', (req, res) => res.send('Hello World!'))
-
-app.get('/aaa', (req, res) => res.send('eee World!'))
+app.set('view engine', 'pug');
 
 /* Get a list of all players */
 app.get('/players', function (req, res, next) {
-    axios.get('http://webserver:8888/players')
+    axios.get('http://localhost:8888/players')
         .then(response => {
             var players = response.data;
             players = _.sortBy(players, (player) => player.name)
             res.render('player/players', { players: players });
         }).catch(error => {
-            //debug('Error when getting players: ' + error);
-            //next(error);
-            console.log('error');
+            console.log(error);
         });
 });
 
