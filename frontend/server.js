@@ -1,14 +1,23 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
-const port = 3000;
+require('marko/node-require').install();
+require('marko/express'); //enable res.marko
 
-var router = express.Router();
-var _ = require('underscore');
+var express = require('express');
 
-var router = express.Router();
+// Configure lasso to control how JS/CSS/etc. is delivered to the browser
+require('lasso').configure({
+    plugins: [
+        'lasso-marko', // Allow Marko templates to be compiled and transported to the browser
+        'lasso-less'
+    ],
+    outputDir: __dirname + '/static', // Place all generated JS/CSS/etc. files into the "static" dir
+    bundlingEnabled: isProduction, // Only enable bundling in production
+    minify: true, // Only minify JS and CSS code in production
+    fingerprintsEnabled: isProduction, // Only add fingerprints to URLs in production
+});
 
-app.set('view engine', 'pug');
+var app = express();
+
+app.use(require('lasso/middleware').serveStatic());
 
 /* Get a list of all players */
 app.get('/players', function (req, res, next) {
