@@ -1,12 +1,18 @@
 <template>
-  <div id="app">123
+  <div id="app">
+    <TopMenu />
     <router-view/>
   </div>
 </template>
 
 <script>
+import TopMenu from './components/TopMenu.vue'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    TopMenu
+  }
 }
 </script>
 
