@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Player;
 use App\Repository\PlayerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
@@ -43,7 +44,7 @@ class PlayerController extends BaseController
     {
         $players = $this->getDoctrine()
             ->getRepository(Player::class)
-            ->findAll();
+            ->findAllSimple();
 
         if (!$players) {
             throw $this->createNotFoundException(
@@ -58,5 +59,25 @@ class PlayerController extends BaseController
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
+    }
+
+    public function addPlayer(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!empty($data['name'])) {
+            $em = $this->getDoctrine()->getManager();
+            $player = new Player();
+            $player->setName($data['name']);
+            $em->persist($player);
+            $em->flush();
+
+            return new Response($player->getId());
+        }
+
+        return new JsonResponse([
+            'status' => 'error',
+            ],
+            JsonResponse::HTTP_CREATED
+        );
     }
 }

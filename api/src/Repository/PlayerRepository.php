@@ -19,6 +19,16 @@ class PlayerRepository extends ServiceEntityRepository
         parent::__construct($registry, Player::class);
     }
 
+    public function findAllSimple()
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id', 'p.name')
+            ->orderBy('p.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+    }
+
     // /**
     //  * @return Player[] Returns an array of Player objects
     //  */

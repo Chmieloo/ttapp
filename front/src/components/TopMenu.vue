@@ -1,7 +1,8 @@
 <template>
   <div class="topMenu">
     <div><router-link to="/">ttapp</router-link></div>
-    <div><router-link to="/players">players</router-link></div>
+    <div><router-link to="/player/list">players</router-link></div>
+    <div><router-link to="/player/add">add player</router-link></div>
     <div>tournaments</div>
   </div>
 </template>

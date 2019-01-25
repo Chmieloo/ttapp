@@ -1,10 +1,19 @@
 player:
   path: /players/{id}
   controller: App\Controller\PlayerController::getPlayerById
+  methods: [GET]
+  requirements:
+    id: '\d+'
 
 players:
   path: /players
   controller: App\Controller\PlayerController::getPlayers
+  methods: [GET]
+
+player_add:
+  path: /players/add
+  controller: App\Controller\PlayerController::addPlayer
+  methods: [POST]
 
 match_mode:
   path: /matches/modes/{id}
