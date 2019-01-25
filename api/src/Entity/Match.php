@@ -37,6 +37,18 @@ class Match
      */
     private $match_mode;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Player", inversedBy="matches")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $home_player;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Player", inversedBy="matches")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $away_player;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +98,30 @@ class Match
     public function setMatchMode(?MatchMode $match_mode): self
     {
         $this->match_mode = $match_mode;
+
+        return $this;
+    }
+
+    public function getHomePlayer(): ?Player
+    {
+        return $this->home_player;
+    }
+
+    public function setHomePlayer(?Player $home_player): self
+    {
+        $this->home_player = $home_player;
+
+        return $this;
+    }
+
+    public function getAwayPlayer(): ?Player
+    {
+        return $this->away_player;
+    }
+
+    public function setAwayPlayer(?Player $away_player): self
+    {
+        $this->away_player = $away_player;
 
         return $this;
     }
