@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -35,6 +37,16 @@ class MatchMode
      * @ORM\Column(type="smallint")
      */
     private $max_sets;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Match", mappedBy="match_mode")
+     */
+    private $matches;
+
+    public function __construct()
+    {
+        $this->matches = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -85,6 +97,37 @@ class MatchMode
     public function setMaxSets(int $max_sets): self
     {
         $this->max_sets = $max_sets;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Match[]
+     */
+    public function getMatches(): Collection
+    {
+        return $this->matches;
+    }
+
+    public function addMatch(Match $match): self
+    {
+        if (!$this->matches->contains($match)) {
+            $this->matches[] = $match;
+            $match->setMatchMode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatch(Match $match): self
+    {
+        if ($this->matches->contains($match)) {
+            $this->matches->removeElement($match);
+            // set the owning side to null (unless already changed)
+            if ($match->getMatchMode() === $this) {
+                $match->setMatchMode(null);
+            }
+        }
 
         return $this;
     }
