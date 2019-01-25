@@ -53,6 +53,10 @@ class PlayerController extends BaseController
 
         $data = $this->serializer->serialize($players, 'json');
 
-        return new Response($data);
+        $response = new Response();
+        $response->setContent($data);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 }

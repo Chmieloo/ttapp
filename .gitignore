@@ -2,3 +2,6 @@
 .idea
 node_modules
 front/babel_cache
+
+package-lock.json
+front/package-lock.json
