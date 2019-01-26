@@ -2,8 +2,7 @@
   <div class="topMenu">
     <div><router-link to="/">ttapp</router-link></div>
     <div><router-link to="/player/list">players</router-link></div>
-    <div><router-link to="/player/add">add player</router-link></div>
-    <div>tournaments</div>
+    <div><router-link to="/tournament/list">tournaments</router-link></div>
   </div>
 </template>
 
@@ -23,11 +22,12 @@ export default {
     padding-left: 15px;
     font-weight: 600;
     box-shadow: 0px 4px 4px black;
+
 }
 
 .topMenu div {
     float: left;
-    width: 100px;
+    margin-right: 40px;
 }
 
 .topMenu div:first-child a {

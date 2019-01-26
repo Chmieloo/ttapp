@@ -49,6 +49,11 @@ class Match
      */
     private $away_player;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $date_of_match;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -122,6 +127,18 @@ class Match
     public function setAwayPlayer(?Player $away_player): self
     {
         $this->away_player = $away_player;
+
+        return $this;
+    }
+
+    public function getDateOfMatch(): ?\DateTimeInterface
+    {
+        return $this->date_of_match;
+    }
+
+    public function setDateOfMatch(\DateTimeInterface $date_of_match): self
+    {
+        $this->date_of_match = $date_of_match;
 
         return $this;
     }

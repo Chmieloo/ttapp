@@ -2,25 +2,25 @@
   <div id="app">
     <div class="mainContainer">
       <span class="header-icon"><i class="fas fa-list"></i></span>
-      <span class="header-title">Player list</span>
+      <span class="header-title">List of tournaments</span>
       <table class="table-player-list">
         <tr class="row-header">
           <th class="txt-left">name</th>
-          <th class="txt-center mw-100">m.played</th>
-          <th class="txt-center mw-100">m.won</th>
-          <th class="txt-center mw-100">m.%</th>
-          <th class="txt-center mw-100">s.played</th>
-          <th class="txt-center mw-100">s.won</th>
-          <th class="txt-center mw-100">s.%</th>
+          <th class="txt-center mw-100">phase</th>
+          <th class="txt-center mw-100">participants</th>
+          <th class="txt-center mw-100">phase</th>
+          <th class="txt-center mw-100">matches played</th>
+          <th class="txt-center mw-100">matches scheduled</th>
+          <th class="txt-center mw-100">options</th>
         </tr>
-        <tr v-for="player in players" v-bind:key="player.id" class="player-row">
-          <td class="txt-left">{{ player.name }}</td>
-          <td class="txt-center">0</td>
-          <td class="txt-center">0</td>
+        <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="player-row">
+          <td class="txt-left">{{ tournament.name }}</td>
+          <td class="txt-center">group</td>
+          <td class="txt-center">58</td>
           <td class="txt-center">20</td>
           <td class="txt-center">0</td>
           <td class="txt-center">0</td>
-          <td class="txt-center">20</td>
+          <td class="txt-center">schedule | results</td>
         </tr>
       </table>
     </div>
@@ -34,12 +34,12 @@ export default {
   name: 'App',
   data () {
     return {
-      players: null
+      tournaments: null
     }
   },
   mounted () {
-    axios.get('/api/players').then((res) => {
-      this.players = res.data
+    axios.get('/api/tournaments').then((res) => {
+      this.tournaments = res.data
     })
   }
 }

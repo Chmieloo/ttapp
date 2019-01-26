@@ -30,9 +30,7 @@ class PlayerController extends BaseController
             );
         }
 
-        $data = $this->serializer->serialize($player, 'json');
-
-        return new Response($data);
+        return $this->sendJsonResponse($player);
     }
 
     /**
@@ -52,13 +50,7 @@ class PlayerController extends BaseController
             );
         }
 
-        $data = $this->serializer->serialize($players, 'json');
-
-        $response = new Response();
-        $response->setContent($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $this->sendJsonResponse($players);
     }
 
     public function addPlayer(Request $request)

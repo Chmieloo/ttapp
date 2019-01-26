@@ -24,8 +24,25 @@ body {
   color: #9e9e9e;
 }
 
+h1 {
+  color: white;
+}
+
+.txt-left {text-align: left;}
+.txt-right {text-align: right;}
+.txt-center {text-align: center;}
+
+.mw-100 {min-width: 100px;}
+
+.w50pc {
+  width: 50%;
+  vertical-align: top;
+}
+
+.padr10 {padding-right: 10px;}
+
 #app {
-  font-family: 'Roboto', 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

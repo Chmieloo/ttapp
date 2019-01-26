@@ -1,3 +1,11 @@
+match_mode:
+  path: /matches/modes/{id}
+  controller: App\Controller\MatchModeController::getMatchModeById
+
+match_modes:
+  path: /matches/modes
+  controller: App\Controller\MatchModeController::getMatchModes
+
 player:
   path: /players/{id}
   controller: App\Controller\PlayerController::getPlayerById
@@ -15,10 +23,19 @@ player_add:
   controller: App\Controller\PlayerController::addPlayer
   methods: [POST]
 
-match_mode:
-  path: /matches/modes/{id}
-  controller: App\Controller\MatchModeController::getMatchModeById
+tournament:
+  path: /tournaments/{id}
+  controller: App\Controller\TournamentController::getTournamentById
+  methods: [GET]
+  requirements:
+    id: '\d+'
 
-match_modes:
-  path: /matches/modes
-  controller: App\Controller\MatchModeController::getMatchModes
+tournaments:
+  path: /tournaments
+  controller: App\Controller\TournamentController::getTournaments
+  methods: [GET]
+
+tournament_add:
+  path: /tournaments/add
+  controller: App\Controller\TournamentController::addTournament
+  methods: [POST]
