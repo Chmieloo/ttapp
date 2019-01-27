@@ -7,9 +7,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\MatchModeRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\GameModeRepository")
  */
-class MatchMode
+class GameMode
 {
     /**
      * @ORM\Id()
@@ -17,11 +17,6 @@ class MatchMode
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="smallint")
-     */
-    private $wins_required;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -36,33 +31,26 @@ class MatchMode
     /**
      * @ORM\Column(type="smallint")
      */
+    private $wins_required;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
     private $max_sets;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Match", mappedBy="match_mode")
+     * @ORM\OneToMany(targetEntity="App\Entity\Game", mappedBy="game_mode")
      */
-    private $matches;
+    private $games;
 
     public function __construct()
     {
-        $this->matches = new ArrayCollection();
+        $this->games = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getWinsRequired(): ?int
-    {
-        return $this->wins_required;
-    }
-
-    public function setWinsRequired(int $wins_required): self
-    {
-        $this->wins_required = $wins_required;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -89,6 +77,18 @@ class MatchMode
         return $this;
     }
 
+    public function getWinsRequired(): ?int
+    {
+        return $this->wins_required;
+    }
+
+    public function setWinsRequired(int $wins_required): self
+    {
+        $this->wins_required = $wins_required;
+
+        return $this;
+    }
+
     public function getMaxSets(): ?int
     {
         return $this->max_sets;
@@ -102,30 +102,30 @@ class MatchMode
     }
 
     /**
-     * @return Collection|Match[]
+     * @return Collection|Game[]
      */
-    public function getMatches(): Collection
+    public function getGames(): Collection
     {
-        return $this->matches;
+        return $this->games;
     }
 
-    public function addMatch(Match $match): self
+    public function addGame(Game $game): self
     {
-        if (!$this->matches->contains($match)) {
-            $this->matches[] = $match;
-            $match->setMatchMode($this);
+        if (!$this->games->contains($game)) {
+            $this->games[] = $game;
+            $game->setGameMode($this);
         }
 
         return $this;
     }
 
-    public function removeMatch(Match $match): self
+    public function removeGame(Game $game): self
     {
-        if ($this->matches->contains($match)) {
-            $this->matches->removeElement($match);
+        if ($this->games->contains($game)) {
+            $this->games->removeElement($game);
             // set the owning side to null (unless already changed)
-            if ($match->getMatchMode() === $this) {
-                $match->setMatchMode(null);
+            if ($game->getGameMode() === $this) {
+                $game->setGameMode(null);
             }
         }
 

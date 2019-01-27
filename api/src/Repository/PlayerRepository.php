@@ -22,7 +22,7 @@ class PlayerRepository extends ServiceEntityRepository
     public function findAllSimple()
     {
         return $this->createQueryBuilder('p')
-            ->select('p.id', 'p.name')
+            ->select('p.id', 'p.name', 'p.tournament_elo')
             ->orderBy('p.name', 'ASC')
             ->getQuery()
             ->getResult();

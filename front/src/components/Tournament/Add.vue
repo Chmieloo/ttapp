@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <div class="mainContainer">
-      <div id="addPlayerForm">
+      <div id="addTournamentForm">
         <span class="header-icon"><i class="fas fa-plus-circle"></i></span>
-        <span class="header-title">New player</span>
+        <span class="header-title">New tournament</span>
         <form class="mart10" method="post" @submit.prevent="postNow">
           <div>
-            <input type="text" name="" value="name" v-model="name" placeholder="Name">
+            <input id="tournamentName" type="text" name="name" value="name" :state="nameState" v-model="name" placeholder="Name">
           </div>
           <div class="mart10">
-            <input type="text" name="" value="nickname" v-model="nickname" placeholder="Nickname">
+            <input id="tournamentDate" type="date" name="date" value="" v-model="startDate" placeholder="Start date">
           </div>
           <div class="mart10">
             <button type="submit" name="button">Submit</button>
@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       name: '',
-      nickname: '',
+      startDate: new Date(),
       show: false,
       errors: []
     }
@@ -61,8 +61,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-#addPlayerForm {
+#addTournamentForm {
   input {
+    font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
     font-size: 16px;
     padding: 8px;
     font-weight: 400;

@@ -47,20 +47,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.mainContainer {
-  padding: 20px 25px;
-}
-
 .header-title {
   color: white;
   font-size: 30px;
   font-weight: 600;
-}
-
-.header-icon {
-  color: white;
-  font-size: 20px;
-  padding-right: 15px;
 }
 
 .table-player-list {

@@ -4,6 +4,7 @@ import IndexPage from '@/components/IndexPage'
 import PlayerList from '@/components/Player/List'
 import PlayerAdd from '@/components/Player/Add'
 import TournamentList from '@/components/Tournament/List'
+import TournamentAdd from '@/components/Tournament/Add'
 
 Vue.use(Router)
 
@@ -12,6 +13,7 @@ export default new Router({
     { path: '/', name: 'IndexPage', component: IndexPage },
     { path: '/player/list', name: 'PlayerList', component: PlayerList },
     { path: '/player/add', name: 'PlayerAdd', component: PlayerAdd },
-    { path: '/tournament/list', name: 'TournamentList', component: TournamentList }
+    { path: '/tournament/list', name: 'TournamentList', component: TournamentList },
+    { path: '/tournament/add', name: 'TournamentAdd', component: TournamentAdd }
   ]
 })

@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\MatchRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\GameRepository")
  */
-class Match
+class Game
 {
     /**
      * @ORM\Id()
@@ -15,6 +15,11 @@ class Match
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\GameMode", inversedBy="games")
+     */
+    private $game_mode;
 
     /**
      * @ORM\Column(type="boolean")
@@ -32,19 +37,13 @@ class Match
     private $is_walkover;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\MatchMode", inversedBy="matches")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $match_mode;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Player", inversedBy="matches")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Player", inversedBy="home_games")
      * @ORM\JoinColumn(nullable=false)
      */
     private $home_player;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Player", inversedBy="matches")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Player", inversedBy="away_games")
      * @ORM\JoinColumn(nullable=false)
      */
     private $away_player;
@@ -54,9 +53,26 @@ class Match
      */
     private $date_of_match;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Tournament", inversedBy="games")
+     */
+    private $tournament;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getGameMode(): ?GameMode
+    {
+        return $this->game_mode;
+    }
+
+    public function setGameMode(?GameMode $game_mode): self
+    {
+        $this->game_mode = $game_mode;
+
+        return $this;
     }
 
     public function getIsFinished(): ?bool
@@ -95,18 +111,6 @@ class Match
         return $this;
     }
 
-    public function getMatchMode(): ?MatchMode
-    {
-        return $this->match_mode;
-    }
-
-    public function setMatchMode(?MatchMode $match_mode): self
-    {
-        $this->match_mode = $match_mode;
-
-        return $this;
-    }
-
     public function getHomePlayer(): ?Player
     {
         return $this->home_player;
@@ -139,6 +143,18 @@ class Match
     public function setDateOfMatch(\DateTimeInterface $date_of_match): self
     {
         $this->date_of_match = $date_of_match;
+
+        return $this;
+    }
+
+    public function getTournament(): ?Tournament
+    {
+        return $this->tournament;
+    }
+
+    public function setTournament(?Tournament $tournament): self
+    {
+        $this->tournament = $tournament;
 
         return $this;
     }

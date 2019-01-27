@@ -6,21 +6,25 @@
       <table class="table-player-list">
         <tr class="row-header">
           <th class="txt-left">name</th>
+          <th class="txt-center mw-100">elo</th>
           <th class="txt-center mw-100">m.played</th>
           <th class="txt-center mw-100">m.won</th>
           <th class="txt-center mw-100">m.%</th>
           <th class="txt-center mw-100">s.played</th>
           <th class="txt-center mw-100">s.won</th>
           <th class="txt-center mw-100">s.%</th>
+          <th class="txt-center mw-100">form</th>
         </tr>
         <tr v-for="player in players" v-bind:key="player.id" class="player-row">
           <td class="txt-left">{{ player.name }}</td>
+          <td class="txt-center">{{ player.tournament_elo }}</td>
           <td class="txt-center">0</td>
           <td class="txt-center">0</td>
           <td class="txt-center">20</td>
           <td class="txt-center">0</td>
           <td class="txt-center">0</td>
           <td class="txt-center">20</td>
+          <td class="txt-center">W.W.L.D.W</td>
         </tr>
       </table>
     </div>
@@ -49,12 +53,6 @@ export default {
 <style scoped>
 .mainContainer {
   padding: 20px 25px;
-}
-
-.header-title {
-  color: white;
-  font-size: 30px;
-  font-weight: 600;
 }
 
 .header-icon {
