@@ -50,15 +50,6 @@ class TournamentController extends BaseController
             $tournament->setName($data['name']);
             $em->persist($tournament);
             $em->flush();
-            /*
-            $player = new Player();
-            $player->setName($data['name']);
-            $player->setNickname($data['nickname']);
-            $player->setTournamentElo(self::STARTING_ELO);
-            $player->setCurrentElo(self::STARTING_ELO);
-            $em->persist($player);
-            $em->flush();
-            */
 
             return new Response($player->getId());
         }

@@ -43,9 +43,15 @@ class Tournament
      */
     private $games;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Group", mappedBy="tournament")
+     */
+    private $groups;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -126,6 +132,37 @@ class Tournament
             // set the owning side to null (unless already changed)
             if ($game->getTournament() === $this) {
                 $game->setTournament(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Group[]
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): self
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups[] = $group;
+            $group->setTournament($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): self
+    {
+        if ($this->groups->contains($group)) {
+            $this->groups->removeElement($group);
+            // set the owning side to null (unless already changed)
+            if ($group->getTournament() === $this) {
+                $group->setTournament(null);
             }
         }
 
