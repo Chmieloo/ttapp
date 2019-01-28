@@ -43,4 +43,19 @@ class TournamentGroupController extends BaseController
 
         return new Response($group->getId());
     }
+
+    public function getTournamentGroupsByTournamentId($id)
+    {
+        $data = $this->getDoctrine()
+            ->getRepository(TournamentGroup::class)
+            ->getTournamentGroupsByTournamentId($id);
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
 }

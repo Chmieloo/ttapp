@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\TournamentGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -17,6 +18,52 @@ class TournamentGroupRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, TournamentGroup::class);
+    }
+
+    /**
+     * @param $id
+     * @return mixed[]
+     */
+    public function getTournamentGroupsByTournamentId($id)
+    {
+        $sql =
+            'select p.id as playerId, p.name as playerName, tg.id as groupId, tg.name as groupName ' .
+            'from player_tournament_group ptg ' .
+            'join player p on p.id = ptg.player_id ' .
+            'join tournament_group tg on tg.id = ptg.group_id ' .
+            'where tg.tournament_id = :tournamentId';
+
+        $params['tournamentId'] = $id;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $groups = [];
+        foreach ($result as $data) {
+            $groupId = $data['groupId'];
+            $groupName = $data['groupName'];
+            $playerId = $data['playerId'];
+            $playerName = $data['playerName'];
+
+            $currentGroup = array_key_exists($groupId, $groups) ?
+                $groups[$groupId] :
+                $groups[$groupId] = [
+                    'groupId' => $groupId,
+                    'groupName' => $groupName,
+                ];
+
+            $currentGroup['players'][] = [
+                'playerId' => $playerId,
+                'playerName' => $playerName,
+            ];
+
+            $groups[$groupId] = $currentGroup;
+        }
+
+        return $groups;
     }
 
     // /**

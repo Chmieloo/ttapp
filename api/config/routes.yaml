@@ -44,3 +44,10 @@ group_add:
   path: /groups/add
   controller: App\Controller\TournamentGroupController::addTournamentGroup
   methods: [POST]
+
+groups_by_tournament:
+  path: /groups/tournaments/{id}
+  controller: App\Controller\TournamentGroupController::getTournamentGroupsByTournamentId
+  methods: [GET]
+  requirements:
+    id: '\d+'
