@@ -16,7 +16,7 @@ class TournamentController extends BaseController
     {
         $tournaments = $this->getDoctrine()
             ->getRepository(Tournament::class)
-            ->findAll();
+            ->loadList();
 
         if (!$tournaments) {
             throw $this->createNotFoundException(
@@ -48,10 +48,13 @@ class TournamentController extends BaseController
             $em = $this->getDoctrine()->getManager();
             $tournament = new Tournament();
             $tournament->setName($data['name']);
+            $tournament->setStartTime(\DateTime::createFromFormat('Y-m-d', $data['date']));
+            $tournament->setIsFinished(0);
+            $tournament->setIsPlayoffs(0);
             $em->persist($tournament);
             $em->flush();
 
-            return new Response($player->getId());
+            return new Response($tournament->getId());
         }
     }
 }

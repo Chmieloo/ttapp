@@ -15,12 +15,12 @@
         </tr>
         <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="player-row">
           <td class="txt-left">{{ tournament.name }}</td>
-          <td class="txt-center">group</td>
+          <td class="txt-center">{{ tournament.phase }}</td>
           <td class="txt-center">58</td>
           <td class="txt-center">20</td>
           <td class="txt-center">0</td>
           <td class="txt-center">0</td>
-          <td class="txt-center">schedule | results</td>
+          <td class="txt-center">schedule | results | standings</td>
         </tr>
       </table>
     </div>

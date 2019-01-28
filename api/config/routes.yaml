@@ -39,3 +39,8 @@ tournament_add:
   path: /tournaments/add
   controller: App\Controller\TournamentController::addTournament
   methods: [POST]
+
+group_add:
+  path: /groups/add
+  controller: App\Controller\TournamentGroupController::addTournamentGroup
+  methods: [POST]

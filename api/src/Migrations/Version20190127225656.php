@@ -22,8 +22,8 @@ final class Version20190127225656 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE TABLE `group` (id INT AUTO_INCREMENT NOT NULL, tournament_id INT NOT NULL, name VARCHAR(255) NOT NULL, priority SMALLINT NOT NULL, INDEX IDX_6DC044C533D1A3E7 (tournament_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE `group` ADD CONSTRAINT FK_6DC044C533D1A3E7 FOREIGN KEY (tournament_id) REFERENCES tournament (id)');
+        $this->addSql('CREATE TABLE `tournament_group` (id INT AUTO_INCREMENT NOT NULL, tournament_id INT NOT NULL, name VARCHAR(255) NOT NULL, priority SMALLINT NOT NULL, INDEX IDX_6DC044C533D1A3E7 (tournament_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE `tournament_group` ADD CONSTRAINT FK_6DC044C533D1A3E7 FOREIGN KEY (tournament_id) REFERENCES tournament (id)');
     }
 
     public function down(Schema $schema) : void
@@ -31,6 +31,6 @@ final class Version20190127225656 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP TABLE `group`');
+        $this->addSql('DROP TABLE `tournament_group`');
     }
 }

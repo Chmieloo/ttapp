@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\TournamentGroupRepository")
  */
-class Group
+class TournamentGroup
 {
     /**
      * @ORM\Id()
@@ -27,7 +27,7 @@ class Group
     private $priority;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Tournament", inversedBy="groups")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Tournament", inversedBy="tournamentGroups")
      * @ORM\JoinColumn(nullable=false)
      */
     private $tournament;

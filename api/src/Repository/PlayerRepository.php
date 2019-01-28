@@ -26,7 +26,6 @@ class PlayerRepository extends ServiceEntityRepository
             ->orderBy('p.name', 'ASC')
             ->getQuery()
             ->getResult();
-
     }
 
     // /**

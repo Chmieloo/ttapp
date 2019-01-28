@@ -1,15 +1,20 @@
 <template>
   <div id="app">
     <div class="mainContainer">
-      <div id="addTournamentForm">
+      <div id="addPlayerForm">
         <span class="header-icon"><i class="fas fa-plus-circle"></i></span>
-        <span class="header-title">New tournament</span>
+        <span class="header-title">New group</span>
         <form class="mart10" method="post" @submit.prevent="postNow">
           <div>
-            <input id="tournamentName" type="text" name="name" value="name" v-model="name" placeholder="Name">
+            <input type="text" name="" value="name" v-model="name" placeholder="Name">
           </div>
           <div class="mart10">
-            <input id="tournamentDate" type="date" name="date" value="" :format="formatDate" v-model="date" placeholder="Start date">
+            <select v-model="selected" name="tournaments">
+              <option disabled value="">Please select one</option>
+              <option v-for="tournament in tournaments" v-bind:key="tournament.id" v-bind:value="tournament.id">
+                {{ tournament.name }}
+              </option>
+            </select>
           </div>
           <div class="mart10">
             <button type="submit" name="button">Submit</button>
@@ -18,7 +23,7 @@
       </div>
       <div>
         <p v-if="errors.length">
-          <b>Information:</b>
+          <b>Please correct the following error(s):</b>
           <ul>
             <li v-for="error in errors" v-bind:key="error.id">{{ error }}</li>
           </ul>
@@ -30,32 +35,33 @@
 
 <script>
 import axios from 'axios'
-import moment from 'moment'
 
 export default {
   name: 'formPost',
   data () {
     return {
+      tournaments: this.getTournaments(),
       name: '',
-      date: moment(new Date()).format('YYYY-MM-DD'),
       show: false,
       errors: []
     }
   },
   methods: {
-    formatDate (date) {
-      return moment(date).format('DD-MM-YYYY')
+    getTournaments () {
+      axios.get('/api/tournaments').then((res) => {
+        this.tournaments = res.data
+      })
     },
     postNow () {
-      axios.post('/api/tournaments/add', {
+      axios.post('/api/groups/add', {
         headers: {
           'Content-type': 'application/x-www-form-urlencoded'
         },
         name: this.name,
-        date: this.date
+        tournament: this.selected
       }).then((res) => {
         this.errors = []
-        this.errors.push('Tournament added')
+        this.errors.push('Group added')
       }).catch(error => {
         this.errors.push(error.response.data.errorText)
       })
@@ -65,14 +71,23 @@ export default {
 </script>
 
 <style lang="less" scoped>
-#addTournamentForm {
+#addPlayerForm {
   input {
-    font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
     font-size: 16px;
     padding: 8px;
     font-weight: 400;
     color: #000;
     min-width: 200px;
   }
+}
+
+select {
+    font-size: 16px;
+    padding: 8px;
+    font-weight: 400;
+    color: #000;
+    min-width: 200px;
+    font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
+    height: 40px;
 }
 </style>
