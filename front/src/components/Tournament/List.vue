@@ -13,14 +13,16 @@
           <th class="txt-center mw-100">matches scheduled</th>
           <th class="txt-center mw-100">options</th>
         </tr>
-        <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="player-row">
+        <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="row-data">
           <td class="txt-left">{{ tournament.name }}</td>
           <td class="txt-center">{{ tournament.phase }}</td>
           <td class="txt-center">58</td>
           <td class="txt-center">20</td>
           <td class="txt-center">0</td>
           <td class="txt-center">0</td>
-          <td class="txt-center">schedule | results | standings</td>
+          <td class="txt-center cell-options">
+            <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link>
+          </td>
         </tr>
       </table>
     </div>
@@ -57,15 +59,5 @@ export default {
   border-collapse: collapse;
   margin-top: 20px;
   width: 100%;
-}
-
-.row-header {
-  font-size: 20px;;
-}
-
-.player-row {
-  height: 25px;
-  line-height: 25px;
-  border-bottom: 1px solid #2d2d2d;
 }
 </style>

@@ -27,7 +27,8 @@ class TournamentGroupRepository extends ServiceEntityRepository
     public function getTournamentGroupsByTournamentId($id)
     {
         $sql =
-            'select p.id as playerId, p.name as playerName, tg.id as groupId, tg.name as groupName ' .
+            'select p.id as playerId, p.name as playerName, ' .
+            'tg.id as groupId, tg.name as groupName, tg.abbreviation as groupAbbreviation ' .
             'from player_tournament_group ptg ' .
             'join player p on p.id = ptg.player_id ' .
             'join tournament_group tg on tg.id = ptg.group_id ' .
@@ -45,6 +46,7 @@ class TournamentGroupRepository extends ServiceEntityRepository
         foreach ($result as $data) {
             $groupId = $data['groupId'];
             $groupName = $data['groupName'];
+            $groupAbbreviation = $data['groupAbbreviation'];
             $playerId = $data['playerId'];
             $playerName = $data['playerName'];
 
@@ -53,6 +55,7 @@ class TournamentGroupRepository extends ServiceEntityRepository
                 $groups[$groupId] = [
                     'groupId' => $groupId,
                     'groupName' => $groupName,
+                    'groupAbbreviation' => $groupAbbreviation,
                 ];
 
             $currentGroup['players'][] = [

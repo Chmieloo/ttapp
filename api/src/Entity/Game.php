@@ -58,6 +58,11 @@ class Game
      */
     private $tournament;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\TournamentGroup", inversedBy="games")
+     */
+    private $tournament_group;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -155,6 +160,18 @@ class Game
     public function setTournament(?Tournament $tournament): self
     {
         $this->tournament = $tournament;
+
+        return $this;
+    }
+
+    public function getTournamentGroup(): ?TournamentGroup
+    {
+        return $this->tournament_group;
+    }
+
+    public function setTournamentGroup(?TournamentGroup $tournament_group): self
+    {
+        $this->tournament_group = $tournament_group;
 
         return $this;
     }

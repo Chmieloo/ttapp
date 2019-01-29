@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="mainContainer">
-      <span class="header-icon"><i class="fas fa-list"></i></span>
+      <span class="header-icon"><i class="fas fa-users"></i></span>
       <span class="header-title">Player list</span>
       <table class="table-player-list">
         <tr class="row-header">
@@ -15,7 +15,7 @@
           <th class="txt-center mw-100">s.%</th>
           <th class="txt-center mw-100">form</th>
         </tr>
-        <tr v-for="player in players" v-bind:key="player.id" class="player-row">
+        <tr v-for="player in players" v-bind:key="player.id" class="row-data">
           <td class="txt-left">{{ player.name }}</td>
           <td class="txt-center">{{ player.tournament_elo }}</td>
           <td class="txt-center">0</td>
@@ -69,11 +69,5 @@ export default {
 
 .row-header {
   font-size: 20px;;
-}
-
-.player-row {
-  height: 25px;
-  line-height: 25px;
-  border-bottom: 1px solid #2d2d2d;
 }
 </style>

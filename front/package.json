@@ -27,6 +27,7 @@
     "prod": "^1.0.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
+    "vue-scrollto": "^2.13.0",
     "webpack-cli": "^3.2.1"
   },
   "devDependencies": {

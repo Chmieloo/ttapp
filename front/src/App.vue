@@ -16,12 +16,22 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 body {
-  background: #1a1a1a;
+  background: #0d0d0d;
   padding: 0;
   margin: 0;
   color: #9e9e9e;
+}
+
+.cell-options {
+  a {
+    text-decoration: none;
+    color: #9e9e9e;
+  }
+  a:hover {
+    color: white;
+  }
 }
 
 button {
@@ -34,6 +44,19 @@ button {
   color: #fff;
   border: none;
   border-radius: 8px;
+}
+
+.row-header {
+  font-size: 20px;
+  color: #dedede;
+  height: 35px;
+  line-height: 35px;
+}
+
+.row-data {
+  height: 35px;
+  line-height: 35px;
+  border-top: 1px solid #2d2d2d;
 }
 
 input {

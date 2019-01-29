@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,6 +33,21 @@ class TournamentGroup
      * @ORM\JoinColumn(nullable=false)
      */
     private $tournament;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Game", mappedBy="tournament_group")
+     */
+    private $games;
+
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $abbreviation;
+
+    public function __construct()
+    {
+        $this->games = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -69,6 +86,49 @@ class TournamentGroup
     public function setTournament(?Tournament $tournament): self
     {
         $this->tournament = $tournament;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Game[]
+     */
+    public function getGames(): Collection
+    {
+        return $this->games;
+    }
+
+    public function addGame(Game $game): self
+    {
+        if (!$this->games->contains($game)) {
+            $this->games[] = $game;
+            $game->setTournamentGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGame(Game $game): self
+    {
+        if ($this->games->contains($game)) {
+            $this->games->removeElement($game);
+            // set the owning side to null (unless already changed)
+            if ($game->getTournamentGroup() === $this) {
+                $game->setTournamentGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAbbreviation(): ?string
+    {
+        return $this->abbreviation;
+    }
+
+    public function setAbbreviation(string $abbreviation): self
+    {
+        $this->abbreviation = $abbreviation;
 
         return $this;
     }
