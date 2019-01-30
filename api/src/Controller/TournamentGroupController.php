@@ -44,6 +44,10 @@ class TournamentGroupController extends BaseController
         return new Response($group->getId());
     }
 
+    /**
+     * @param $id
+     * @return Response
+     */
     public function getTournamentGroupsByTournamentId($id)
     {
         $data = $this->getDoctrine()

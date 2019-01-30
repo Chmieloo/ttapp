@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -62,6 +64,31 @@ class Game
      * @ORM\ManyToOne(targetEntity="App\Entity\TournamentGroup", inversedBy="games")
      */
     private $tournament_group;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $winner_id;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $home_score;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $away_score;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Scores", mappedBy="game", orphanRemoval=true)
+     */
+    private $scores;
+
+    public function __construct()
+    {
+        $this->scores = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -172,6 +199,73 @@ class Game
     public function setTournamentGroup(?TournamentGroup $tournament_group): self
     {
         $this->tournament_group = $tournament_group;
+
+        return $this;
+    }
+
+    public function getWinnerId(): ?int
+    {
+        return $this->winner_id;
+    }
+
+    public function setWinnerId(int $winner_id): self
+    {
+        $this->winner_id = $winner_id;
+
+        return $this;
+    }
+
+    public function getHomeScore(): ?int
+    {
+        return $this->home_score;
+    }
+
+    public function setHomeScore(int $home_score): self
+    {
+        $this->home_score = $home_score;
+
+        return $this;
+    }
+
+    public function getAwayScore(): ?int
+    {
+        return $this->away_score;
+    }
+
+    public function setAwayScore(int $away_score): self
+    {
+        $this->away_score = $away_score;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Scores[]
+     */
+    public function getScores(): Collection
+    {
+        return $this->scores;
+    }
+
+    public function addScore(Scores $score): self
+    {
+        if (!$this->scores->contains($score)) {
+            $this->scores[] = $score;
+            $score->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScore(Scores $score): self
+    {
+        if ($this->scores->contains($score)) {
+            $this->scores->removeElement($score);
+            // set the owning side to null (unless already changed)
+            if ($score->getGame() === $this) {
+                $score->setGame(null);
+            }
+        }
 
         return $this;
     }

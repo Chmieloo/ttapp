@@ -6,6 +6,10 @@ match_modes:
   path: /matches/modes
   controller: App\Controller\MatchModeController::getMatchModes
 
+matches:
+  path: /matches
+  controller: App\Controller\MatchController:getMatches
+
 player:
   path: /players/{id}
   controller: App\Controller\PlayerController::getPlayerById

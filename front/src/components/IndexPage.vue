@@ -1,55 +1,29 @@
 <template>
   <div class="mainContainer">
-    <table class="mainTable">
-      <tr>
-        <td class="w50pc padr10">
-          <h1>Today's schedule</h1>
-          <div class="greyContainer">
-            <table class="schedule">
-              <tr>
-                <td>09:30</td>
-                <td>Conference D</td>
-                <td>John Doe</td>
-                <td>-</td>
-                <td>Jim Beam</td>
-              </tr>
-              <tr>
-                <td>10:00</td>
-                <td>Premier League</td>
-                <td>Mike Johnson</td>
-                <td>-</td>
-                <td>Billy Bob</td>
-              </tr>
-            </table>
-          </div>
-        </td>
-        <td class="w50pc padr10">
-          <h1>Today's results</h1>
-          <div class="greyContainer">
-            <table class="results">
-              <tr>
-                <td>Mike Doe</td>
-                <td>-</td>
-                <td>Jerry Jackson</td>
-                <td>3 - 1 (11-5, 11-4, 3-11, 13-11)</td>
-              </tr>
-              <tr>
-                <td>Bobby Brown</td>
-                <td>-</td>
-                <td>Tom Black</td>
-                <td>2 - 2 (11-5, 11-4, 3-11, 3-11)</td>
-              </tr>
-            </table>
-          </div>
-        </td>
-      </tr>
-    </table>
+    <div class="halfContainer">
+      <span class="header-title">TODAY'S SCHEDULE</span>
+      <div class="inContainer90">
+        1
+      </div>
+    </div>
+    <div class="halfContainer">
+      <span class="header-title">TODAY'S RESULTS</span>
+      <div class="inContainer90">
+        <MatchResults />
+      </div>
+    </div>
+    <div style="clear: both;" />
   </div>
 </template>
 
 <script>
+import MatchResults from './Match/MatchResults.vue'
+
 export default {
   name: 'IndexPage',
+  components: {
+    MatchResults
+  },
   data () {
     return {
       msg: "Today's schedule"
@@ -60,12 +34,32 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.halfContainer {
+  float: left;
+  width: 50%;
+  margin-top: 40px;
+}
+
+.inContainer90 {
+  margin-top: 20px;
+  width: 95%;
+}
+
 .mainContainer {
   padding: 0px 20px 0px 20px;
 }
 
+.header-title {
+  color: white;
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  margin-right: 40px;
+}
+
 .mainTable {
   width: 100%;
+  margin-top: 20px;
 }
 
 .greyContainer {
