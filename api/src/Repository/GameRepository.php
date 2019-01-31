@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Entity\TournamentGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -22,6 +23,7 @@ class GameRepository extends ServiceEntityRepository
 
     /**
      * @param $id
+     * @return array
      */
     public function getAllByTournamentId($id)
     {
@@ -89,32 +91,37 @@ class GameRepository extends ServiceEntityRepository
         return $matchData;
     }
 
-    // /**
-    //  * @return Game[] Returns an array of Game objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $tournamentId
+     * @param $player1Id
+     * @param $player2Id
+     * @return bool
+     */
+    public function validateTournamentGroupPlayer($tournamentId, $player1Id, $player2Id)
     {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('g.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $sql = 'select ptg1.group_id as p1groupId, ptg2.group_id as p2groupId ' .
+            'from player_tournament_group ptg1 ' .
+            'join player_tournament_group ptg2 on ptg2.tournament_id = ptg1.tournament_id ' .
+            'where ptg1.tournament_id = :tournamentId ' .
+            'and ptg1.player_id = :player1 ' .
+            'and ptg2.player_id = :player2';
 
-    /*
-    public function findOneBySomeField($value): ?Game
-    {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $params['tournamentId'] = $tournamentId;
+        $params['player1'] = $player1Id;
+        $params['player2'] = $player2Id;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result['p1groupId'] != $result['p2groupId']) {
+            $group = null;
+        } else {
+            $group = $result['p1groupId'];
+        }
+
+        return $group;
     }
-    */
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\GameMode;
 use App\Entity\MatchMode;
 use App\Entity\Player;
 use App\Repository\PlayerRepository;
@@ -21,7 +22,7 @@ class MatchModeController extends BaseController
     public function getMatchModeById($id)
     {
         $matchMode = $this->getDoctrine()
-            ->getRepository(MatchMode::class)
+            ->getRepository(GameMode::class)
             ->find($id);
 
         if (!$matchMode) {
@@ -43,7 +44,7 @@ class MatchModeController extends BaseController
     public function getMatchModes()
     {
         $matchModes = $this->getDoctrine()
-            ->getRepository(MatchMode::class)
+            ->getRepository(GameMode::class)
             ->findAll();
 
         if (!$matchModes) {

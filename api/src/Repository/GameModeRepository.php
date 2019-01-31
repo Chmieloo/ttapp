@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\GameMode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -19,32 +20,19 @@ class GameModeRepository extends ServiceEntityRepository
         parent::__construct($registry, GameMode::class);
     }
 
-    // /**
-    //  * @return GameMode[] Returns an array of GameMode objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return mixed[]
+     */
+    public function findAll()
     {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('g.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $sql = 'select * from game_mode';
 
-    /*
-    public function findOneBySomeField($value): ?GameMode
-    {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
-    */
 }

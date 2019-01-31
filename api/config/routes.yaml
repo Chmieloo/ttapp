@@ -10,6 +10,11 @@ matches:
   path: /matches
   controller: App\Controller\MatchController:getMatches
 
+match_add:
+  path: /matches/add/official
+  controller: App\Controller\MatchController::addMatch
+  methods: [POST]
+
 player:
   path: /players/{id}
   controller: App\Controller\PlayerController::getPlayerById
