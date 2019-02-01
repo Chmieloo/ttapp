@@ -36,15 +36,15 @@
                         </tr>
                         <tr v-for="player in group.players" v-bind:key="player.playerId" class="grsoup-container">
                             <td>{{ player.playerName }}</td>
-                            <td class="txt-center">0</td>
-                            <td class="txt-center">0</td>
-                            <td class="txt-center">0</td>
-                            <td class="txt-center">0</td>
-                            <td class="txt-center">10 - 10</td>
-                            <td class="txt-center">10</td>
-                            <td class="txt-center">123 - 98</td>
-                            <td class="txt-center">9</td>
-                            <td class="txt-center">24</td>
+                            <td class="txt-center">{{ player.played }}</td>
+                            <td class="txt-center">{{ player.wins }}</td>
+                            <td class="txt-center">{{ player.draws }}</td>
+                            <td class="txt-center">{{ player.losses }}</td>
+                            <td class="txt-center">-</td>
+                            <td class="txt-center">-</td>
+                            <td class="txt-center">-</td>
+                            <td class="txt-center">-</td>
+                            <td class="txt-center">{{ player.points }}</td>
                         </tr>
                     </table>
                 </div>
@@ -64,7 +64,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/groups/tournaments/' + this.$route.params.id).then((res) => {
+    axios.get('/api/tournaments/' + this.$route.params.id + '/standings').then((res) => {
       this.groups = res.data
     })
   }

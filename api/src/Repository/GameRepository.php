@@ -22,13 +22,11 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $id
-     * @return array
+     * Base sql string
+     * @return string
      */
-    public function getAllByTournamentId($id)
+    public function baseQuery()
     {
-        $matchData = [];
-
         $sql =
             'select g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
             'p1.id as homePlayerId, p2.id awayPlayerId, ' .
@@ -46,13 +44,28 @@ class GameRepository extends ServiceEntityRepository
             'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
             'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
             'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
-            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ' .
-            'where g.tournament_id = :tournamentId';
+            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ';
+
+        return $sql;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getResultsByTournamentId($id)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.tournament_id = :tournamentId ';
+        $baseSql .= 'and g.is_finished = 1 ';
+        $baseSql .= 'order by g.date_of_match asc';
 
         $params['tournamentId'] = $id;
 
         $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($sql);
+        $stmt = $em->getConnection()->prepare($baseSql);
         $stmt-> execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -90,6 +103,116 @@ class GameRepository extends ServiceEntityRepository
 
         return $matchData;
     }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getByTournamentId($id)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.tournament_id = :tournamentId ';
+        $baseSql .= 'order by g.date_of_match asc';
+
+        $params['tournamentId'] = $id;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+            $numberOfSets = (int)$match['homeScoreTotal'] + (int)$match['awayScoreTotal'];
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => $match['dateOfMatch'],
+                'homePlayerId' => $match['homePlayerId'],
+                'awayPlayerId' => $match['awayPlayerId'],
+                'homePlayerName' => $match['homePlayerName'],
+                'awayPlayerName' => $match['awayPlayerName'],
+                'winnerId' => $match['winnerId'] ?: 0,
+                'homeScoreTotal' => $match['homeScoreTotal'],
+                'awayScoreTotal' => $match['awayScoreTotal'],
+                'numberOfSets' => $numberOfSets,
+                'scores' => $setScores,
+            ];
+        }
+
+        return $matchData;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getScheduleByTournamentId($id)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.tournament_id = :tournamentId ';
+        $baseSql .= 'and g.is_finished = 0 ';
+        $baseSql .= 'order by g.date_of_match, g.id asc';
+
+        $params['tournamentId'] = $id;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+            $numberOfSets = (int)$match['homeScoreTotal'] + (int)$match['awayScoreTotal'];
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => $match['dateOfMatch'],
+                'homePlayerId' => $match['homePlayerId'],
+                'awayPlayerId' => $match['awayPlayerId'],
+                'homePlayerName' => $match['homePlayerName'],
+                'awayPlayerName' => $match['awayPlayerName'],
+                'winnerId' => $match['winnerId'] ?: 0,
+                'homeScoreTotal' => $match['homeScoreTotal'],
+                'awayScoreTotal' => $match['awayScoreTotal'],
+                'numberOfSets' => $numberOfSets,
+                'scores' => $setScores,
+            ];
+        }
+
+        return $matchData;
+    }
+
 
     /**
      * @param $tournamentId

@@ -1,19 +1,9 @@
-match_mode:
-  path: /matches/modes/{id}
-  controller: App\Controller\MatchModeController::getMatchModeById
+# PLAYER ROUTES
 
-match_modes:
-  path: /matches/modes
-  controller: App\Controller\MatchModeController::getMatchModes
-
-matches:
-  path: /matches
-  controller: App\Controller\MatchController:getMatches
-
-match_add:
-  path: /matches/add/official
-  controller: App\Controller\MatchController::addMatch
-  methods: [POST]
+players:
+  path: /players
+  controller: App\Controller\PlayerController::getPlayers
+  methods: [GET]
 
 player:
   path: /players/{id}
@@ -22,22 +12,12 @@ player:
   requirements:
     id: '\d+'
 
-players:
-  path: /players
-  controller: App\Controller\PlayerController::getPlayers
-  methods: [GET]
-
 player_add:
   path: /players/add
   controller: App\Controller\PlayerController::addPlayer
   methods: [POST]
 
-tournament:
-  path: /tournaments/{id}
-  controller: App\Controller\TournamentController::getTournamentById
-  methods: [GET]
-  requirements:
-    id: '\d+'
+# TOURNAMENT ROUTES
 
 tournaments:
   path: /tournaments
@@ -49,10 +29,20 @@ tournament_add:
   controller: App\Controller\TournamentController::addTournament
   methods: [POST]
 
-group_add:
-  path: /groups/add
-  controller: App\Controller\TournamentGroupController::addTournamentGroup
-  methods: [POST]
+tournament:
+  path: /tournaments/{id}
+  controller: App\Controller\TournamentController::getTournamentById
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
+tournament_standings:
+  path: /tournaments/{id}/standings
+  controller: App\Controller\TournamentController::getStandings
+  requirements:
+    id: '\d+'
+
+# GROUP ROUTES
 
 groups_by_tournament:
   path: /groups/tournaments/{id}
@@ -60,3 +50,38 @@ groups_by_tournament:
   methods: [GET]
   requirements:
     id: '\d+'
+
+group_add:
+  path: /groups/add
+  controller: App\Controller\TournamentGroupController::addTournamentGroup
+  methods: [POST]
+
+# MATCH MODE ROUTES
+
+match_mode:
+  path: /matches/modes/{id}
+  controller: App\Controller\MatchModeController::getMatchModeById
+
+match_modes:
+  path: /matches/modes
+  controller: App\Controller\MatchModeController::getMatchModes
+
+# MATCH ROUTES
+
+matches_current_tournament_results:
+  path: /matches/current/results
+  controller: App\Controller\MatchController:getCurrentTournamentResults
+
+matches_current_tournament_schedule:
+  path: /matches/current/schedule
+  controller: App\Controller\MatchController:getCurrentTournamentSchedule
+
+match_add:
+  path: /matches/add/official
+  controller: App\Controller\MatchController::addMatch
+  methods: [POST]
+
+matches_all:
+  path: /matches
+  controller: App\Controller\MatchController:getAllMatches
+

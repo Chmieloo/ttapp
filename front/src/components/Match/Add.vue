@@ -43,7 +43,11 @@
           </div>
           <div class="mart10">
             <div class="span-label">date and time of match</div>
-            <datetime type="datetime" v-model="datetime" format="yyyy-MM-dd HH:mm"></datetime>
+            <datetime
+              type="datetime"
+              v-model="datetime"
+              format="yyyy-MM-dd HH:mm"
+              value-zone="Europe/Berlin"></datetime>
           </div>
           <div class="mart10">
             <button type="submit" name="button">Submit</button>

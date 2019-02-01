@@ -3,7 +3,7 @@
     <div class="halfContainer">
       <span class="header-title">TODAY'S SCHEDULE</span>
       <div class="inContainer90">
-        1
+        <MatchSchedule />
       </div>
     </div>
     <div class="halfContainer">
@@ -18,11 +18,13 @@
 
 <script>
 import MatchResults from './Match/MatchResults.vue'
+import MatchSchedule from './Match/MatchSchedule.vue'
 
 export default {
   name: 'IndexPage',
   components: {
-    MatchResults
+    MatchResults,
+    MatchSchedule
   },
   data () {
     return {

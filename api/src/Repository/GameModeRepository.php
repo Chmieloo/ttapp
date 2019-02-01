@@ -25,7 +25,7 @@ class GameModeRepository extends ServiceEntityRepository
      */
     public function findAll()
     {
-        $sql = 'select * from game_mode';
+        $sql = "select * from game_mode";
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);

@@ -2,24 +2,18 @@
   <div class="mainMatchContainer">
     <table>
       <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
-        <td class="w30pc" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
+        <td>
+          {{ match.dateOfMatch }}
+        </td>
+        <td class="padl20 padr20">
+          {{ match.groupName }}
+        </td>
+        <td class="playerName txt-right">
           {{ match.homePlayerName }}
         </td>
-        <td>-</td>
-        <td class="w30pc" v-bind:class="match.winnerId == match.awayPlayerId ? 'winner-color' : ''">
+        <td class="padl20 padr20">-</td>
+        <td class="playerName">
           {{ match.awayPlayerName }}
-        </td>
-        <td>
-          <span class="totalScore">
-          {{ match.homeScoreTotal }} - {{ match.awayScoreTotal }}
-          </span>
-          <span class="setScores">
-            (
-            <span v-for="score in match.scores" v-bind:key="score.set" class="score">
-              {{ score.home }} - {{ score.away }}
-            </span>
-            )
-          </span>
         </td>
       </tr>
     </table>
@@ -30,14 +24,14 @@
 import axios from 'axios'
 
 export default {
-  name: 'MatchResults',
+  name: 'MatchSchedule',
   data () {
     return {
       matches: []
     }
   },
   mounted () {
-    axios.get('/api/matches/current/results').then((res) => {
+    axios.get('/api/matches/current/schedule').then((res) => {
       this.matches = res.data
     })
   }
@@ -50,7 +44,15 @@ export default {
   background: #3e3e3e;
   padding: 20px;
   table {
-    width: 100%;
+    .padl20 {
+      padding-left: 20px;
+    }
+    .padr20 {
+      padding-right: 20px;
+    }
+    .playerName {
+      color: white;
+    }
     .totalScore {
       color: white;
       font-weight: 600;

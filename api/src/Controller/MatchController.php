@@ -13,14 +13,62 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MatchController extends BaseController
 {
+    public function getAllMatches()
+    {
+        /** @var Tournament $activeTournament */
+        $activeTournament = $this->getDoctrine()
+            ->getRepository(Tournament::class)
+            ->findNotFinished();
+
+        $data = $this->getDoctrine()
+            ->getRepository(Game::class)
+            ->getByTournamentId($activeTournament->getId());
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
+
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getMatches()
+    public function getCurrentTournamentResults()
     {
+        /** @var Tournament $activeTournament */
+        $activeTournament = $this->getDoctrine()
+            ->getRepository(Tournament::class)
+            ->findNotFinished();
+
         $data = $this->getDoctrine()
             ->getRepository(Game::class)
-            ->getAllByTournamentId(1);
+            ->getResultsByTournamentId($activeTournament->getId());
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getCurrentTournamentSchedule()
+    {
+        /** @var Tournament $activeTournament */
+        $activeTournament = $this->getDoctrine()
+            ->getRepository(Tournament::class)
+            ->findNotFinished();
+
+        $data = $this->getDoctrine()
+            ->getRepository(Game::class)
+            ->getScheduleByTournamentId($activeTournament->getId());
 
         if (!$data) {
             throw $this->createNotFoundException(
@@ -43,7 +91,15 @@ class MatchController extends BaseController
         $modeId = $data['mode'];
         $homePlayerId = $data['homePlayer'];
         $awayPlayerId = $data['awayPlayer'];
+
         $dateTime = $data['datetime'];
+        $timestamp = strtotime($dateTime);
+        $datetimeFormat = 'Y-m-d H:i:s';
+
+        $date = new \DateTime();
+        $date->setTimezone(new \DateTimeZone('Europe/Berlin'));
+        $date->setTimestamp($timestamp);
+        $date->format($datetimeFormat);
 
         if (empty($dateTime)) {
             return new JsonResponse([
@@ -132,7 +188,7 @@ class MatchController extends BaseController
         $game->setWinnerId(0);
         $game->setHomeScore(0);
         $game->setAwayScore(0);
-        $game->setDateOfMatch(\DateTime::createFromFormat('Y-m-d', $data['datetime']));
+        $game->setDateOfMatch($date);
 
         $em->persist($game);
         $em->flush();
