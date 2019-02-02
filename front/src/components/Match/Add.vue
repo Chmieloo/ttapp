@@ -47,6 +47,7 @@
               type="datetime"
               v-model="datetime"
               format="yyyy-MM-dd HH:mm"
+              minute-step="15"
               value-zone="Europe/Berlin"></datetime>
           </div>
           <div class="mart10">

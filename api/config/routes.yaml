@@ -81,6 +81,11 @@ match_add:
   controller: App\Controller\MatchController::addMatch
   methods: [POST]
 
+match_save:
+  path: /matches/save
+  controller: App\Controller\MatchController::saveMatch
+  methods: [POST]
+
 matches_all:
   path: /matches
   controller: App\Controller\MatchController:getAllMatches

@@ -40,10 +40,10 @@
                             <td class="txt-center">{{ player.wins }}</td>
                             <td class="txt-center">{{ player.draws }}</td>
                             <td class="txt-center">{{ player.losses }}</td>
-                            <td class="txt-center">-</td>
-                            <td class="txt-center">-</td>
-                            <td class="txt-center">-</td>
-                            <td class="txt-center">-</td>
+                            <td class="txt-center">{{ player.setsFor }} - {{ player.setsAgainst }}</td>
+                            <td class="txt-center">{{ player.setsDiff }}</td>
+                            <td class="txt-center">{{ player.ralliesFor }} - {{ player.ralliesAgainst }}</td>
+                            <td class="txt-center">{{ player.ralliesDiff }}</td>
                             <td class="txt-center">{{ player.points }}</td>
                         </tr>
                     </table>

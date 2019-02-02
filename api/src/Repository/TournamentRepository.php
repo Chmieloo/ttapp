@@ -61,14 +61,29 @@ class TournamentRepository extends ServiceEntityRepository
             'SUM(if (g1.winner_id = ptg.player_id, 1, 0)) as wins, ' .
             'SUM(if (g1.is_finished = 1 AND g1.winner_id = 0, 1, 0)) as draws, ' .
             'SUM(if (g1.is_finished = 1 AND g1.winner_id != 0 AND g1.winner_id != ptg.player_id, 1, 0)) as losses, ' .
-            '(SUM(if (g1.winner_id = ptg.player_id, 1, 0)) * 2 + SUM(if (g1.is_finished = 1 AND g1.winner_id = 0, 1, 0))) as points ' .
+            '(SUM(if (g1.winner_id = ptg.player_id, 1, 0)) * 2 + SUM(if (g1.is_finished = 1 AND g1.winner_id = 0, 1, 0))) as points, ' .
+            '(SUM(if (g1.home_player_id = ptg.player_id, g1.home_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.away_score, 0))) as setsFor, ' .
+            '(SUM(if (g1.home_player_id = ptg.player_id, g1.away_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.home_score, 0))) as setsAgainst, ' .
+            'u.ralliesFor, u.ralliesAgainst ' .
             'from player_tournament_group ptg ' .
             'left join game g1 on g1.home_player_id = ptg.player_id or g1.away_player_id = ptg.player_id ' .
             'join player p on p.id = ptg.player_id ' .
             'join tournament_group tg on tg.id = ptg.group_id ' .
+            'join ( ' .
+            'select player, sum(pointsFor) as ralliesFor, sum(pointsAgainst) as ralliesAgainst from ( ' .
+            'SELECT g.id, g.home_player_id   AS player, sum(s.home_points) AS pointsFor, sum(s.away_points) AS pointsAgainst ' .
+            'FROM scores s JOIN game g ON g.id = s.game_id ' .
+            'GROUP BY g.home_player_id ' .
+            'UNION ' .
+            'SELECT ' .
+            'g.id, g.away_player_id   AS player, sum(s.away_points) AS pointsFor, sum(s.home_points) AS pointsAgainst ' .
+            'FROM scores s JOIN game g ON g.id = s.game_id ' .
+            'GROUP BY g.away_player_id ' .
+            ') u group by player ' .
+            ') u on u.player = ptg.player_id ' .
             'where ptg.tournament_id = :tournamentId ' .
             'group by ptg.player_id ' .
-            'order by ptg.group_id asc, points desc ';
+            'order by ptg.group_id asc, points desc, setsFor desc, setsAgainst asc ';
 
         $params['tournamentId'] = $tournamentId;
 
@@ -91,6 +106,12 @@ class TournamentRepository extends ServiceEntityRepository
             $draws = $item['draws'];
             $losses = $item['losses'];
             $points = $item['points'];
+            $setsFor = $item['setsFor'];
+            $setsAgainst = $item['setsAgainst'];
+            $setsDiff = $setsFor - $setsAgainst;
+            $ralliesFor = $item['ralliesFor'];
+            $ralliesAgainst = $item['ralliesAgainst'];
+            $ralliesDiff = $ralliesFor - $ralliesAgainst;
 
             $currentGroup = array_key_exists($groupId, $groups) ?
                 $groups[$groupId] :
@@ -108,6 +129,12 @@ class TournamentRepository extends ServiceEntityRepository
                 'draws' => $draws,
                 'losses' => $losses,
                 'points' => $points,
+                'setsFor' => $setsFor,
+                'setsAgainst' => $setsAgainst,
+                'setsDiff' => $setsDiff > 0 ? '+' . $setsDiff : (string)$setsDiff,
+                'ralliesFor' => $ralliesFor,
+                'ralliesAgainst' => $ralliesAgainst,
+                'ralliesDiff' => $ralliesDiff > 0 ? '+' . $ralliesDiff : (string)$ralliesDiff,
             ];
 
             $groups[$groupId] = $currentGroup;

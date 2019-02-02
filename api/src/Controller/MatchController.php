@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\GameMode;
 use App\Entity\Player;
+use App\Entity\Scores;
 use App\Entity\Tournament;
 use App\Entity\TournamentGroup;
 use App\Repository\GameRepository;
@@ -13,6 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MatchController extends BaseController
 {
+    const MINIMAL_END_SCORE = 11;
+    const END_SCORE_DIFFERENCE = 2;
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function getAllMatches()
     {
         /** @var Tournament $activeTournament */
@@ -195,6 +202,104 @@ class MatchController extends BaseController
 
         return new JsonResponse([
             'status' => 'done',
+            'errorText' => 'Match added'
+        ],
+            JsonResponse::HTTP_OK
+        );
+    }
+
+    public function saveMatch(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $matchId = $data['matchId'];
+
+        $homeSet[1] = (int)$data['h1'];
+        $homeSet[2] = (int)$data['h2'];
+        $homeSet[3] = (int)$data['h3'];
+        $homeSet[4] = (int)$data['h4'];
+
+        $awaySet[1] = (int)$data['a1'];
+        $awaySet[2] = (int)$data['a2'];
+        $awaySet[3] = (int)$data['a3'];
+        $awaySet[4] = (int)$data['a4'];
+
+        # Reset match values
+        $homeSetScore = 0;
+        $awaySetScore = 0;
+        $winnerId = 0;
+
+        /** @var Game $match */
+        $match = $this
+            ->getDoctrine()
+            ->getRepository(Game::class)
+            ->find($matchId);
+
+        $em = $this->getDoctrine()->getManager();
+
+        # Get required wins value
+        $requiredWins = $match->getGameMode()->getWinsRequired();
+
+        # Meh. Remove old scores
+        $scores = $match->getScores();
+        foreach ($scores as $score) {
+            $em->remove($score);
+            $em->flush();
+        }
+
+        # Insert new scores
+        for ($i = 1; $i <= 4; $i++) {
+            # Id current set does not have valid value, stop here
+            if (!$homeSet[$i] && !$awaySet[$i]) {
+                break;
+            }
+
+            $newScore = new Scores();
+            $newScore->setGame($match);
+            $newScore->setSetNumber($i);
+            $newScore->setHomePoints($homeSet[$i]);
+            $newScore->setAwayPoints($awaySet[$i]);
+            $em->persist($newScore);
+            $em->flush();
+
+            $match->addScore($newScore);
+
+            # check if this set is finished, if it is, increase score
+            if ($homeSet[$i] >= self::MINIMAL_END_SCORE &&
+                $homeSet[$i] >= ($awaySet[$i] + self::END_SCORE_DIFFERENCE)
+            ) {
+                $homeSetScore++;
+            } elseif ($awaySet[$i] >= self::MINIMAL_END_SCORE &&
+                $awaySet[$i] >= ($homeSet[$i] + self::END_SCORE_DIFFERENCE)
+            ) {
+                $awaySetScore++;
+            }
+        }
+
+        $finished = 0;
+        if ($homeSetScore == $requiredWins) {
+            $winnerId = $match->getHomePlayer()->getId();
+            $finished = 1;
+        } elseif ($awaySetScore == $requiredWins) {
+            $winnerId = $match->getAwayPlayer()->getId();
+            $finished = 1;
+        }
+
+        # Match can be finished with a draw
+        if ($homeSetScore + $awaySetScore == $match->getGameMode()->getMaxSets()) {
+            $finished = 1;
+        }
+
+        $match->setHomeScore($homeSetScore);
+        $match->setAwayScore($awaySetScore);
+        $match->setWinnerId($winnerId);
+        $match->setIsFinished($finished);
+
+        $em->persist($match);
+        $em->flush();
+
+        return new JsonResponse([
+            'status' => 0,
             'errorText' => 'Match added'
         ],
             JsonResponse::HTTP_OK
