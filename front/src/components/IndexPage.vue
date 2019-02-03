@@ -1,13 +1,13 @@
 <template>
   <div class="mainContainer">
     <div class="halfContainer">
-      <span class="header-title">TODAY'S SCHEDULE</span>
+      <span class="header-title">SCHEDULE</span>
       <div class="inContainer90">
         <MatchSchedule />
       </div>
     </div>
     <div class="halfContainer">
-      <span class="header-title">TODAY'S RESULTS</span>
+      <span class="header-title">RESULTS</span>
       <div class="inContainer90">
         <MatchResults />
       </div>
