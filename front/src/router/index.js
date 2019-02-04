@@ -10,6 +10,7 @@ import TournamentStandings from '@/components/Tournament/Standings'
 import GroupAdd from '@/components/Group/Add'
 import MatchAdd from '@/components/Match/Add'
 import MatchEdit from '@/components/Match/Edit'
+import PlayerInfo from '@/components/Player/Info'
 
 Vue.use(Router)
 Vue.use(VueScrollTo)
@@ -24,6 +25,7 @@ export default new Router({
     { path: '/tournament/:id/standings', name: 'TournamentStandings', component: TournamentStandings },
     { path: '/group/add', name: 'GroupAdd', component: GroupAdd },
     { path: '/match/add', name: 'MatchAdd', component: MatchAdd },
-    { path: '/match/edit', name: 'MatchEdit', component: MatchEdit }
+    { path: '/match/edit', name: 'MatchEdit', component: MatchEdit },
+    { path: '/player/:id/info', name: 'PlayerInfo', component: PlayerInfo }
   ]
 })

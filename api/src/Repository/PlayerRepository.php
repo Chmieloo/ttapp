@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -28,32 +29,31 @@ class PlayerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // /**
-    //  * @return Player[] Returns an array of Player objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $playerId
+     * @return mixed
+     */
+    public function loadPlayerById($playerId)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $sql = 'select p.name, count(g.id) as played, ' .
+               'sum(if(p.id = g.winner_id, 1, 0)) as wins, ' .
+               'sum(if(g.winner_id = 0, 1, 0)) as draws, ' .
+               'sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses ' .
+               'from player p ' .
+               'join game g on p.id in (g.home_player_id, g.away_player_id) ' .
+               'where p.id = :playerId and g.is_finished = 1 ' .
+               'group by p.id';
 
-    /*
-    public function findOneBySomeField($value): ?Player
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $params['playerId'] = $playerId;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute($params);
+
+        $player = $stmt->fetch(PDO::FETCH_ASSOC);
+        $player['winPercentage'] = number_format(($player['wins'] / $player['played']) * 100, 2);
+        $player['notWinPercentage'] = 100 - $player['winPercentage'];
+
+        return $player;
     }
-    */
 }

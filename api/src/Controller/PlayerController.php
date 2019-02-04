@@ -24,7 +24,7 @@ class PlayerController extends BaseController
     {
         $player = $this->getDoctrine()
             ->getRepository(Player::class)
-            ->find($id);
+            ->loadPlayerById($id);
 
         if (!$player) {
             throw $this->createNotFoundException(

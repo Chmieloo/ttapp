@@ -16,7 +16,7 @@
           <th class="txt-center mw-100">form</th>
         </tr>
         <tr v-for="player in players" v-bind:key="player.id" class="row-data">
-          <td class="txt-left">{{ player.name }}</td>
+          <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-center">{{ player.tournament_elo }}</td>
           <td class="txt-center">0</td>
           <td class="txt-center">0</td>
@@ -50,7 +50,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
 .mainContainer {
   padding: 20px 25px;
 }
@@ -69,5 +69,15 @@ export default {
 
 .row-header {
   font-size: 20px;;
+}
+
+.player-link {
+  a {
+    color: white;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 }
 </style>
