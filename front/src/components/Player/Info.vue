@@ -16,17 +16,36 @@
                 <div class="val">{{ player.played }}</div>
             </div>
             <div class="infoCard marl20">
-                <div class="lab">WINS</div>
-                <div class="val">{{ player.played }}</div>
-            </div>
-            <div class="infoCard marl20">
-                <div class="lab">DRAWS</div>
-                <div class="val">{{ player.played }}</div>
-            </div>
-            <div class="infoCard marl20">
-                <div class="lab">LOSSES</div>
+                <div class="lab">WINS : {{ player.wins }}</div>
                 <div class="val">
-                    <dough-nut v-if="loaded" :chart-data="downloads"></dough-nut>
+                    <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
+                        <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
+                        <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
+                        <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayWins" stroke-dashoffset="60%"></circle>
+                        <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ winPercentage }}%</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="infoCard marl20">
+                <div class="lab">DRAWS : {{ player.draws }}</div>
+                <div class="val">
+                    <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
+                        <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
+                        <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
+                        <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayDraws" stroke-dashoffset="60%"></circle>
+                        <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ drawPercentage }}%</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="infoCard marl20">
+                <div class="lab">LOSSES : {{ player.losses }}</div>
+                <div class="val">
+                    <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
+                        <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
+                        <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
+                        <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayLosses" stroke-dashoffset="60%"></circle>
+                        <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ lossPercentage }}%</text>
+                    </svg>
                 </div>
             </div>
             <div style="clear: both;"></div>
@@ -37,23 +56,29 @@
 
 <script>
 import axios from 'axios'
-import DoughNut from '../Charts/DoughNut'
 
 export default {
   name: 'App',
-  components: {
-    DoughNut
-  },
   data () {
     return {
-      player: null
+      player: null,
+      winPercentage: 0,
+      drawPercentage: 0,
+      lossPercentage: 0,
+      strokeDashArrayWins: '0 100',
+      strokeDashArrayDraws: '0 100',
+      strokeDashArrayLosses: '0 100'
     }
   },
   mounted () {
     axios.get('/api/players/' + this.$route.params.id).then((res) => {
       this.player = res.data
-      this.downloads = [res.data.winPercentage, res.data.notWinPercentage]
-      this.loaded = true
+      this.strokeDashArrayWins = res.data.winPercentage + ' ' + res.data.notWinPercentage
+      this.winPercentage = res.data.winPercentage
+      this.strokeDashArrayDraws = res.data.drawPercentage + ' ' + res.data.notDrawPercentage
+      this.drawPercentage = res.data.drawPercentage
+      this.strokeDashArrayLosses = res.data.lossPercentage + ' ' + res.data.notLossPercentage
+      this.lossPercentage = res.data.lossPercentage
     })
   }
 }
@@ -76,7 +101,14 @@ export default {
         color: white;
         font-size: 70px;
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        max-height: 100px;
     }
+}
+
+.percentage {
+    position: relative;
+    font-size: 20px;
+    top: -125px;
 }
 
 .marl20 {

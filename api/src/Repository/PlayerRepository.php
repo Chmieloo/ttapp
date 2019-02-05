@@ -51,8 +51,14 @@ class PlayerRepository extends ServiceEntityRepository
         $stmt-> execute($params);
 
         $player = $stmt->fetch(PDO::FETCH_ASSOC);
-        $player['winPercentage'] = number_format(($player['wins'] / $player['played']) * 100, 2);
+        $player['winPercentage'] = number_format(($player['wins'] / $player['played']) * 100, 0);
         $player['notWinPercentage'] = 100 - $player['winPercentage'];
+
+        $player['drawPercentage'] = number_format(($player['draws'] / $player['played']) * 100, 0);
+        $player['notDrawPercentage'] = 100 - $player['drawPercentage'];
+
+        $player['lossPercentage'] = number_format(($player['losses'] / $player['played']) * 100, 0);
+        $player['notLossPercentage'] = 100 - $player['lossPercentage'];
 
         return $player;
     }

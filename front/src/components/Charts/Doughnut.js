@@ -27,6 +27,9 @@ export default {
   mounted () {
     this.renderChart({
       labels: this.chartLabels,
+      options: {
+        percentageInnerCutout: 10
+      },
       datasets: [
         {
           label: 'downloads',
