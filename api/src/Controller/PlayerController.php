@@ -44,7 +44,7 @@ class PlayerController extends BaseController
     {
         $players = $this->getDoctrine()
             ->getRepository(Player::class)
-            ->findAllSimple();
+            ->loadAll();
 
         if (!$players) {
             throw $this->createNotFoundException(

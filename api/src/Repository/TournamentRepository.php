@@ -25,17 +25,21 @@ class TournamentRepository extends ServiceEntityRepository
      */
     public function loadList()
     {
-        return $this->createQueryBuilder('t')
-            ->select(
-                't.id',
-                't.name',
-                't.start_time',
-                'case when t.is_playoffs = 0 then \'group\' else \'playoffs\' end as phase',
-                't.is_finished as finished'
-            )
-            ->orderBy('t.start_time', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $sql =
+            'select t.id, t.name, t.start_time, ' .
+            'case when t.is_playoffs = 0 then \'group\' else \'playoffs\' end as phase, ' .
+            't.is_finished as finished, count(distinct(g.away_player_id)) as participants, ' .
+            'count(g.id) as scheduled, sum(g.is_finished) as finished ' .
+            'from tournament t ' .
+            'join game g on g.tournament_id = t.id';
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
 
     /**

@@ -16,10 +16,10 @@
         <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="row-data">
           <td class="txt-left">{{ tournament.name }}</td>
           <td class="txt-center">{{ tournament.phase }}</td>
-          <td class="txt-center">58</td>
-          <td class="txt-center">20</td>
-          <td class="txt-center">0</td>
-          <td class="txt-center">0</td>
+          <td class="txt-center">{{ tournament.participants }}</td>
+          <td class="txt-center">{{ tournament.phase }}</td>
+          <td class="txt-center">{{ tournament.finished }}</td>
+          <td class="txt-center">{{ tournament.scheduled }}</td>
           <td class="txt-center cell-options">
             <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link>
           </td>

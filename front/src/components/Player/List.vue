@@ -10,21 +10,13 @@
           <th class="txt-center mw-100">m.played</th>
           <th class="txt-center mw-100">m.won</th>
           <th class="txt-center mw-100">m.%</th>
-          <th class="txt-center mw-100">s.played</th>
-          <th class="txt-center mw-100">s.won</th>
-          <th class="txt-center mw-100">s.%</th>
-          <th class="txt-center mw-100">form</th>
         </tr>
         <tr v-for="player in players" v-bind:key="player.id" class="row-data">
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
-          <td class="txt-center">{{ player.tournament_elo }}</td>
-          <td class="txt-center">0</td>
-          <td class="txt-center">0</td>
-          <td class="txt-center">20</td>
-          <td class="txt-center">0</td>
-          <td class="txt-center">0</td>
-          <td class="txt-center">20</td>
-          <td class="txt-center">W.W.L.D.W</td>
+          <td class="txt-center">{{ player.elo }}</td>
+          <td class="txt-center">{{ player.gamesPlayed }}</td>
+          <td class="txt-center">{{ player.wins }}</td>
+          <td class="txt-center">{{ player.winPercentage }}</td>
         </tr>
       </table>
     </div>

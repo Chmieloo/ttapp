@@ -35,7 +35,9 @@
                             <th class="txt-center">points</th>
                         </tr>
                         <tr v-for="player in group.players" v-bind:key="player.playerId" class="grsoup-container">
-                            <td>{{ player.playerName }}</td>
+                            <td class="playerLink">
+                                <router-link :to="'/player/' + player.playerId + '/info'">{{ player.playerName }}</router-link>
+                            </td>
                             <td class="txt-center">{{ player.played }}</td>
                             <td class="txt-center">{{ player.wins }}</td>
                             <td class="txt-center">{{ player.draws }}</td>
@@ -79,6 +81,16 @@ export default {
   font-weight: 600;
   margin-bottom: 40px;
   margin-right: 40px;
+}
+
+.playerLink {
+    a {
+        color: white;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
 }
 
 .header-title-abbs {

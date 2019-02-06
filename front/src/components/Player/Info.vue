@@ -11,44 +11,55 @@
             <span class="playerName">{{ player.name }}</span>
         </div>
         <div class="playerCardInfo">
-            <div class="infoCard">
-                <div class="lab">MATCHES PLAYED</div>
-                <div class="val">{{ player.played }}</div>
-            </div>
-            <div class="infoCard marl20">
-                <div class="lab">WINS : {{ player.wins }}</div>
-                <div class="val">
-                    <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
-                        <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
-                        <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
-                        <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayWins" stroke-dashoffset="60%"></circle>
-                        <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ winPercentage }}%</text>
-                    </svg>
-                </div>
-            </div>
-            <div class="infoCard marl20">
-                <div class="lab">DRAWS : {{ player.draws }}</div>
-                <div class="val">
-                    <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
-                        <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
-                        <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
-                        <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayDraws" stroke-dashoffset="60%"></circle>
-                        <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ drawPercentage }}%</text>
-                    </svg>
-                </div>
-            </div>
-            <div class="infoCard marl20">
-                <div class="lab">LOSSES : {{ player.losses }}</div>
-                <div class="val">
-                    <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
-                        <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
-                        <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
-                        <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayLosses" stroke-dashoffset="60%"></circle>
-                        <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ lossPercentage }}%</text>
-                    </svg>
-                </div>
-            </div>
-            <div style="clear: both;"></div>
+            <table class="playerData">
+                <tr>
+                    <td style="width: 25%;">
+                        <div class="innerData">
+                            <div class="lab">MATCHES PLAYED</div>
+                            <div class="bigVal">{{ player.played }}</div>
+                        </div>
+                    </td>
+                    <td style="width: 25%;">
+                        <div class="innerData">
+                            <div class="lab">WINS : {{ player.wins }}</div>
+                            <div class="val">
+                                <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
+                                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
+                                    <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
+                                    <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayWins" stroke-dashoffset="60%"></circle>
+                                    <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ winPercentage }}%</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 25%;">
+                        <div class="innerData">
+                            <div class="lab">DRAWS : {{ player.draws }}</div>
+                            <div class="val">
+                                <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
+                                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
+                                    <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
+                                    <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayDraws" stroke-dashoffset="60%"></circle>
+                                    <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ drawPercentage }}%</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="width: 25%;">
+                        <div class="innerData">
+                            <div class="lab">LOSSES : {{ player.losses }}</div>
+                            <div class="val">
+                                <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
+                                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
+                                    <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
+                                    <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayLosses" stroke-dashoffset="60%"></circle>
+                                    <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ lossPercentage }}%</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
   </div>
@@ -93,15 +104,34 @@ export default {
     width: 131px;
     min-height: 150px;
     text-align: center;
-    .lab {
-        font-size: 15px;
-    }
     .val {
         margin-top: 20px;
         color: white;
         font-size: 70px;
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         max-height: 100px;
+    }
+}
+
+table.playerData {
+    width: 100%;
+    td {
+        padding: 8px;
+        text-align: center;
+        .innerData {
+            height: 180px;
+            border: 1px solid #252525;
+        }
+        .lab {
+            font-size: 15px;
+            padding: 10px 0px 20px 0px;
+        }
+        .bigVal {
+            font-size: 60px;
+            font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
+            color: white;
+            font-weight: 600;
+        }
     }
 }
 
