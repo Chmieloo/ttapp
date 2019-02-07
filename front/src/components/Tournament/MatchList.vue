@@ -1,15 +1,15 @@
 <template>
   <div class="mainContainer">
     <div class="halfContainer">
-      <span class="header-title">TOURNAMENT SCHEDULE</span>
+      <span class="header-title">FULL TOURNAMENT SCHEDULE</span>
       <div class="inContainer90">
-        <MatchSchedule />
+        <FullMatchSchedule />
       </div>
     </div>
     <div class="halfContainer">
-      <span class="header-title">LAST 10 TOURNAMENT RESULTS</span>
+      <span class="header-title">FULL TOURNAMENT RESULTS</span>
       <div class="inContainer90">
-        <MatchResults />
+        <FullMatchResults />
       </div>
     </div>
     <div style="clear: both;" />
@@ -17,14 +17,14 @@
 </template>
 
 <script>
-import MatchResults from './Match/MatchResults.vue'
-import MatchSchedule from './Match/MatchSchedule.vue'
+import FullMatchResults from '../Tournament/Results.vue'
+import FullMatchSchedule from '../Tournament/Schedule.vue'
 
 export default {
-  name: 'IndexPage',
+  name: 'MatchList',
   components: {
-    MatchResults,
-    MatchSchedule
+    FullMatchResults,
+    FullMatchSchedule
   },
   data () {
     return {

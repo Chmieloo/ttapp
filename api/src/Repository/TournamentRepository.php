@@ -125,7 +125,14 @@ class TournamentRepository extends ServiceEntityRepository
                     'groupAbbreviation' => $groupAbbreviation,
                 ];
 
+            if (array_key_exists('players', $currentGroup)) {
+                $pos = count($currentGroup['players']) + 1;
+            } else {
+                $pos = 1;
+            }
+
             $currentGroup['players'][] = [
+                'pos' => $pos,
                 'playerId' => $playerId,
                 'playerName' => $playerName,
                 'played' => $played,

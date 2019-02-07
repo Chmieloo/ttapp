@@ -24,10 +24,6 @@
         </td>
       </tr>
     </table>
-    <div class="containerLink">
-      <i class="fas fa-arrow-circle-right"></i>
-      <router-link to="/tournament/match/list">show all tournament matches</router-link>
-    </div>
   </div>
 </template>
 
@@ -35,14 +31,14 @@
 import axios from 'axios'
 
 export default {
-  name: 'MatchResults',
+  name: 'FullMatchResults',
   data () {
     return {
       matches: []
     }
   },
   mounted () {
-    axios.get('/api/matches/current/results').then((res) => {
+    axios.get('/api/matches/current/fullresults').then((res) => {
       this.matches = res.data
     })
   }

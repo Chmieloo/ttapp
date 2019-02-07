@@ -83,6 +83,14 @@ matches_current_tournament_schedule:
   path: /matches/current/schedule
   controller: App\Controller\MatchController:getCurrentTournamentSchedule
 
+matches_current_tournament_full_results:
+  path: /matches/current/fullresults
+  controller: App\Controller\MatchController:getCurrentTournamentFullResults
+
+matches_current_tournament_full_schedule:
+  path: /matches/current/fullschedule
+  controller: App\Controller\MatchController:getCurrentTournamentFullSchedule
+
 match_add:
   path: /matches/add/official
   controller: App\Controller\MatchController::addMatch

@@ -118,7 +118,7 @@ export default {
       this.results = results.data
     })).catch(error => {
       console.log('Error when getting data for matches ' + error)
-    })    
+    })
   }
 }
 </script>

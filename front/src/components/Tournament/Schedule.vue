@@ -2,32 +2,21 @@
   <div class="mainMatchContainer">
     <table>
       <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
-        <td>{{ match.dateOfMatch }}</td>
-        <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
+        <td>
+          {{ match.dateOfMatch }}
+        </td>
+        <td class="padl20 padr20">
+          {{ match.groupName }}
+        </td>
+        <td class="playerName txt-right">
           {{ match.homePlayerName }}
         </td>
-        <td style="width: 30px; text-align: center;">-</td>
-        <td v-bind:class="match.winnerId == match.awayPlayerId ? 'winner-color' : ''">
+        <td class="padl20 padr20">-</td>
+        <td class="playerName">
           {{ match.awayPlayerName }}
-        </td>
-        <td>
-          <span class="totalScore">
-          {{ match.homeScoreTotal }} - {{ match.awayScoreTotal }}
-          </span>
-          <span class="setScores">
-            (
-            <span v-for="score in match.scores" v-bind:key="score.set" class="score">
-              {{ score.home }} - {{ score.away }}
-            </span>
-            )
-          </span>
         </td>
       </tr>
     </table>
-    <div class="containerLink">
-      <i class="fas fa-arrow-circle-right"></i>
-      <router-link to="/tournament/match/list">show all tournament matches</router-link>
-    </div>
   </div>
 </template>
 
@@ -35,14 +24,14 @@
 import axios from 'axios'
 
 export default {
-  name: 'MatchResults',
+  name: 'FullMatchSchedule',
   data () {
     return {
       matches: []
     }
   },
   mounted () {
-    axios.get('/api/matches/current/results').then((res) => {
+    axios.get('/api/matches/current/fullschedule').then((res) => {
       this.matches = res.data
     })
   }
@@ -55,7 +44,15 @@ export default {
   background: #3e3e3e;
   padding: 20px;
   table {
-    width: 100%;
+    .padl20 {
+      padding-left: 20px;
+    }
+    .padr20 {
+      padding-right: 20px;
+    }
+    .playerName {
+      color: white;
+    }
     .totalScore {
       color: white;
       font-weight: 600;

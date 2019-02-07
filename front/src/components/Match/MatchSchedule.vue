@@ -1,22 +1,28 @@
 <template>
   <div class="mainMatchContainer">
-    <table>
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
-        <td>
-          {{ match.dateOfMatch }}
-        </td>
-        <td class="padl20 padr20">
-          {{ match.groupName }}
-        </td>
-        <td class="playerName txt-right">
-          {{ match.homePlayerName }}
-        </td>
-        <td class="padl20 padr20">-</td>
-        <td class="playerName">
-          {{ match.awayPlayerName }}
-        </td>
-      </tr>
-    </table>
+    <div v-if="matches.length">
+      <table>
+        <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
+          <td>
+            {{ match.dateOfMatch }}
+          </td>
+          <td class="padl20 padr20">
+            {{ match.groupName }}
+          </td>
+          <td class="playerName txt-right">
+            {{ match.homePlayerName }}
+          </td>
+          <td class="padl20 padr20">-</td>
+          <td class="playerName">
+            {{ match.awayPlayerName }}
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="containerLink">
+      <i class="fas fa-arrow-circle-right"></i>
+      <router-link to="/tournament/match/list">show full schedule</router-link>
+    </div>
   </div>
 </template>
 
@@ -62,6 +68,12 @@ export default {
       color: #979797;
     }
   }
+}
+
+.containerLink {
+  margin-top: 10px;
+  padding: 20px 0px 0px 0px;
+  border-top: 1px solid #6f6f6f;
 }
 
 .winner-color {

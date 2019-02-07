@@ -23,6 +23,7 @@
                 <div class="group-body">
                     <table>
                         <tr class="group-row-header">
+                            <th class="empty-th"></th>
                             <th class="txt-left">name</th>
                             <th class="txt-center">played</th>
                             <th class="txt-center">wins</th>
@@ -34,7 +35,15 @@
                             <th class="txt-center">+/-</th>
                             <th class="txt-center">points</th>
                         </tr>
-                        <tr v-for="player in group.players" v-bind:key="player.playerId" class="grsoup-container">
+                        <tr v-for="player in group.players" v-bind:key="player.playerId" class="group-container player-row">
+                            <td v-if="player.pos == 1" class="level-one"></td>
+                            <td v-else-if="player.pos == 2" class="level-two"></td>
+                            <td v-else-if="player.pos == 3" class="level-two"></td>
+                            <td v-else-if="player.pos == 4" class="level-three"></td>
+                            <td v-else-if="player.pos == 5" class="level-three"></td>
+                            <td v-else-if="player.pos == 6" class="level-four"></td>
+                            <td v-else-if="player.pos == 7" class="level-four"></td>
+                            <td v-else class="level-five"></td>
                             <td class="playerLink">
                                 <router-link :to="'/player/' + player.playerId + '/info'">{{ player.playerName }}</router-link>
                             </td>
@@ -81,6 +90,26 @@ export default {
   font-weight: 600;
   margin-bottom: 40px;
   margin-right: 40px;
+}
+
+.level-one {
+    border-left: 25px solid #36de00;
+}
+.level-two {
+    border-left: 25px solid #b0ff00;
+}
+.level-three {
+    border-left: 25px solid #444444;
+}
+.level-four {
+    border-left: 25px solid #999;
+}
+.level-five {
+    border-left: 25px solid #eee;
+}
+
+.empty-th, .empty-td {
+    width: 30px;
 }
 
 .playerLink {
@@ -135,8 +164,9 @@ export default {
 
 .group-row-header {
     text-transform: uppercase;
-    :first-child {
+    :nth-child(2) {
         width: 250px;
+        padding-left: 10px;
     }
 }
 
@@ -156,8 +186,8 @@ export default {
 }
 
 .player-row {
-  height: 40px;
-  line-height: 30px;
-  border-bottom: 1px solid #2d2d2d;
+    :nth-child(2) {
+        padding-left: 10px;
+    }
 }
 </style>

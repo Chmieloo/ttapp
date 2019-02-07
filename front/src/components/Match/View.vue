@@ -1,15 +1,23 @@
 <template>
   <div class="mainContainer">
     <div class="halfContainer">
-      <span class="header-title">TOURNAMENT SCHEDULE</span>
+      <span class="header-title">KARIUS</span>
+      <div style="font-size: 50px; color: white; height: 100px;">
+          <i class="fas fa-table-tennis"></i>
+          <i class="fas fa-table-tennis"></i>
+      </div>
       <div class="inContainer90">
-        <MatchSchedule />
+        8
       </div>
     </div>
     <div class="halfContainer">
-      <span class="header-title">LAST 10 TOURNAMENT RESULTS</span>
+      <span class="header-title">BAKTUS</span>
+      <div style="font-size: 50px; color: #1f1f1f; height: 100px;">
+          <i class="fas fa-table-tennis"></i>
+          <i class="fas fa-table-tennis"></i>
+      </div>
       <div class="inContainer90">
-        <MatchResults />
+        10
       </div>
     </div>
     <div style="clear: both;" />
@@ -17,15 +25,8 @@
 </template>
 
 <script>
-import MatchResults from './Match/MatchResults.vue'
-import MatchSchedule from './Match/MatchSchedule.vue'
-
 export default {
-  name: 'IndexPage',
-  components: {
-    MatchResults,
-    MatchSchedule
-  },
+  name: 'MatchView',
   data () {
     return {
       msg: "Today's schedule"
@@ -40,11 +41,15 @@ export default {
   float: left;
   width: 50%;
   margin-top: 40px;
+  text-align: center;
 }
 
 .inContainer90 {
-  margin-top: 20px;
   width: 95%;
+  font-size: 400px;
+  font-weight: 900;
+  color: white;
+  margin-top: -100px;
 }
 
 .mainContainer {

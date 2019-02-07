@@ -24,6 +24,15 @@ body {
   color: #9e9e9e;
 }
 
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .cell-options {
   a {
     text-decoration: none;
