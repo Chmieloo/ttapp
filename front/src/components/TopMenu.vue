@@ -3,7 +3,8 @@
     <div><router-link to="/">ttapp</router-link></div>
     <div><router-link to="/player/list">players</router-link></div>
     <div><router-link to="/tournament/list">tournaments</router-link></div>
-    <div><router-link to="/matches/list">matches</router-link></div>
+    <div><router-link to="/match/list">matches</router-link></div>
+    <div style="float: right;"><router-link to="/match/edit">+</router-link></div>
   </div>
 </template>
 

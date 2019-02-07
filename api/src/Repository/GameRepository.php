@@ -52,6 +52,7 @@ class GameRepository extends ServiceEntityRepository
     /**
      * @param $id
      * @return array
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getResultsByTournamentId($id)
     {

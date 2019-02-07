@@ -36,6 +36,27 @@ class PlayerController extends BaseController
     }
 
     /**
+     * Get player by id
+     *
+     * @param $id
+     * @return Response
+     */
+    public function getPlayerResults($id)
+    {
+        $player = $this->getDoctrine()
+            ->getRepository(Player::class)
+            ->loadPlayerResults($id);
+
+        if (!$player) {
+            throw $this->createNotFoundException(
+                'Player not found with id: ' . $id
+            );
+        }
+
+        return $this->sendJsonResponse($player);
+    }
+
+    /**
      * List of all players
      *
      * @return Response

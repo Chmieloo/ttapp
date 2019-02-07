@@ -12,6 +12,13 @@ player:
   requirements:
     id: '\d+'
 
+player_results:
+  path: /players/{id}/results
+  controller: App\Controller\PlayerController::getPlayerResults
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 player_add:
   path: /players/add
   controller: App\Controller\PlayerController::addPlayer

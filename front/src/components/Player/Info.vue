@@ -60,6 +60,15 @@
                     </td>
                 </tr>
             </table>
+            <hr />
+            <div>LAST MATCHES</div>
+            <table>
+                <tr v-for="result in results" v-bind:key="result.id" class="row-data">
+                    <td class="w30pc">
+                    {{ result.homePlayerName }}
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
   </div>
@@ -82,6 +91,7 @@ export default {
     }
   },
   mounted () {
+    /*
     axios.get('/api/players/' + this.$route.params.id).then((res) => {
       this.player = res.data
       this.strokeDashArrayWins = res.data.winPercentage + ' ' + res.data.notWinPercentage
@@ -91,6 +101,24 @@ export default {
       this.strokeDashArrayLosses = res.data.lossPercentage + ' ' + res.data.notLossPercentage
       this.lossPercentage = res.data.lossPercentage
     })
+    */
+
+    axios.all([
+      axios.get('/api/players/' + this.$route.params.id),
+      axios.get('/api/players/' + this.$route.params.id + '/results')
+    ]).then(axios.spread((player, results) => {
+      this.player = player.data
+      this.strokeDashArrayWins = player.data.winPercentage + ' ' + player.data.notWinPercentage
+      this.winPercentage = player.data.winPercentage
+      this.strokeDashArrayDraws = player.data.drawPercentage + ' ' + player.data.notDrawPercentage
+      this.drawPercentage = player.data.drawPercentage
+      this.strokeDashArrayLosses = player.data.lossPercentage + ' ' + player.data.notLossPercentage
+      this.lossPercentage = player.data.lossPercentage
+
+      this.results = results.data
+    })).catch(error => {
+      console.log('Error when getting data for matches ' + error)
+    })    
   }
 }
 </script>
