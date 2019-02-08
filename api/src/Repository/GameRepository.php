@@ -61,7 +61,7 @@ class GameRepository extends ServiceEntityRepository
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
         $baseSql .= 'and g.is_finished = 1 ';
-        $baseSql .= 'order by g.date_of_match asc ';
+        $baseSql .= 'order by g.date_of_match desc ';
 
         $params['tournamentId'] = $id;
 
