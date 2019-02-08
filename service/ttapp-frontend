@@ -1,0 +1,3 @@
+#!/bin/bash
+cd ~/ttapp/front
+npm run dev
