@@ -7,3 +7,10 @@ RUN apt-get update \
   && apt-get install -y libmemcached-dev zlib1g-dev \
   && pecl install memcached-3.0.3 \
   && docker-php-ext-enable memcached opcache
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && php -r "unlink('composer-setup.php');"
+
+RUN apt-get update \
+  && apt-get install -y git
