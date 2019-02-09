@@ -197,7 +197,7 @@ class GameRepository extends ServiceEntityRepository
      * @param null $limit
      * @return array
      */
-    public function getUpcomingScheduleByTournamentId($id, $limit = null)
+    public function loadUpcomingFixturesByTournamentId($id, $limit = null)
     {
         $matchData = [];
 
@@ -216,8 +216,8 @@ class GameRepository extends ServiceEntityRepository
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (is_numeric($limit)) {
-            $result = array_slice($result, 0, 10);
+        if (is_numeric($limit) && $limit) {
+            $result = array_slice($result, 0, $limit);
         }
 
         foreach ($result as $match) {

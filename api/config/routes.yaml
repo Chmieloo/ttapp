@@ -56,6 +56,12 @@ tournament_results:
     tournamentId: '\d+'
     numberOfResults: '\d+'
 
+tournament_schedule:
+  path: /tournaments/{tournamentId}/fixtures/{numberOfFixtures}
+  controller: App\Controller\TournamentController:getTournamentSchedule
+  requirements:
+    tournamentId: '\d+'
+    numberOfFixtures: '\d+'
 
 # GROUP ROUTES
 
@@ -82,14 +88,6 @@ match_modes:
   controller: App\Controller\MatchModeController::getMatchModes
 
 # MATCH ROUTES
-
-matches_current_tournament_schedule:
-  path: /matches/current/schedule
-  controller: App\Controller\MatchController:getCurrentTournamentSchedule
-
-matches_current_tournament_full_schedule:
-  path: /matches/current/fullschedule
-  controller: App\Controller\MatchController:getCurrentTournamentFullSchedule
 
 match_add:
   path: /matches/add/official

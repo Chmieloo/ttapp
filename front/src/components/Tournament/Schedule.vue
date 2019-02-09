@@ -31,7 +31,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/matches/current/fullschedule').then((res) => {
+    axios.get('/api/tournaments/0/fixtures/0').then((res) => {
       this.matches = res.data
     })
   }

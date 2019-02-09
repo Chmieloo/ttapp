@@ -42,38 +42,6 @@ class MatchController extends BaseController
     }
 
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getCurrentTournamentFullSchedule()
-    {
-        /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        $activeTournament = $tournamentRepository->loadCurrentTournament();
-
-        /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
-        $data = $gameRepository->getUpcomingScheduleByTournamentId($activeTournament->getId());
-
-        return $this->sendJsonResponse($data);
-    }
-
-    /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getCurrentTournamentSchedule()
-    {
-        /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        $activeTournament = $tournamentRepository->loadCurrentTournament();
-
-        /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
-        $data = $gameRepository->getUpcomingScheduleByTournamentId($activeTournament->getId(), 10);
-
-        return $this->sendJsonResponse($data);
-    }
-
-    /**
      * @param Request $request
      * @return JsonResponse
      */
