@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
 use App\Entity\Tournament;
+use App\Repository\GameRepository;
+use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,5 +68,34 @@ class TournamentController extends BaseController
             ->getStandingsByTournamentId($id);
 
         return $this->sendJsonResponse($standings);
+    }
+
+    /**
+     * Gets results from active tournament
+     * @param $tournamentId
+     * @param $numberOfResults
+     * @return Response
+     */
+    public function getTournamentResults($tournamentId, $numberOfResults)
+    {
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        # If empty, load current
+        $tournament = $tournamentId ?
+            $tournamentRepository->find($tournamentId) :
+            $tournamentRepository->loadCurrentTournament();
+
+        $data = $gameRepository->loadLastResultsByTournamentId($tournament->getId(), $numberOfResults);
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
     }
 }

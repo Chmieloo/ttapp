@@ -42,59 +42,13 @@ class MatchController extends BaseController
     }
 
     /**
-     * Gets results from active tournament
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getCurrentTournamentFullResults()
-    {
-        /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
-
-        $activeTournament = $tournamentRepository->findNotFinished();
-        $data = $gameRepository->getLastResultsByTournamentId($activeTournament->getId());
-
-        if (!$data) {
-            throw $this->createNotFoundException(
-                'No data'
-            );
-        }
-
-        return $this->sendJsonResponse($data);
-    }
-
-    /**
-     * Gets results from active tournament
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getCurrentTournamentResults()
-    {
-        /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
-
-        $activeTournament = $tournamentRepository->findNotFinished();
-        $data = $gameRepository->getLastResultsByTournamentId($activeTournament->getId(), 10);
-
-        if (!$data) {
-            throw $this->createNotFoundException(
-                'No data'
-            );
-        }
-
-        return $this->sendJsonResponse($data);
-    }
-
-    /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getCurrentTournamentFullSchedule()
     {
         /** @var TournamentRepository $tournamentRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        $activeTournament = $tournamentRepository->findNotFinished();
+        $activeTournament = $tournamentRepository->loadCurrentTournament();
 
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
@@ -110,7 +64,7 @@ class MatchController extends BaseController
     {
         /** @var TournamentRepository $tournamentRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        $activeTournament = $tournamentRepository->findNotFinished();
+        $activeTournament = $tournamentRepository->loadCurrentTournament();
 
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);

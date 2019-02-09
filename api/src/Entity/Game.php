@@ -85,6 +85,11 @@ class Game
      */
     private $scores;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $date_played;
+
     public function __construct()
     {
         $this->scores = new ArrayCollection();
@@ -266,6 +271,18 @@ class Game
                 $score->setGame(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDatePlayed(): ?\DateTimeInterface
+    {
+        return $this->date_played;
+    }
+
+    public function setDatePlayed(?\DateTimeInterface $date_played): self
+    {
+        $this->date_played = $date_played;
 
         return $this;
     }

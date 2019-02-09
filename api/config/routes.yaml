@@ -49,6 +49,14 @@ tournament_standings:
   requirements:
     id: '\d+'
 
+tournament_results:
+  path: /tournaments/{tournamentId}/results/{numberOfResults}
+  controller: App\Controller\TournamentController:getTournamentResults
+  requirements:
+    tournamentId: '\d+'
+    numberOfResults: '\d+'
+
+
 # GROUP ROUTES
 
 groups_by_tournament:
@@ -75,17 +83,9 @@ match_modes:
 
 # MATCH ROUTES
 
-matches_current_tournament_results:
-  path: /matches/current/results
-  controller: App\Controller\MatchController:getCurrentTournamentResults
-
 matches_current_tournament_schedule:
   path: /matches/current/schedule
   controller: App\Controller\MatchController:getCurrentTournamentSchedule
-
-matches_current_tournament_full_results:
-  path: /matches/current/fullresults
-  controller: App\Controller\MatchController:getCurrentTournamentFullResults
 
 matches_current_tournament_full_schedule:
   path: /matches/current/fullschedule

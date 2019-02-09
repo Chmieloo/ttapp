@@ -38,7 +38,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/matches/current/fullresults').then((res) => {
+    axios.get('/api/tournaments/0/results/0').then((res) => {
       this.matches = res.data
     })
   }

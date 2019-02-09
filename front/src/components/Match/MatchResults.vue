@@ -12,9 +12,12 @@
         </td>
         <td>
           <span class="totalScore">
-          {{ match.homeScoreTotal }} - {{ match.awayScoreTotal }}
+          {{ match.homeScoreTotal }} - {{ match.awayScoreTotal }} :: {{ match.isWalkover }}
           </span>
-          <span class="setScores">
+          <span v-if="match.isWalkover = 1">
+            {{ match.isWalkover }}
+          </span>
+          <span v-else class="setScores">
             (
             <span v-for="score in match.scores" v-bind:key="score.set" class="score">
               {{ score.home }} - {{ score.away }}
@@ -42,7 +45,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/matches/current/results').then((res) => {
+    axios.get('/api/tournaments/0/results/10').then((res) => {
       this.matches = res.data
     })
   }

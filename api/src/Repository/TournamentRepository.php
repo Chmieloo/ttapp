@@ -45,7 +45,7 @@ class TournamentRepository extends ServiceEntityRepository
     /**
      * @return Tournament|null
      */
-    public function findNotFinished(): ?Tournament
+    public function loadCurrentTournament(): ?Tournament
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.is_finished = 0')

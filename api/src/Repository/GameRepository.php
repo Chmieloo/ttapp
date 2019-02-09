@@ -30,7 +30,7 @@ class GameRepository extends ServiceEntityRepository
         $sql =
             'select g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
             'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, ' .
-            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, ' .
+            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
             's1.home_points as s1hp, s1.away_points s1ap, ' .
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
@@ -54,14 +54,14 @@ class GameRepository extends ServiceEntityRepository
      * @param int $limit
      * @return array
      */
-    public function getLastResultsByTournamentId($id, $limit = null)
+    public function loadLastResultsByTournamentId($id, $limit = null)
     {
         $matchData = [];
 
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
         $baseSql .= 'and g.is_finished = 1 ';
-        $baseSql .= 'order by g.date_of_match desc ';
+        $baseSql .= 'order by g.date_played desc ';
 
         $params['tournamentId'] = $id;
 
@@ -70,8 +70,8 @@ class GameRepository extends ServiceEntityRepository
         $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (is_numeric($limit)) {
-            $result = array_slice($result, 0, 10);
+        if (is_numeric($limit) && $limit) {
+            $result = array_slice($result, 0, $limit);
         }
 
         foreach ($result as $match) {
@@ -105,6 +105,7 @@ class GameRepository extends ServiceEntityRepository
 
             $matchData[] = [
                 'matchId' => $matchId,
+                'isWalkover' => $match['isWalkover'],
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => date("Y-m-d", strtotime($match['dateOfMatch'])),
                 'homePlayerId' => $match['homePlayerId'],
