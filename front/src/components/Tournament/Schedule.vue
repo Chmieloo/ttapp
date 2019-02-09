@@ -9,11 +9,11 @@
           {{ match.groupName }}
         </td>
         <td class="playerName txt-right">
-          {{ match.homePlayerName }}
+          {{ match.homePlayerDisplayName }}
         </td>
         <td class="padl20 padr20">-</td>
         <td class="playerName">
-          {{ match.awayPlayerName }}
+          {{ match.awayPlayerDisplayName }}
         </td>
       </tr>
     </table>

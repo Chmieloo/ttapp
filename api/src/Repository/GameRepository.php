@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Game|null find($id, $lockMode = null, $lockVersion = null)
  * @method Game|null findOneBy(array $criteria, array $orderBy = null)
- * @method Game[]    findAll()
+ * @method Game[]    loadAll()
  * @method Game[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class GameRepository extends ServiceEntityRepository
@@ -35,6 +35,8 @@ class GameRepository extends ServiceEntityRepository
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
+            'p1.display_name as homePlayerDisplayName, ' .
+            'p2.display_name as awayPlayerDisplayName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
@@ -112,6 +114,8 @@ class GameRepository extends ServiceEntityRepository
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
                 'awayPlayerName' => $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
@@ -127,7 +131,7 @@ class GameRepository extends ServiceEntityRepository
      * @param $id
      * @return array
      */
-    public function getByTournamentId($id)
+    public function loadByTournamentId($id)
     {
         $matchData = [];
 
@@ -257,6 +261,8 @@ class GameRepository extends ServiceEntityRepository
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
                 'awayPlayerName' => $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
@@ -370,5 +376,72 @@ class GameRepository extends ServiceEntityRepository
         }
 
         return $group;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function loadById($id)
+    {
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.id = :gameId ';
+
+        $params = [
+            'gameId' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $matchId = $result['id'];
+        $setPoints = [
+            $result['s1hp'],
+            $result['s1ap'],
+            $result['s2hp'],
+            $result['s2ap'],
+            $result['s3hp'],
+            $result['s3ap'],
+            $result['s4hp'],
+            $result['s4ap'],
+        ];
+        $setPoints = array_filter($setPoints, function ($element) {
+            return is_numeric($element);
+        });
+        $numberOfSets = (int)(count($setPoints) / 2);
+
+        $setScores = [];
+        for ($i = 1; $i <= $numberOfSets; $i++) {
+            $homeScoreVar = 's' . $i . 'hp';
+            $awayScoreVar = 's' . $i . 'ap';
+            $setScores[] = [
+                'set' => $i,
+                'home' => $result[$homeScoreVar],
+                'away' => $result[$awayScoreVar],
+            ];
+        }
+
+        $matchData = [
+            'matchId' => $matchId,
+            'groupName' => $result['groupName'],
+            'dateOfMatch' => date("D M j", strtotime($result['dateOfMatch'])),
+            'homePlayerId' => $result['homePlayerId'],
+            'awayPlayerId' => $result['awayPlayerId'],
+            'homePlayerName' => $result['homePlayerName'],
+            'awayPlayerName' => $result['awayPlayerName'],
+            'homePlayerDisplayName' => $result['homePlayerDisplayName'] ? : $result['homePlayerName'],
+            'awayPlayerDisplayName' => $result['awayPlayerDisplayName'] ? : $result['awayPlayerName'],
+            'winnerId' => $result['winnerId'] ?: 0,
+            'homeScoreTotal' => $result['homeScoreTotal'],
+            'awayScoreTotal' => $result['awayScoreTotal'],
+            'numberOfSets' => $numberOfSets,
+            'scores' => $setScores,
+        ];
+
+
+        return $matchData;
     }
 }

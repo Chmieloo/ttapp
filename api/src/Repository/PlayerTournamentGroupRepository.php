@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method PlayerTournamentGroup|null find($id, $lockMode = null, $lockVersion = null)
  * @method PlayerTournamentGroup|null findOneBy(array $criteria, array $orderBy = null)
- * @method PlayerTournamentGroup[]    findAll()
+ * @method PlayerTournamentGroup[]    loadAll()
  * @method PlayerTournamentGroup[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class PlayerTournamentGroupRepository extends ServiceEntityRepository

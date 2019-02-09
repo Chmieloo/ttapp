@@ -8,7 +8,6 @@
           <th class="txt-left">name</th>
           <th class="txt-center mw-100">phase</th>
           <th class="txt-center mw-100">participants</th>
-          <th class="txt-center mw-100">phase</th>
           <th class="txt-center mw-100">matches played</th>
           <th class="txt-center mw-100">matches scheduled</th>
           <th class="txt-center mw-100">options</th>
@@ -17,11 +16,11 @@
           <td class="txt-left">{{ tournament.name }}</td>
           <td class="txt-center">{{ tournament.phase }}</td>
           <td class="txt-center">{{ tournament.participants }}</td>
-          <td class="txt-center">{{ tournament.phase }}</td>
           <td class="txt-center">{{ tournament.finished }}</td>
           <td class="txt-center">{{ tournament.scheduled }}</td>
           <td class="txt-center cell-options">
-            <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link>
+            <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link> |
+            <router-link :to="'/tournament/' + tournament.id + '/results/edit'">edit results</router-link>
           </td>
         </tr>
       </table>
@@ -48,7 +47,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
 .header-title {
   color: white;
   font-size: 30px;
@@ -59,5 +58,11 @@ export default {
   border-collapse: collapse;
   margin-top: 20px;
   width: 100%;
+}
+
+.cell-options {
+  a {
+    color: white;
+  }
 }
 </style>

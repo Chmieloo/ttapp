@@ -23,7 +23,7 @@ class GameModeRepository extends ServiceEntityRepository
     /**
      * @return mixed[]
      */
-    public function findAll()
+    public function loadAll()
     {
         $sql = 'select * from game_mode';
 

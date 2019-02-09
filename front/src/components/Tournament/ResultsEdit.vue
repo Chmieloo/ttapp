@@ -55,7 +55,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'MatchEdit',
+  name: 'TournamentResultsEdit',
   data () {
     return {
       matches: [],
@@ -64,7 +64,7 @@ export default {
   },
   mounted () {
     axios.all([
-      axios.get('/api/matches')
+      axios.get('/api/tournaments/' + this.$route.params.id + '/matches/fullfeed')
     ]).then(axios.spread((matches) => {
       this.matches = matches.data
     })).catch(error => {

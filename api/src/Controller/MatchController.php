@@ -18,19 +18,10 @@ class MatchController extends BaseController
     const MINIMAL_END_SCORE = 11;
     const END_SCORE_DIFFERENCE = 2;
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getAllMatches()
+    public function getMatch($id)
     {
-        /** @var Tournament $activeTournament */
-        $activeTournament = $this->getDoctrine()
-            ->getRepository(Tournament::class)
-            ->findNotFinished();
-
-        $data = $this->getDoctrine()
-            ->getRepository(Game::class)
-            ->getByTournamentId($activeTournament->getId());
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $data = $gameRepository->loadById($id);
 
         if (!$data) {
             throw $this->createNotFoundException(

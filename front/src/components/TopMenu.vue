@@ -5,7 +5,6 @@
     <div><router-link to="/tournament/list">tournaments</router-link></div>
     <div><router-link to="/tournament/match/list">tournament matches</router-link></div>
     <div>quick games</div>
-    <div style="float: right;"><router-link to="/match/edit">+</router-link></div>
   </div>
 </template>
 

@@ -4,18 +4,18 @@
       <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
         <td>{{ match.dateOfMatch }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
-          {{ match.homePlayerName }}
+          {{ match.homePlayerDisplayName }}
         </td>
         <td style="width: 30px; text-align: center;">-</td>
         <td v-bind:class="match.winnerId == match.awayPlayerId ? 'winner-color' : ''">
-          {{ match.awayPlayerName }}
+          {{ match.awayPlayerDisplayName }}
         </td>
         <td>
           <span class="totalScore">
-          {{ match.homeScoreTotal }} - {{ match.awayScoreTotal }} :: {{ match.isWalkover }}
+          {{ match.homeScoreTotal }} - {{ match.awayScoreTotal }}
           </span>
-          <span v-if="match.isWalkover = 1">
-            {{ match.isWalkover }}
+          <span v-if="match.isWalkover == '1'">
+            walkover
           </span>
           <span v-else class="setScores">
             (

@@ -11,7 +11,7 @@ import TournamentMatchList from '@/components/Tournament/MatchList'
 import GroupAdd from '@/components/Group/Add'
 import MatchAdd from '@/components/Match/Add'
 import MatchView from '@/components/Match/View'
-import MatchEdit from '@/components/Match/Edit'
+import TournamentResultsEdit from '@/components/Tournament/ResultsEdit'
 import PlayerInfo from '@/components/Player/Info'
 
 Vue.use(Router)
@@ -28,8 +28,8 @@ export default new Router({
     { path: '/tournament/match/list', name: 'TournamentMatchList', component: TournamentMatchList },
     { path: '/group/add', name: 'GroupAdd', component: GroupAdd },
     { path: '/match/add', name: 'MatchAdd', component: MatchAdd },
-    { path: '/match/edit', name: 'MatchEdit', component: MatchEdit },
-    { path: '/match/view', name: 'MatchView', component: MatchView },
+    { path: '/tournament/:id/results/edit', name: 'TournamentResultsEdit', component: TournamentResultsEdit },
+    { path: '/match/:id/view', name: 'MatchView', component: MatchView },
     { path: '/player/:id/info', name: 'PlayerInfo', component: PlayerInfo }
   ]
 })

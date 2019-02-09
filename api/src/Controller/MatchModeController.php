@@ -45,7 +45,7 @@ class MatchModeController extends BaseController
     {
         $matchModes = $this->getDoctrine()
             ->getRepository(GameMode::class)
-            ->findAll();
+            ->loadAll();
 
         if (!$matchModes) {
             throw $this->createNotFoundException(

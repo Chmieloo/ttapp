@@ -63,6 +63,12 @@ tournament_schedule:
     tournamentId: '\d+'
     numberOfFixtures: '\d+'
 
+tournament_matches_fullfeed:
+  path: /tournaments/{tournamentId}/matches/fullfeed
+  controller: App\Controller\TournamentController:getTournamentMatchesFullfeed
+  requirements:
+    tournamentId: '\d+'
+
 # GROUP ROUTES
 
 groups_by_tournament:
@@ -88,6 +94,13 @@ match_modes:
   controller: App\Controller\MatchModeController::getMatchModes
 
 # MATCH ROUTES
+
+match:
+  path: /matches/{id}
+  controller: App\Controller\MatchController::getMatch
+  methods: [GET]
+  requirements:
+    id: '\d+'
 
 match_add:
   path: /matches/add/official

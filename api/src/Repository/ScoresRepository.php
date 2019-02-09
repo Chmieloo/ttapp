@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Scores|null find($id, $lockMode = null, $lockVersion = null)
  * @method Scores|null findOneBy(array $criteria, array $orderBy = null)
- * @method Scores[]    findAll()
+ * @method Scores[]    loadAll()
  * @method Scores[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ScoresRepository extends ServiceEntityRepository

@@ -48,6 +48,11 @@ class Player
      */
     private $current_elo;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $display_name;
+
     public function __construct()
     {
         $this->home_games = new ArrayCollection();
@@ -165,6 +170,18 @@ class Player
     public function setCurrentElo(int $current_elo): self
     {
         $this->current_elo = $current_elo;
+
+        return $this;
+    }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->display_name;
+    }
+
+    public function setDisplayName(?string $display_name): self
+    {
+        $this->display_name = $display_name;
 
         return $this;
     }

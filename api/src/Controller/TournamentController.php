@@ -120,4 +120,31 @@ class TournamentController extends BaseController
 
         return $this->sendJsonResponse($data);
     }
+
+    /**
+     * @param $tournamentId
+     * @return Response
+     */
+    public function getTournamentMatchesFullfeed($tournamentId)
+    {
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        # If empty, load current
+        $tournament = $tournamentId ?
+            $tournamentRepository->find($tournamentId) :
+            $tournamentRepository->loadCurrentTournament();
+
+        $data = $gameRepository->loadByTournamentId($tournament->getId());
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
 }
