@@ -3,10 +3,9 @@
     <table class="scoreTable">
       <tr>
         <td class="scoreLeft scoreContainer">
-          <span class="header-title">{{ match.homePlayerDisplayName }}</span>
-          <div class="inContainer90">
-            8
-          </div>
+        <keep-alive>
+          <component :is="homePlayerComponent" v-bind:homePlayerData="homePlayerData"></component>
+        </keep-alive>
         </td>
         <td class="columnMid">
           <div class="midInfoHeader">MATCH MODE</div>
@@ -23,36 +22,56 @@
           <div class="midInfoValue">11 - 13</div>
         </td>
         <td class="scoreRight scoreContainer">
-          <span class="header-title">{{ match.awayPlayerDisplayName }}</span>
-          <div class="inContainer90">
-            3
-          </div>
+          <component :is="awayPlayerComponent" v-bind:awayPlayerData="awayPlayerData"></component>
         </td>
       </tr>
     </table>
+    <div v-on:click="flipSides()">flip sides</div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import HomePlayer from './HomePlayer.vue'
+import AwayPlayer from './AwayPlayer.vue'
 
 export default {
-  name: 'MatchView',
+  components: {
+    HomePlayer,
+    AwayPlayer
+  },
   data () {
     return {
-      match: []
+      match: [],
+      homePlayerComponent: null,
+      awayPlayerComponent: null,
+      awayPlayerData: null,
+      homePlayerData: null
     }
   },
   mounted () {
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
+      this.homePlayerComponent = HomePlayer
+      this.awayPlayerComponent = AwayPlayer
       this.match = res.data
-      this.leftScoreTotal = 100
+      this.homePlayerData = {
+        'homePlayerName': res.data.homePlayerName
+      }
+      this.awayPlayerData = {
+        'awayPlayerName': res.data.awayPlayerName
+      }
     })
+  },
+  methods: {
+    flipSides () {
+      this.tempComponent = this.homePlayerComponent
+      this.homePlayerComponent = this.awayPlayerComponent
+      this.awayPlayerComponent = this.tempComponent
+    }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .scoreTable {
   width: 100%;
@@ -73,58 +92,17 @@ export default {
   }
 }
 
-
-
-
-
-.halfContainer {
-  float: left;
-  width: 50%;
-  margin-top: 40px;
+.scoreContainer {
+  width: 40%;
+  vertical-align: top;
   text-align: center;
 }
 
-.inContainer90 {
-  width: 95%;
-  font-size: 400px;
-  line-height: 400px;
-  font-weight: 900;
-  color: white;
+.scoreLeft {
+  border-right: 1px solid #222;
 }
 
-.mainContainer {
-  padding: 0px 20px 0px 20px;
+.scoreRight {
+  border-left: 1px solid #222;
 }
-
-.header-title {
-  color: white;
-  font-size: 40px;
-  font-weight: 600;
-  margin-bottom: 40px;
-  margin-right: 40px;
-}
-
-.mainTable {
-  width: 100%;
-  margin-top: 20px;
-}
-
-.greyContainer {
-  background: #3e3e3e;
-  padding: 20px;
-  border-radius: 10px 10px;
-  box-shadow: 2px 2px 4px 0px black;
-}
-
-.greyContainer .title {
-  color: white;
-  font-weight: 600;
-}
-
-hr{
-  border: none;
-  border-bottom: 1px solid #b3b3b3;
-  height: 1px;
-}
-
 </style>
