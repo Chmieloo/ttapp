@@ -2,7 +2,7 @@
   <div class="mainMatchContainer">
     <table>
       <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
-        <td>{{ match.dateOfMatch }}</td>
+        <td>{{ match.datePlayed }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
           {{ match.homePlayerDisplayName }}
         </td>

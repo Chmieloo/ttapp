@@ -82,22 +82,24 @@ export default {
       return array
     },
     postResults (event) {
+      console.log(event.target.elements)
       axios.post('/api/matches/save', {
         headers: {
           'Content-type': 'application/x-www-form-urlencoded'
         },
         matchId: event.target.elements.matchId.value,
-        h1: event.target.elements.home_set_1.value,
-        h2: event.target.elements.home_set_2.value,
-        h3: event.target.elements.home_set_3.value,
-        h4: event.target.elements.home_set_4.value,
-        a1: event.target.elements.away_set_1.value,
-        a2: event.target.elements.away_set_2.value,
-        a3: event.target.elements.away_set_3.value,
-        a4: event.target.elements.away_set_4.value
+        h1: typeof event.target.elements.home_set_1 === 'undefined' ? '' : event.target.elements.home_set_1.value,
+        h2: typeof event.target.elements.home_set_2 === 'undefined' ? '' : event.target.elements.home_set_2.value,
+        h3: typeof event.target.elements.home_set_3 === 'undefined' ? '' : event.target.elements.home_set_3.value,
+        h4: typeof event.target.elements.home_set_4 === 'undefined' ? '' : event.target.elements.home_set_4.value,
+        a1: typeof event.target.elements.away_set_1 === 'undefined' ? '' : event.target.elements.away_set_1.value,
+        a2: typeof event.target.elements.away_set_2 === 'undefined' ? '' : event.target.elements.away_set_2.value,
+        a3: typeof event.target.elements.away_set_3 === 'undefined' ? '' : event.target.elements.away_set_3.value,
+        a4: typeof event.target.elements.away_set_4 === 'undefined' ? '' : event.target.elements.away_set_4.value
       }).then((res) => {
         this.errors = []
-        this.errors.push('Match added')
+        this.errors.push('Result saved')
+        alert('Result saved')
       }).catch(error => {
         this.errors = []
         this.errors.push(error.response.data.errorText)

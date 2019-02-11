@@ -37,7 +37,7 @@ class GameRepository extends ServiceEntityRepository
             's4.home_points as s4hp, s4.away_points s4ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
             'p2.display_name as awayPlayerDisplayName, ' .
-            'tg.name as groupName, g.date_of_match as dateOfMatch ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join player p1 on p1.id = g.home_player_id ' .
@@ -110,6 +110,7 @@ class GameRepository extends ServiceEntityRepository
                 'isWalkover' => $match['isWalkover'],
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => date("Y-m-d", strtotime($match['dateOfMatch'])),
+                'datePlayed' => date("Y-m-d", strtotime($match['datePlayed'])),
                 'homePlayerId' => $match['homePlayerId'],
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
@@ -137,7 +138,7 @@ class GameRepository extends ServiceEntityRepository
 
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
-        $baseSql .= 'order by g.date_of_match asc';
+        $baseSql .= 'order by g.date_of_match desc';
 
         $params['tournamentId'] = $id;
 

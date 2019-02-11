@@ -14,6 +14,8 @@ import MatchView from '@/components/Match/View'
 import MatchNew from '@/components/Match/New'
 import TournamentResultsEdit from '@/components/Tournament/ResultsEdit'
 import PlayerInfo from '@/components/Player/Info'
+// Quick Play
+import QuickMatchList from '@/components/QuickMatch/List'
 
 Vue.use(Router)
 Vue.use(VueScrollTo)
@@ -32,6 +34,7 @@ export default new Router({
     { path: '/match/new', name: 'MatchNew', component: MatchNew },
     { path: '/tournament/:id/results/edit', name: 'TournamentResultsEdit', component: TournamentResultsEdit },
     { path: '/match/:id/view', name: 'MatchView', component: MatchView },
-    { path: '/player/:id/info', name: 'PlayerInfo', component: PlayerInfo }
+    { path: '/player/:id/info', name: 'PlayerInfo', component: PlayerInfo },
+    { path: '/quickmatches', name: 'QuickMatchList', component: QuickMatchList }
   ]
 })

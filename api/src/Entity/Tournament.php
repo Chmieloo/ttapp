@@ -48,6 +48,11 @@ class Tournament
      */
     private $tournamentGroups;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_official;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
@@ -165,6 +170,18 @@ class Tournament
                 $group->setTournament(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsOfficial(): ?bool
+    {
+        return $this->is_official;
+    }
+
+    public function setIsOfficial(bool $is_official): self
+    {
+        $this->is_official = $is_official;
 
         return $this;
     }

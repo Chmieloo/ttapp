@@ -28,10 +28,12 @@ class TournamentRepository extends ServiceEntityRepository
         $sql =
             'select t.id, t.name, t.start_time, ' .
             'case when t.is_playoffs = 0 then \'group\' else \'playoffs\' end as phase, ' .
-            't.is_finished as finished, count(distinct(g.away_player_id)) as participants, ' .
+            't.is_finished as finished, count(distinct(g.home_player_id)) as participants, ' .
             'count(g.id) as scheduled, sum(g.is_finished) as finished ' .
             'from tournament t ' .
-            'join game g on g.tournament_id = t.id';
+            'join game g on g.tournament_id = t.id ' .
+            'where t.is_official = 1 ' .
+            'group by t.id';
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);

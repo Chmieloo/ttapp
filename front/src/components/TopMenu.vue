@@ -4,7 +4,7 @@
     <div><router-link to="/player/list">players</router-link></div>
     <div><router-link to="/tournament/list">tournaments</router-link></div>
     <div><router-link to="/tournament/match/list">tournament matches</router-link></div>
-    <div>quick games</div>
+    <div><router-link to="/quickmatches">quick play</router-link></div>
   </div>
 </template>
 
