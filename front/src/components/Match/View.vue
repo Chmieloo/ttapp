@@ -17,7 +17,14 @@
       </div>
     </div>
     <div class="container-mid">
-      123
+      <div class="midInfoHeader">MATCH MODE</div>
+      <div class="midInfoValue">best of 4</div>
+      <div class="midInfoHeader">SET SCORE</div>
+      <div class="midInfoValue">
+        <span>{{ match.homeScoreTotal }}</span>
+        <span>:</span>
+        <span>{{ match.awayScoreTotal }}</span>
+      </div>
     </div>
     <div style="clear: both;"></div>
     <div style="display: none;">
@@ -182,6 +189,16 @@ export default {
   margin-right: auto;
   width: 20%;
   text-align: center;
+  .midInfoHeader {
+    text-transform: uppercase;
+    font-size: 30px;
+    font-weight: 600;
+  }
+  .midInfoValue {
+    padding-top: 0px;
+    font-size: 30px;
+    color: #555;
+  }
 }
 
 .rallyScore {
