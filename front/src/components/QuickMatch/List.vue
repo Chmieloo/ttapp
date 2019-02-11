@@ -2,28 +2,9 @@
   <div id="app">
     <div class="mainContainer">
       <span class="header-icon"><i class="fas fa-list"></i></span>
-      <span class="header-title">List of tournaments</span>
-      <table class="table-player-list">
-        <tr class="row-header">
-          <th class="txt-left">name</th>
-          <th class="txt-center mw-100">phase</th>
-          <th class="txt-center mw-100">participants</th>
-          <th class="txt-center mw-100">matches played</th>
-          <th class="txt-center mw-100">matches scheduled</th>
-          <th class="txt-center mw-100">options</th>
-        </tr>
-        <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="row-data">
-          <td class="txt-left">{{ tournament.name }}</td>
-          <td class="txt-center">{{ tournament.phase }}</td>
-          <td class="txt-center">{{ tournament.participants }}</td>
-          <td class="txt-center">{{ tournament.finished }}</td>
-          <td class="txt-center">{{ tournament.scheduled }}</td>
-          <td class="txt-center cell-options">
-            <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link> |
-            <router-link :to="'/tournament/' + tournament.id + '/results/edit'">edit results</router-link>
-          </td>
-        </tr>
-      </table>
+      <span class="header-title">Quick Play</span>
+      <div>
+      </div>
     </div>
   </div>
 </template>
