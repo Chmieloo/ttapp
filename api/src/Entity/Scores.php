@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Scores
      * @ORM\Column(type="integer")
      */
     private $away_points;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Points", mappedBy="score", orphanRemoval=true)
+     */
+    private $points;
+
+    public function __construct()
+    {
+        $this->points = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +98,37 @@ class Scores
     public function setAwayPoints(int $away_points): self
     {
         $this->away_points = $away_points;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Points[]
+     */
+    public function getPoints(): Collection
+    {
+        return $this->points;
+    }
+
+    public function addPoint(Points $point): self
+    {
+        if (!$this->points->contains($point)) {
+            $this->points[] = $point;
+            $point->setScore($this);
+        }
+
+        return $this;
+    }
+
+    public function removePoint(Points $point): self
+    {
+        if ($this->points->contains($point)) {
+            $this->points->removeElement($point);
+            // set the owning side to null (unless already changed)
+            if ($point->getScore() === $this) {
+                $point->setScore(null);
+            }
+        }
 
         return $this;
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="mainMatchContainer">
     <div v-if="matches.length">
-      <table>
+      <table class="fullWidth">
         <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
           <td>
             {{ match.dateOfMatch }}
@@ -12,9 +12,12 @@
           <td class="playerName txt-right">
             {{ match.homePlayerDisplayName }}
           </td>
-          <td class="padl20 padr20">-</td>
+          <td class="padl20 padr20" style="text-align: center;">-</td>
           <td class="playerName">
             {{ match.awayPlayerDisplayName }}
+          </td>
+          <td style="text-align: right;">
+            <i class="fas fa-eye"></i>
           </td>
         </tr>
       </table>
@@ -46,6 +49,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
+.fullWidth {
+  width: 100%;
+}
+
 .mainMatchContainer {
   background: #3e3e3e;
   padding: 20px;
