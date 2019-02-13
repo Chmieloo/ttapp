@@ -3,16 +3,54 @@
     <div v-bind:class="flipped ? 'container-fr' : 'container-fl'">
       <div>
         <span class="header-title">{{ match.homePlayerDisplayName }}</span>
-        <div class="rallyScore">
-          {{ homeScore }}
+        <div v-if="match.isFinished == 1">
+          <div v-if="match.winnerId == 0">
+            <div class="rallyScore">
+              {{ match.homeScoreTotal }}
+            </div>
+          </div>
+          <div v-else-if="match.winnerId == match.homePlayerId">
+            <div class="rallyScoreWinner">
+              {{ match.homeScoreTotal }}
+            </div>
+          </div>
+          <div v-else>
+            <div class="rallyScore">
+              {{ match.homeScoreTotal }}
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="rallyScore">
+            {{ homeScore }}
+          </div>
         </div>
       </div>
     </div>
     <div v-bind:class="flipped ? 'container-fl' : 'container-fr'">
       <div>
         <span class="header-title">{{ match.awayPlayerDisplayName }}</span>
-        <div class="rallyScore">
-          {{ awayScore }}
+        <div v-if="match.isFinished == 1">
+          <div v-if="match.winnerId == 0">
+            <div class="rallyScore">
+              {{ match.awayScoreTotal }}
+            </div>
+          </div>
+          <div v-else-if="match.winnerId == match.awayPlayerId">
+            <div class="rallyScoreWinner">
+              {{ match.awayScoreTotal }}
+            </div>
+          </div>
+          <div v-else>
+            <div class="rallyScore">
+              {{ match.awayScoreTotal }}
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="rallyScore">
+            {{ awayScore }}
+          </div>
         </div>
       </div>
     </div>
@@ -25,6 +63,9 @@
         <span>:</span>
         <span>{{ match.awayScoreTotal }}</span>
       </div>
+      <div v-show="endSet" class="endSet" v-gamepad:shoulder-right="finalizeSet">
+        Press [R] to confirm set score.
+      </div>
     </div>
     <div style="clear: both;"></div>
     <div style="display: none;">
@@ -33,7 +74,8 @@
       <button v-gamepad:button-x="subPointLeft">Press me!</button>
       <button v-gamepad:button-b="subPointRight">Press me!</button>
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
-      <button v-gamepad:shoulder-right="test">Press me!</button>
+    </div>
+    <div>
     </div>
     <div v-if="isConnected()">
       <i class="fas fa-gamepad pad"></i>
@@ -58,7 +100,8 @@ Vue.use(VueGamepad)
 
 export default {
   components: {
-    VueGamepad
+    VueGamepad,
+    VuejsDialog
   },
   data () {
     return {
@@ -66,7 +109,8 @@ export default {
       flipped: 0,
       gamepadConnected: 0,
       homeScore: 0,
-      awayScore: 0
+      awayScore: 0,
+      endSet: 0
     }
   },
   mounted () {
@@ -85,35 +129,54 @@ export default {
         if (Math.abs(this.homeScore - this.awayScore) < 2) {
           return false
         } else {
-          return true
+          return this.confirmFinalScore()
         }
       } else {
         return false
       }
     },
+    checkFinalScore () {
+      if (this.homeScore >= 11 || this.awayScore >= 11) {
+        if (Math.abs(this.homeScore - this.awayScore) < 2) {
+          this.endSet = 0
+        } else {
+          this.endSet = 1
+          // Now the confirmation dialog is visible
+        }
+      } else {
+        this.endSet = 0
+      }
+    },
+    finalizeSet () {
+      this.endSet = 0
+      this.flipSides()
+      this.resetScores()
+    },
     flipSides () {
       this.flipped = (this.flipped + 1) % 2
     },
-    test () {
-      this.$dialog
-        .confirm('Please confirm to continue')
-        .then(function (dialog) {
-          console.log('Clicked on proceed')
-        })
-        .catch(function () {
-          console.log('Clicked on cancel')
-        })
+    resetScores () {
+      this.homeScore = 0
+      this.awayScore = 0
     },
     addPointLeft () {
-      if (this.flipped) {
-        this.awayScore++
-      } else {
-        this.homeScore++
+      if (!this.endSet) {
+        if (this.flipped) {
+          this.awayScore++
+        } else {
+          this.homeScore++
+        }
+        this.checkFinalScore()
       }
-      if (this.isFinishedSet()) {
-        this.flipSides()
-        this.homeScore = 0
-        this.awayScore = 0
+    },
+    addPointRight () {
+      if (!this.endSet) {
+        if (this.flipped) {
+          this.homeScore++
+        } else {
+          this.awayScore++
+        }
+        this.checkFinalScore()
       }
     },
     subPointLeft () {
@@ -122,18 +185,7 @@ export default {
       } else {
         this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
       }
-    },
-    addPointRight () {
-      if (this.flipped) {
-        this.homeScore++
-      } else {
-        this.awayScore++
-      }
-      if (this.isFinishedSet()) {
-        this.flipSides()
-        this.homeScore = 0
-        this.awayScore = 0
-      }
+      this.checkFinalScore()
     },
     subPointRight () {
       if (this.flipped) {
@@ -141,6 +193,7 @@ export default {
       } else {
         this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
       }
+      this.checkFinalScore()
     },
     isConnected () {
       var body = document.getElementsByTagName('body')
@@ -162,8 +215,8 @@ export default {
 }
 
 .pad {
-  color: #666;
-  font-size: 40px;
+  color: #fff;
+  font-size: 30px;
   position: absolute;
   top: 0px;
   right: 10px;
@@ -207,6 +260,24 @@ export default {
   line-height: 400px;
   font-weight: 900;
   color: white;
+}
+
+.endSet {
+  font-size: 50px;
+  color: white;
+  font-weight: 600;
+  position: absolute;
+  background: #6666666b;
+  left: 0;
+  right: 0;
+}
+
+.rallyScoreWinner {
+  width: 95%;
+  font-size: 400px;
+  line-height: 400px;
+  font-weight: 900;
+  color: #40c500;
 }
 
 .scoreContainer {

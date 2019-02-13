@@ -29,7 +29,7 @@ class GameRepository extends ServiceEntityRepository
     {
         $sql =
             'select g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
-            'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, ' .
+            'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
             's1.home_points as s1hp, s1.away_points s1ap, ' .
             's2.home_points as s2hp, s2.away_points s2ap, ' .
@@ -436,6 +436,7 @@ class GameRepository extends ServiceEntityRepository
             'homePlayerDisplayName' => $result['homePlayerDisplayName'] ? : $result['homePlayerName'],
             'awayPlayerDisplayName' => $result['awayPlayerDisplayName'] ? : $result['awayPlayerName'],
             'winnerId' => $result['winnerId'] ?: 0,
+            'isFinished' => $result['isFinished'] ?: 0,
             'homeScoreTotal' => $result['homeScoreTotal'],
             'awayScoreTotal' => $result['awayScoreTotal'],
             'numberOfSets' => $numberOfSets,
