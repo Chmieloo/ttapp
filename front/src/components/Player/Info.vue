@@ -91,18 +91,6 @@ export default {
     }
   },
   mounted () {
-    /*
-    axios.get('/api/players/' + this.$route.params.id).then((res) => {
-      this.player = res.data
-      this.strokeDashArrayWins = res.data.winPercentage + ' ' + res.data.notWinPercentage
-      this.winPercentage = res.data.winPercentage
-      this.strokeDashArrayDraws = res.data.drawPercentage + ' ' + res.data.notDrawPercentage
-      this.drawPercentage = res.data.drawPercentage
-      this.strokeDashArrayLosses = res.data.lossPercentage + ' ' + res.data.notLossPercentage
-      this.lossPercentage = res.data.lossPercentage
-    })
-    */
-
     axios.all([
       axios.get('/api/players/' + this.$route.params.id),
       axios.get('/api/players/' + this.$route.params.id + '/results')

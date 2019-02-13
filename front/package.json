@@ -36,6 +36,7 @@
     "vue-datetime": "^1.0.0-beta.10",
     "vue-doughnut-chart": "0.0.5",
     "vue-gamepad": "^1.0.1",
+    "vue-plain-slider": "^1.1.1",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.13.0",
     "vue-single-select": "^1.0.29",

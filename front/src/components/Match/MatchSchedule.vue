@@ -17,7 +17,7 @@
             {{ match.awayPlayerDisplayName }}
           </td>
           <td style="text-align: right;">
-            <i class="fas fa-eye"></i>
+            <div><router-link :to="'/match/' + match.id + '/view'"><i class="fas fa-eye"></i></router-link></div>
           </td>
         </tr>
       </table>
