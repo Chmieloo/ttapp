@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Scores;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -19,32 +20,27 @@ class ScoresRepository extends ServiceEntityRepository
         parent::__construct($registry, Scores::class);
     }
 
-    // /**
-    //  * @return Scores[] Returns an array of Scores objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $matchId
+     * @param $setNumber
+     * @return mixed
+     */
+    public function getScoreIdByMatchIdAndSetNumber($matchId, $setNumber)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $baseSql = 'select id from scores where game_id = :matchId and set_number = :setNumber';
+        $params = [
+            'matchId' => $matchId,
+            'setNumber' => $setNumber
+        ];
 
-    /*
-    public function findOneBySomeField($value): ?Scores
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt->execute($params);
+
+        $result = $stmt->fetch();
+
+        var_dump($result);
+
+        return $result['id'];
     }
-    */
 }

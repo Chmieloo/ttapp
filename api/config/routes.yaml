@@ -95,6 +95,13 @@ match_modes:
 
 # MATCH ROUTES
 
+match_finish:
+  path: /matches/{id}/finish
+  controller: App\Controller\MatchController::finishMatch
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 match:
   path: /matches/{id}
   controller: App\Controller\MatchController::getMatch
@@ -116,3 +123,9 @@ matches_all:
   path: /matches
   controller: App\Controller\MatchController:getAllMatches
 
+# POINTS
+
+points_save:
+  path: /points/add
+  controller: App\Controller\PointController::addPoint
+  methods: [POST]

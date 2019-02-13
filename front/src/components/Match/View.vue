@@ -148,9 +148,14 @@ export default {
       }
     },
     finalizeSet () {
-      this.endSet = 0
-      this.flipSides()
-      this.resetScores()
+      if (this.endSet) {
+        axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
+          this.endSet = 0
+          this.flipSides()
+          this.resetScores()
+          this.match = res.data
+        })
+      }
     },
     flipSides () {
       this.flipped = (this.flipped + 1) % 2
@@ -163,8 +168,10 @@ export default {
       if (!this.endSet) {
         if (this.flipped) {
           this.awayScore++
+          this.savePoint(0, 1, this.match.matchId)
         } else {
           this.homeScore++
+          this.savePoint(1, 0, this.match.matchId)
         }
         this.checkFinalScore()
       }
@@ -173,8 +180,10 @@ export default {
       if (!this.endSet) {
         if (this.flipped) {
           this.homeScore++
+          this.savePoint(1, 0, this.match.matchId)
         } else {
           this.awayScore++
+          this.savePoint(0, 1, this.match.matchId)
         }
         this.checkFinalScore()
       }
@@ -198,6 +207,21 @@ export default {
     isConnected () {
       var body = document.getElementsByTagName('body')
       return body[0].classList.contains('gamepad-connected')
+    },
+    savePoint (homeScore, awayScore, matchId) {
+      axios.post('/api/points/add', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        home: homeScore,
+        away: awayScore,
+        matchId: matchId
+      }).then((res) => {
+        console.log('Point added')
+      }).catch(error => {
+        console.log(error.response)
+        // this.errors.push(error.response.data.errorText)
+      })
     }
   }
 }
@@ -292,5 +316,10 @@ export default {
 
 .scoreRight {
   border-left: 1px solid #222;
+}
+
+.header-title {
+  font-size: 50px;
+  color: #40c500;
 }
 </style>

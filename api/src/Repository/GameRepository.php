@@ -446,4 +446,22 @@ class GameRepository extends ServiceEntityRepository
 
         return $matchData;
     }
+
+    public function updateScores($matchId, $setNumber)
+    {
+        $baseSql = 'update scores s ' .
+                   'set ' .
+                   's.home_points = (select sum(p.is_home_point) as homePoints from points p where p.score_id = s.id), ' .
+                   's.away_points = (select sum(p.is_away_point) as awayPoints from points p where p.score_id = s.id) ' .
+                   'where s.set_number = :setNumber and s.game_id = :gameId';
+
+        $params = [
+            'gameId' => $matchId,
+            'setNumber' => $setNumber,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+    }
 }

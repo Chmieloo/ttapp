@@ -32,6 +32,30 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($data);
     }
 
+    public function finishMatch($id)
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        $data = $gameRepository->find($id);
+        $setNumber = $data->getScores()->count();
+
+        # update set scores
+        $gameRepository->updateScores($id, $setNumber);
+
+        # TODO check match scores
+
+        $data = $gameRepository->loadById($id);
+        
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
+
     /**
      * @param Request $request
      * @return JsonResponse
