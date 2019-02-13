@@ -72,18 +72,20 @@ class TournamentRepository extends ServiceEntityRepository
             '(SUM(if (g1.home_player_id = ptg.player_id, g1.away_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.home_score, 0))) as setsAgainst, ' .
             'u.ralliesFor, u.ralliesAgainst ' .
             'from player_tournament_group ptg ' .
-            'left join game g1 on g1.home_player_id = ptg.player_id or g1.away_player_id = ptg.player_id ' .
+            'left join game g1 on (g1.home_player_id = ptg.player_id or g1.away_player_id = ptg.player_id) and g1.tournament_id = :tournamentId ' .
             'join player p on p.id = ptg.player_id ' .
             'join tournament_group tg on tg.id = ptg.group_id ' .
             'join ( ' .
             'select player, sum(pointsFor) as ralliesFor, sum(pointsAgainst) as ralliesAgainst from ( ' .
             'SELECT g.id, g.home_player_id   AS player, sum(s.home_points) AS pointsFor, sum(s.away_points) AS pointsAgainst ' .
             'FROM scores s JOIN game g ON g.id = s.game_id ' .
+            'JOIN tournament t1 on t1.id = g.tournament_id WHERE t1.id = :tournamentId ' .
             'GROUP BY g.home_player_id ' .
             'UNION ' .
             'SELECT ' .
             'g.id, g.away_player_id   AS player, sum(s.away_points) AS pointsFor, sum(s.home_points) AS pointsAgainst ' .
             'FROM scores s JOIN game g ON g.id = s.game_id ' .
+            'JOIN tournament t2 on t2.id = g.tournament_id WHERE t2.id = :tournamentId ' .
             'GROUP BY g.away_player_id ' .
             ') u group by player ' .
             ') u on u.player = ptg.player_id ' .
