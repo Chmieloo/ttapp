@@ -35,6 +35,7 @@ class MatchController extends BaseController
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws \Exception
      */
     public function addMatch(Request $request)
     {
@@ -236,10 +237,14 @@ class MatchController extends BaseController
             $finished = 1;
         }
 
+        $datePlayed = new \DateTime(null, new \DateTimeZone('Europe/Berlin'));
+        $datePlayed->format('Y-m-d H:i:s');
+
         $match->setHomeScore($homeSetScore);
         $match->setAwayScore($awaySetScore);
         $match->setWinnerId($winnerId);
         $match->setIsFinished($finished);
+        $match->setDatePlayed($datePlayed);
 
         $em->persist($match);
         $em->flush();
