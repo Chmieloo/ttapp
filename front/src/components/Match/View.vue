@@ -73,7 +73,8 @@
         </div>
       </div>
       <div v-show="endSet" class="endSet" v-gamepad:shoulder-right="finalizeSet">
-        Press [R] to confirm set score.
+        <div>Press [R] to confirm set score.</div>
+        <div><img src="./assets/padr.png" /></div>
       </div>
     </div>
     <div style="clear: both;"></div>
@@ -338,9 +339,10 @@ export default {
   color: white;
   font-weight: 600;
   position: absolute;
-  background: #6666666b;
+  background: #666666ed;
   left: 0;
   right: 0;
+  padding: 50px 0px;
 }
 
 .rallyScoreWinner {
