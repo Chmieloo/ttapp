@@ -90,6 +90,16 @@ class Game
      */
     private $date_played;
 
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $current_set;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $server_id;
+
     public function __construct()
     {
         $this->scores = new ArrayCollection();
@@ -262,6 +272,26 @@ class Game
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getSetScores()
+    {
+        $currentHomeScore = 0;
+        $currentAwayScore = 0;
+
+        /**
+         * @var  $key
+         * @var Scores $score
+         */
+        foreach ($this->scores as $key => $score) {
+            $currentHomeScore += $score->getHomePoints() > $score->getAwayPoints() ? 1 : 0;
+            $currentAwayScore += $score->getAwayPoints() > $score->getHomePoints() ? 1 : 0;
+        }
+
+        return [$currentHomeScore, $currentAwayScore];
+    }
+
     public function removeScore(Scores $score): self
     {
         if ($this->scores->contains($score)) {
@@ -283,6 +313,30 @@ class Game
     public function setDatePlayed(?\DateTimeInterface $date_played): self
     {
         $this->date_played = $date_played;
+
+        return $this;
+    }
+
+    public function getCurrentSet(): ?int
+    {
+        return $this->current_set;
+    }
+
+    public function setCurrentSet(int $current_set): self
+    {
+        $this->current_set = $current_set;
+
+        return $this;
+    }
+
+    public function getServerId(): ?int
+    {
+        return $this->server_id;
+    }
+
+    public function setServerId(?int $server_id): self
+    {
+        $this->server_id = $server_id;
 
         return $this;
     }

@@ -39,8 +39,6 @@ class ScoresRepository extends ServiceEntityRepository
 
         $result = $stmt->fetch();
 
-        var_dump($result);
-
         return $result['id'];
     }
 }

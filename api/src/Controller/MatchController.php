@@ -9,6 +9,7 @@ use App\Entity\Scores;
 use App\Entity\Tournament;
 use App\Entity\TournamentGroup;
 use App\Repository\GameRepository;
+use App\Repository\ScoresRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ class MatchController extends BaseController
 
     public function getMatch($id)
     {
+        /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
         $data = $gameRepository->loadById($id);
 
@@ -32,21 +34,79 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($data);
     }
 
-    public function finishMatch($id)
+    public function finishSet($matchId)
     {
+        $em = $this->getDoctrine()->getManager();
+
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        /** @var ScoresRepository $gameRepository */
+        $scoreRepository = $this->getDoctrine()->getRepository(Scores::class);
 
-        $data = $gameRepository->find($id);
-        $setNumber = $data->getScores()->count();
+        /** @var Game $match */
+        $match = $gameRepository->find($matchId);
+        $currentSet = $match->getCurrentSet();
 
-        # update set scores
-        $gameRepository->updateScores($id, $setNumber);
+        # Update current set scores by summarizing single points
+        $scoreId = $scoreRepository->getScoreIdByMatchIdAndSetNumber($matchId, $currentSet);
+        $gameRepository->updateScores($scoreId);
 
-        # TODO check match scores
+        list($currentHomeScore, $currentAwayScore) = $match->getSetScores();
 
-        $data = $gameRepository->loadById($id);
-        
+        # Update match score !
+        $match->setHomeScore($currentHomeScore);
+        $match->setAwayScore($currentAwayScore);
+
+        $requiredWins = $match->getGameMode()->getWinsRequired();
+        $maxSets = $match->getGameMode()->getMaxSets();
+
+        // Update set score in Scores
+        if ($currentHomeScore == $requiredWins) {
+            $match->setWinnerId($match->getHomePlayer()->getId());
+            $match->setCurrentSet(0);
+            $match->setIsFinished(1);
+        } elseif ($currentAwayScore == $requiredWins) {
+            $match->setWinnerId($match->getAwayPlayer()->getId());
+            $match->setCurrentSet(0);
+            $match->setIsFinished(1);
+        } elseif ($currentAwayScore + $currentHomeScore == $maxSets) {
+            $match->setWinnerId(0);
+            $match->setCurrentSet(0);
+            $match->setIsFinished(1);
+        }
+
+        if ($match->getIsFinished() == 1) {
+            $em->persist($match);
+            $em->flush();
+
+            $data = $gameRepository->loadById($matchId);
+
+            return $this->sendJsonResponse($data);
+        } else {
+            $nextSetNumber = $currentSet + 1;
+
+            # Add next set (Score)
+            $score = new Scores();
+            $score->setGame($match);
+            $score->setSetNumber($nextSetNumber);
+            $score->setHomePoints(0);
+            $score->setAwayPoints(0);
+            $em->persist($score);
+            $em->flush();
+
+            $match->setCurrentSet($nextSetNumber);
+            $em->persist($match);
+            $em->flush();
+        }
+
+        if (!$match) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        $data = $gameRepository->loadById($matchId);
+
         if (!$data) {
             throw $this->createNotFoundException(
                 'No data'

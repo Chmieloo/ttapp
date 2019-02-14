@@ -36,7 +36,7 @@ class GameRepository extends ServiceEntityRepository
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
-            'p2.display_name as awayPlayerDisplayName, ' .
+            'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
@@ -427,6 +427,8 @@ class GameRepository extends ServiceEntityRepository
 
         $matchData = [
             'matchId' => $matchId,
+            'serverId' => $result['serverId'],
+            'currentSet' => $result['currentSet'],
             'groupName' => $result['groupName'],
             'dateOfMatch' => date("D M j", strtotime($result['dateOfMatch'])),
             'homePlayerId' => $result['homePlayerId'],
@@ -447,21 +449,30 @@ class GameRepository extends ServiceEntityRepository
         return $matchData;
     }
 
-    public function updateScores($matchId, $setNumber)
+    /**
+     * @param $scoreId
+     * @return bool
+     */
+    public function updateScores($scoreId)
     {
-        $baseSql = 'update scores s ' .
-                   'set ' .
-                   's.home_points = (select sum(p.is_home_point) as homePoints from points p where p.score_id = s.id), ' .
-                   's.away_points = (select sum(p.is_away_point) as awayPoints from points p where p.score_id = s.id) ' .
-                   'where s.set_number = :setNumber and s.game_id = :gameId';
+        $baseSql = 'UPDATE scores s
+                    INNER JOIN
+                    (
+                       SELECT score_id as scoreId, SUM(p.is_home_point) as homePoints, SUM(p.is_away_point) as awayPoints
+                       FROM points p
+                       GROUP BY score_id
+                    ) i ON s.id = i.scoreId
+                    SET s.home_points = i.homePoints, s.away_points = i.awayPoints
+                    where s.id = :scoreId';
 
         $params = [
-            'gameId' => $matchId,
-            'setNumber' => $setNumber,
+            'scoreId' => $scoreId
         ];
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
         $stmt-> execute($params);
+
+        return true;
     }
 }

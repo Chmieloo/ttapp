@@ -56,12 +56,21 @@
     </div>
     <div class="container-mid">
       <div class="midInfoHeader">MATCH MODE</div>
-      <div class="midInfoValue">best of 4</div>
+      <div class="midInfoValue">BO4</div>
       <div class="midInfoHeader">SET SCORE</div>
       <div class="midInfoValue">
-        <span>{{ match.homeScoreTotal }}</span>
-        <span>:</span>
-        <span>{{ match.awayScoreTotal }}</span>
+        <div class="tableSetScores">
+          <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
+            <div v-for="score in match.scores" v-bind:key="score.id" class="rowData">
+              <span>{{ score.home }}</span>
+            </div>
+          </div>
+          <div v-bind:class="flipped ? 'set-container-fl' : 'set-container-fr'">
+            <div v-for="score in match.scores" v-bind:key="score.id" class="rowData">
+              <span>{{ score.away }}</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div v-show="endSet" class="endSet" v-gamepad:shoulder-right="finalizeSet">
         Press [R] to confirm set score.
@@ -110,7 +119,8 @@ export default {
       gamepadConnected: 0,
       homeScore: 0,
       awayScore: 0,
-      endSet: 0
+      endSet: 0,
+      matchScores: []
     }
   },
   mounted () {
@@ -141,7 +151,6 @@ export default {
           this.endSet = 0
         } else {
           this.endSet = 1
-          // Now the confirmation dialog is visible
         }
       } else {
         this.endSet = 0
@@ -150,10 +159,13 @@ export default {
     finalizeSet () {
       if (this.endSet) {
         axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
-          this.endSet = 0
-          this.flipSides()
-          this.resetScores()
-          this.match = res.data
+          if (res.data) {
+            this.endSet = 0
+            this.flipSides()
+            this.resetScores()
+            this.match = res.data
+            // TODO check if the match is finished
+          }
         })
       }
     },
@@ -220,7 +232,6 @@ export default {
         console.log('Point added')
       }).catch(error => {
         console.log(error.response)
-        // this.errors.push(error.response.data.errorText)
       })
     }
   }
@@ -228,6 +239,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.rowData {
+  border: none;
+  font-size: 60px;
+  color: #f5f5f5;
+}
+
 .mainContainer {
   margin-top: 30px;
 }
@@ -261,6 +278,18 @@ export default {
   border-left: 1px solid #222;
 }
 
+.set-container-fl {
+  float: left;
+  width: 40%;
+  text-align: right;
+}
+
+.set-container-fr {
+  float: right;
+  width: 40%;
+  text-align: left;
+}
+
 .container-mid {
   margin-left: auto;
   margin-right: auto;
@@ -268,12 +297,12 @@ export default {
   text-align: center;
   .midInfoHeader {
     text-transform: uppercase;
-    font-size: 30px;
+    font-size: 40px;
     font-weight: 600;
   }
   .midInfoValue {
     padding-top: 0px;
-    font-size: 30px;
+    font-size: 40px;
     color: #555;
   }
 }

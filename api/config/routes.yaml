@@ -96,11 +96,11 @@ match_modes:
 # MATCH ROUTES
 
 match_finish:
-  path: /matches/{id}/finish
-  controller: App\Controller\MatchController::finishMatch
+  path: /matches/{matchId}/finish
+  controller: App\Controller\MatchController::finishSet
   methods: [GET]
   requirements:
-    id: '\d+'
+    matchId: '\d+'
 
 match:
   path: /matches/{id}
