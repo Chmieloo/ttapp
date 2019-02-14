@@ -203,16 +203,20 @@ export default {
     subPointLeft () {
       if (this.flipped) {
         this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
+        this.delPoint(0, 1, this.match.matchId)
       } else {
         this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
+        this.delPoint(1, 0, this.match.matchId)
       }
       this.checkFinalScore()
     },
     subPointRight () {
       if (this.flipped) {
         this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
+        this.delPoint(1, 0, this.match.matchId)
       } else {
         this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
+        this.delPoint(0, 1, this.match.matchId)
       }
       this.checkFinalScore()
     },
@@ -230,6 +234,20 @@ export default {
         matchId: matchId
       }).then((res) => {
         console.log('Point added')
+      }).catch(error => {
+        console.log(error.response)
+      })
+    },
+    delPoint (homeScore, awayScore, matchId) {
+      axios.post('/api/points/del', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        home: homeScore,
+        away: awayScore,
+        matchId: matchId
+      }).then((res) => {
+        console.log('Point removed')
       }).catch(error => {
         console.log(error.response)
       })

@@ -19,32 +19,32 @@ class PointsRepository extends ServiceEntityRepository
         parent::__construct($registry, Points::class);
     }
 
-    // /**
-    //  * @return Points[] Returns an array of Points objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $home
+     * @param $away
+     * @param $matchId
+     * @return bool
+     */
+    public function removeLastPoint($home, $away, $matchId)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $baseSql = 'delete from points 
+                    where id IN (
+                    select max(p.id) from (select * from points) p 
+                    join scores s on s.id = p.score_id
+                    join game g on g.id = s.game_id
+                    where p.is_home_point = :homePoint and p.is_away_point = :awayPoint and g.id = :gameId
+                    )';
 
-    /*
-    public function findOneBySomeField($value): ?Points
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $params = [
+            'gameId' => $matchId,
+            'homePoint' => $home,
+            'awayPoint' => $away,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        return true;
     }
-    */
 }

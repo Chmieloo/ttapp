@@ -10,6 +10,7 @@ use App\Entity\Scores;
 use App\Entity\Tournament;
 use App\Entity\TournamentGroup;
 use App\Repository\GameRepository;
+use App\Repository\PointsRepository;
 use App\Repository\ScoresRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -87,30 +88,31 @@ class PointController extends BaseController
         );
     }
 
-    private function getCurrentMatchSetNumber($matchId)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function deletePoint(Request $request)
     {
-        $doctrine = $this->getDoctrine();
-        $em = $doctrine->getManager();
+        $data = json_decode($request->getContent(), true);
 
-        /** @var Game $match */
-        $match = $this->getDoctrine()->getRepository(Game::class)->find($matchId);
+        /** @var PointsRepository $pointRepository */
+        $pointRepository = $this->getDoctrine()->getRepository(Points::class);
 
-        $scoreId = null;
+        $home = $data['home'];
+        $away = $data['away'];
+        $matchId = $data['matchId'];
 
-        if (!$match->getScores()->count()) {
-            $score = new Scores();
-            $score->setGame($match);
-            $score->setSetNumber(1);
-            $score->setHomePoints(0);
-            $score->setAwayPoints(0);
-            $em->persist($score);
-            $em->flush();
+        # Delete last point (home / away) for given match id
+        $pointRepository->removeLastPoint($home, $away, $matchId);
 
-            $setId = 1;
-        } else {
-            $setId = $match->getScores()->count();
-        }
-
-        return $setId;
+        return new JsonResponse([
+            'status'    => 'done',
+            'errorText' => 'Point removed'
+        ],
+            JsonResponse::HTTP_OK
+        );
     }
+
 }

@@ -34,6 +34,10 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($data);
     }
 
+    /**
+     * @param $matchId
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function finishSet($matchId)
     {
         $em = $this->getDoctrine()->getManager();

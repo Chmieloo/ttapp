@@ -129,3 +129,8 @@ points_save:
   path: /points/add
   controller: App\Controller\PointController::addPoint
   methods: [POST]
+
+points_remove:
+  path: /points/del
+  controller: App\Controller\PointController::deletePoint
+  methods: [POST]
