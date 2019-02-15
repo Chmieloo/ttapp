@@ -84,8 +84,12 @@
       <button v-gamepad:button-x="subPointLeft">Press me!</button>
       <button v-gamepad:button-b="subPointRight">Press me!</button>
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
+      <button v-gamepad:left-analog-up="flipServers">Press me!</button>
     </div>
     <div>
+      <div v-bind:class="flippedServer ? 'server-container-fl' : 'server-container-fr'">
+        SERVER
+      </div>
     </div>
     <div v-if="isConnected()">
       <i class="fas fa-gamepad pad"></i>
@@ -117,6 +121,7 @@ export default {
     return {
       match: [],
       flipped: 0,
+      flippedServer: 0,
       gamepadConnected: 0,
       homeScore: 0,
       awayScore: 0,
@@ -170,8 +175,22 @@ export default {
         })
       }
     },
+    checkServer () {
+      var sumPoints = this.homeScore + this.awayScore
+      if (this.homeScore >= 10 && this.awayScore >= 10) {
+        this.flipServers()
+      } else {
+        if (sumPoints % 2 === 0) {
+          this.flipServers()
+          // number of serves = 2 - (sumPoints % 2)
+        }
+      }
+    },
     flipSides () {
       this.flipped = (this.flipped + 1) % 2
+    },
+    flipServers () {
+      this.flippedServer = (this.flippedServer + 1) % 2
     },
     resetScores () {
       this.homeScore = 0
@@ -187,6 +206,7 @@ export default {
           this.savePoint(1, 0, this.match.matchId)
         }
         this.checkFinalScore()
+        this.checkServer()
       }
     },
     addPointRight () {
@@ -199,6 +219,7 @@ export default {
           this.savePoint(0, 1, this.match.matchId)
         }
         this.checkFinalScore()
+        this.checkServer()
       }
     },
     subPointLeft () {
@@ -283,30 +304,46 @@ export default {
   line-height: 50px;
 }
 
-.container-fl {
+.floatingLeft40 {
   float: left;
   width: 40%;
+}
+
+.floatingRight40 {
+  float: right;
+  width: 40%;
+}
+
+.container-fl {
+  .floatingLeft40;
   text-align: center;
   border-right: 1px solid #222;
 }
 
 .container-fr {
-  float: right;
-  width: 40%;
+  .floatingRight40;
   text-align: center;
   border-left: 1px solid #222;
 }
 
 .set-container-fl {
-  float: left;
-  width: 40%;
+  .floatingLeft40;
   text-align: right;
 }
 
 .set-container-fr {
-  float: right;
-  width: 40%;
+  .floatingRight40;
   text-align: left;
+}
+
+.server-container-fl {
+  .floatingLeft40;
+  text-align: center;
+}
+
+.server-container-fr {
+  .floatingRight40;
+  text-align: center;
 }
 
 .container-mid {
