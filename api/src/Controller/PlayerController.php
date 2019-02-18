@@ -22,9 +22,9 @@ class PlayerController extends BaseController
      */
     public function getPlayerById($id)
     {
-        $player = $this->getDoctrine()
-            ->getRepository(Player::class)
-            ->loadPlayerById($id);
+        /** @var PlayerRepository $playerRepository */
+        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $player = $playerRepository->loadPlayerById($id);
 
         if (!$player) {
             throw $this->createNotFoundException(
@@ -43,9 +43,25 @@ class PlayerController extends BaseController
      */
     public function getPlayerResults($id)
     {
-        $player = $this->getDoctrine()
-            ->getRepository(Player::class)
-            ->loadPlayerResults($id);
+        /** @var PlayerRepository $playerRepository */
+        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $player = $playerRepository->loadPlayerResults($id);
+
+        if (!$player) {
+            throw $this->createNotFoundException(
+                'Player not found with id: ' . $id
+            );
+        }
+
+        return $this->sendJsonResponse($player);
+    }
+
+    public function getPlayerSchedule($id)
+    {
+        /** @var PlayerRepository $playerRepository */
+        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+
+        $player = $playerRepository->loadPlayerSchedule($id);
 
         if (!$player) {
             throw $this->createNotFoundException(
@@ -63,9 +79,9 @@ class PlayerController extends BaseController
      */
     public function getPlayers()
     {
-        $players = $this->getDoctrine()
-            ->getRepository(Player::class)
-            ->loadAll();
+        /** @var PlayerRepository $playerRepository */
+        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $players = $playerRepository->loadAllPlayers();
 
         if (!$players) {
             throw $this->createNotFoundException(

@@ -60,12 +60,59 @@
                     </td>
                 </tr>
             </table>
-            <hr />
-            <div>LAST MATCHES</div>
-            <table>
+            <hr style="border: none; border-bottom: 1px solid #666;" />
+            <div style="padding: 10px 0px; font-size: 20px; color: white;">
+                LAST MATCHES
+            </div>
+            <table style="width: 100%;">
                 <tr v-for="result in results" v-bind:key="result.id" class="row-data">
                     <td class="w30pc">
-                    {{ result.homePlayerName }}
+                        <span v-bind:class="result.winnerId == result.homePlayerId ? 'winner-color' : ''">
+                            {{ result.homePlayerName }}
+                        </span>
+                    </td>
+                    <td class="w30pc">
+                        <span v-bind:class="result.winnerId == result.awayPlayerId ? 'winner-color' : ''">
+                            {{ result.awayPlayerName }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ result.homeScoreTotal }}
+                    </td>
+                    <td>
+                        -
+                    </td>
+                    <td>
+                        {{ result.awayScoreTotal }}
+                    </td>
+                    <td style="text-align: right;">
+                        <span v-if="result.isWalkover == '1'">
+                            walkover
+                        </span>
+                        <span v-else class="setScores">
+                            (
+                            <span v-for="score in result.scores" v-bind:key="score.set" class="score">
+                            {{ score.home }} - {{ score.away }}
+                            </span>
+                            )
+                        </span>
+                    </td>
+                </tr>
+            </table>
+            <hr style="border: none; border-bottom: 1px solid #666;" />
+            <div style="padding: 10px 0px; font-size: 20px; color: white;">
+                NEXT MATCHES
+            </div>
+            <table style="width: 100%;">
+                <tr v-for="event in schedule" v-bind:key="event.id" class="row-data">
+                    <td>
+                        {{ event.dateOfMatch }}
+                    </td>
+                    <td v-if="event.homePlayerId == player.id">
+                        {{ event.awayPlayerName }}
+                    </td>
+                    <td v-else>
+                        {{ event.homePlayerName }}
                     </td>
                 </tr>
             </table>
@@ -93,8 +140,9 @@ export default {
   mounted () {
     axios.all([
       axios.get('/api/players/' + this.$route.params.id),
-      axios.get('/api/players/' + this.$route.params.id + '/results')
-    ]).then(axios.spread((player, results) => {
+      axios.get('/api/players/' + this.$route.params.id + '/results'),
+      axios.get('/api/players/' + this.$route.params.id + '/schedule')
+    ]).then(axios.spread((player, results, schedule) => {
       this.player = player.data
       this.strokeDashArrayWins = player.data.winPercentage + ' ' + player.data.notWinPercentage
       this.winPercentage = player.data.winPercentage
@@ -104,6 +152,7 @@ export default {
       this.lossPercentage = player.data.lossPercentage
 
       this.results = results.data
+      this.schedule = schedule.data
     })).catch(error => {
       console.log('Error when getting data for matches ' + error)
     })
@@ -127,6 +176,10 @@ export default {
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         max-height: 100px;
     }
+}
+
+.score + .score:before {
+  content: ", ";
 }
 
 table.playerData {
@@ -155,6 +208,10 @@ table.playerData {
     position: relative;
     font-size: 20px;
     top: -125px;
+}
+
+.winner-color {
+  color: #40c500;
 }
 
 .marl20 {
