@@ -116,6 +116,13 @@ match:
   requirements:
     id: '\d+'
 
+match_server:
+  path: /matches/{id}/server
+  controller: App\Controller\MatchController::setServer
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 match_add:
   path: /matches/add/official
   controller: App\Controller\MatchController::addMatch

@@ -84,8 +84,16 @@
       <button v-gamepad:button-x="subPointLeft">Press me!</button>
       <button v-gamepad:button-b="subPointRight">Press me!</button>
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
+      <button v-gamepad:button-select="setServer">Press me!</button>
     </div>
-    <div>
+    <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
+      <span v-if="this.numServes === 2" class="server">
+        <i class="fas fa-table-tennis"></i>
+        <i class="fas fa-table-tennis"></i>
+      </span>
+      <span v-if="this.numServes === 1" class="server">
+        <i class="fas fa-table-tennis"></i>
+      </span>
     </div>
     <div v-if="isConnected()">
       <i class="fas fa-gamepad pad"></i>
@@ -121,7 +129,9 @@ export default {
       homeScore: 0,
       awayScore: 0,
       endSet: 0,
-      matchScores: []
+      matchScores: [],
+      serverFlipped: null,
+      numServes: 2
     }
   },
   mounted () {
@@ -134,7 +144,22 @@ export default {
     // window.addEventListener('gamepaddisconnected', this.handleGamepadDisconnect)
   },
   methods: {
-    // logic to check if set is fninished
+    checkServer () {
+      if (this.homeScore === 0 && this.awayScore === 0) {
+        return false
+      }
+      if (this.homeScore <= 10 && this.awayScore <= 10) {
+        this.numServes = 2 - ((this.homeScore + this.awayScore) % 2)
+        if (((this.homeScore + this.awayScore) % 2) === 0) {
+          this.flipServer()
+        }
+      } else {
+        this.numServes = 1
+        this.flipServer()
+      }
+      // when should we flip sides ?
+    },
+    // logic to check if set is finished
     isFinishedSet () {
       if (this.homeScore >= 11 || this.awayScore >= 11) {
         if (Math.abs(this.homeScore - this.awayScore) < 2) {
@@ -165,13 +190,37 @@ export default {
             this.flipSides()
             this.resetScores()
             this.match = res.data
-            // TODO check if the match is finished
+            this.numServes = 2
+            console.log(res.data)
+            if (this.flipped === 1) {
+              // home on the right
+            } else {
+              // home on the left
+            }
+            if (res.data.serverId === res.data.homePlayerId) {
+              // TODO
+            } else {
+              // TODO
+            }
           }
         })
       }
     },
     flipSides () {
       this.flipped = (this.flipped + 1) % 2
+    },
+    flipServer () {
+      this.serverFlipped = (this.serverFlipped + 1) % 2
+    },
+    setServer () {
+      // change INITIAL server, by default it is home
+      axios.get('/api/matches/' + this.$route.params.id + '/server').then((res) => {
+        if (res.data) {
+          this.flipServer()
+          this.match = res.data
+          this.checkServer()
+        }
+      })
     },
     resetScores () {
       this.homeScore = 0
@@ -187,6 +236,7 @@ export default {
           this.savePoint(1, 0, this.match.matchId)
         }
         this.checkFinalScore()
+        this.checkServer()
       }
     },
     addPointRight () {
@@ -199,6 +249,7 @@ export default {
           this.savePoint(0, 1, this.match.matchId)
         }
         this.checkFinalScore()
+        this.checkServer()
       }
     },
     subPointLeft () {
@@ -210,6 +261,7 @@ export default {
         this.delPoint(1, 0, this.match.matchId)
       }
       this.checkFinalScore()
+      this.checkServer()
     },
     subPointRight () {
       if (this.flipped) {
@@ -220,6 +272,7 @@ export default {
         this.delPoint(0, 1, this.match.matchId)
       }
       this.checkFinalScore()
+      this.checkServer()
     },
     isConnected () {
       var body = document.getElementsByTagName('body')
@@ -365,6 +418,11 @@ export default {
 
 .scoreRight {
   border-left: 1px solid #222;
+}
+
+.server {
+  font-size: 50px;
+  color: white;
 }
 
 .header-title {

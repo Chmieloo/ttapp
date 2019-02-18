@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GameModeRepository")
@@ -38,15 +39,6 @@ class GameMode
      */
     private $max_sets;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Game", mappedBy="game_mode")
-     */
-    private $games;
-
-    public function __construct()
-    {
-        $this->games = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -97,37 +89,6 @@ class GameMode
     public function setMaxSets(int $max_sets): self
     {
         $this->max_sets = $max_sets;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Game[]
-     */
-    public function getGames(): Collection
-    {
-        return $this->games;
-    }
-
-    public function addGame(Game $game): self
-    {
-        if (!$this->games->contains($game)) {
-            $this->games[] = $game;
-            $game->setGameMode($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGame(Game $game): self
-    {
-        if ($this->games->contains($game)) {
-            $this->games->removeElement($game);
-            // set the owning side to null (unless already changed)
-            if ($game->getGameMode() === $this) {
-                $game->setGameMode(null);
-            }
-        }
 
         return $this;
     }

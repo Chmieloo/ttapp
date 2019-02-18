@@ -475,4 +475,35 @@ class GameRepository extends ServiceEntityRepository
 
         return true;
     }
+
+    public function updateServer($matchId)
+    {
+        $query = 'select home_player_id, away_player_id, server_id from game g where g.id = :matchId';
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt-> execute([
+            'matchId' => $matchId
+        ]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $newServer = $result['server_id'] == $result['home_player_id'] ?
+            $result['away_player_id'] :
+            $result['home_player_id'];
+
+        $query = 'UPDATE game g
+                    SET g.server_id = :serverId
+                    where g.id = :matchId';
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt-> execute([
+            'matchId' => $matchId,
+            'serverId' => $newServer
+        ]);
+
+        $match = $this->loadById($matchId);
+
+        return $match;
+    }
 }

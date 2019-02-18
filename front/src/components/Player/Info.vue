@@ -62,7 +62,7 @@
             </table>
             <hr style="border: none; border-bottom: 1px solid #666;" />
             <div style="padding: 10px 0px; font-size: 20px; color: white;">
-                LAST MATCHES
+                LAST TOURNAMENT MATCHES
             </div>
             <table style="width: 100%;">
                 <tr v-for="result in results" v-bind:key="result.id" class="row-data">
@@ -101,7 +101,7 @@
             </table>
             <hr style="border: none; border-bottom: 1px solid #666;" />
             <div style="padding: 10px 0px; font-size: 20px; color: white;">
-                NEXT MATCHES
+                NEXT TOURNAMENT MATCHES
             </div>
             <table style="width: 100%;">
                 <tr v-for="event in schedule" v-bind:key="event.id" class="row-data">

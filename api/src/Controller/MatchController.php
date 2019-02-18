@@ -34,6 +34,22 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($data);
     }
 
+    public function setServer($id)
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        /** @var Game $match */
+        $match = $gameRepository->updateServer($id);
+
+        if (!$match) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($match);
+    }
+
     /**
      * @param $matchId
      * @return \Symfony\Component\HttpFoundation\Response

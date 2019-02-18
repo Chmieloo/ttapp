@@ -21,7 +21,7 @@ services:
       context: ./config/php
       dockerfile: Dockerfile
     volumes:
-      - ./api:/var/www
+      - ./api:/var/www:cached
     ports:
         - "9000:9000"
 
@@ -30,7 +30,7 @@ services:
     ports:
       - "8888:80"
     volumes:
-      - ./api:/var/www
+      - ./api:/var/www:cached
       - ./config/web/site.conf:/etc/nginx/conf.d/default.conf
     links:
       - php-fpm
