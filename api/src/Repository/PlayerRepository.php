@@ -20,7 +20,7 @@ class PlayerRepository extends ServiceEntityRepository
         parent::__construct($registry, Player::class);
     }
 
-    public function loadAll()
+    public function loadAllPlayers()
     {
         $sql = 'SELECT p.id, p.name, p.nickname, p.current_elo as elo, count(g.id) as gamesPlayed,
                 sum(if(g.winner_id = p.id, 1, 0)) as wins
@@ -59,7 +59,7 @@ class PlayerRepository extends ServiceEntityRepository
      */
     public function loadPlayerById($playerId)
     {
-        $sql = 'select p.name, count(g.id) as played, ' .
+        $sql = 'select p.id, p.name, count(g.id) as played, ' .
                'sum(if(p.id = g.winner_id, 1, 0)) as wins, ' .
                'sum(if(g.winner_id = 0, 1, 0)) as draws, ' .
                'sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses ' .
@@ -126,7 +126,76 @@ class PlayerRepository extends ServiceEntityRepository
 
         $baseSql = $this->baseQuery();
         $baseSql .= 'where (g.home_player_id = :playerId OR g.away_player_id = :playerId)';
-        $baseSql .= 'and g.is_finished = 1 ';
+        $baseSql .= 'and g.is_finished = 1 and tg.is_official = 1 ';
+        $baseSql .= 'order by g.date_of_match desc';
+
+        $params['playerId'] = $playerId;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+
+            $setPoints = [
+                $match['s1hp'],
+                $match['s1ap'],
+                $match['s2hp'],
+                $match['s2ap'],
+                $match['s3hp'],
+                $match['s3ap'],
+                $match['s4hp'],
+                $match['s4ap'],
+            ];
+            $setPoints = array_filter($setPoints, function ($element) {
+                return is_numeric($element);
+            });
+            $numberOfSets = (int)(count($setPoints) / 2);
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => $match['dateOfMatch'],
+                'homePlayerId' => $match['homePlayerId'],
+                'awayPlayerId' => $match['awayPlayerId'],
+                'homePlayerName' => $match['homePlayerName'],
+                'awayPlayerName' => $match['awayPlayerName'],
+                'winnerId' => $match['winnerId'] ?: 0,
+                'homeScoreTotal' => $match['homeScoreTotal'],
+                'awayScoreTotal' => $match['awayScoreTotal'],
+                'numberOfSets' => $numberOfSets,
+                'scores' => $setScores,
+            ];
+        }
+
+        return $matchData;
+    }
+
+    /**
+     * @param $playerId
+     * @return array
+     */
+    public function loadPlayerSchedule($playerId)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where (g.home_player_id = :playerId OR g.away_player_id = :playerId)';
+        $baseSql .= 'and g.is_finished = 0  and tg.is_official = 1 ';
         $baseSql .= 'order by g.date_of_match asc';
 
         $params['playerId'] = $playerId;

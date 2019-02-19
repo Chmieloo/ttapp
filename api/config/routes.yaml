@@ -19,6 +19,13 @@ player_results:
   requirements:
     id: '\d+'
 
+player_schedule:
+  path: /players/{id}/schedule
+  controller: App\Controller\PlayerController::getPlayerSchedule
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 player_add:
   path: /players/add
   controller: App\Controller\PlayerController::addPlayer
@@ -105,6 +112,13 @@ match_finish:
 match:
   path: /matches/{id}
   controller: App\Controller\MatchController::getMatch
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
+match_server:
+  path: /matches/{id}/server
+  controller: App\Controller\MatchController::setServer
   methods: [GET]
   requirements:
     id: '\d+'
