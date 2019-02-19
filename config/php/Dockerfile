@@ -8,11 +8,11 @@ RUN apt-get update \
   && pecl install memcached-3.0.3 \
   && docker-php-ext-enable memcached opcache
 
+WORKDIR /var/www
+
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');"
-
-RUN /bin/composer install --no-interaction
 
 RUN apt-get update \
   && apt-get install -y git

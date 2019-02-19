@@ -70,13 +70,13 @@ class TournamentRepository extends ServiceEntityRepository
             '(SUM(if (g1.winner_id = ptg.player_id, 1, 0)) * 2 + SUM(if (g1.is_finished = 1 AND g1.winner_id = 0, 1, 0))) as points, ' .
             '(SUM(if (g1.home_player_id = ptg.player_id, g1.home_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.away_score, 0))) as setsFor, ' .
             '(SUM(if (g1.home_player_id = ptg.player_id, g1.away_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.home_score, 0))) as setsAgainst, ' .
-            'u.ralliesFor, u.ralliesAgainst ' .
+            'u.ralliesFor, u.ralliesAgainst, u.df ' .
             'from player_tournament_group ptg ' .
             'left join game g1 on (g1.home_player_id = ptg.player_id or g1.away_player_id = ptg.player_id) and g1.tournament_id = :tournamentId ' .
             'join player p on p.id = ptg.player_id ' .
             'join tournament_group tg on tg.id = ptg.group_id ' .
             'join ( ' .
-            'select player, sum(pointsFor) as ralliesFor, sum(pointsAgainst) as ralliesAgainst from ( ' .
+            'select player, sum(pointsFor) as ralliesFor, sum(pointsAgainst) as ralliesAgainst, (sum(pointsFor) - sum(pointsAgainst)) as df from ( ' .
             'SELECT g.id, g.home_player_id   AS player, sum(s.home_points) AS pointsFor, sum(s.away_points) AS pointsAgainst ' .
             'FROM scores s JOIN game g ON g.id = s.game_id ' .
             'JOIN tournament t1 on t1.id = g.tournament_id WHERE t1.id = :tournamentId ' .
@@ -91,7 +91,7 @@ class TournamentRepository extends ServiceEntityRepository
             ') u on u.player = ptg.player_id ' .
             'where ptg.tournament_id = :tournamentId ' .
             'group by ptg.player_id ' .
-            'order by ptg.group_id asc, points desc, setsFor desc, setsAgainst asc ';
+            'order by ptg.group_id asc, points desc, u.df desc ';
 
         $params['tournamentId'] = $tournamentId;
 
