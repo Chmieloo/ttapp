@@ -86,7 +86,6 @@
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
     </div>
-    <div>{{ match.serverId }} | {{ this.flipped }} | {{ this.serverFlipped }}</div>
     <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
       <span v-if="this.numServes === 2" class="server">
         <i class="fas fa-table-tennis"></i>

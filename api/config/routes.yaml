@@ -63,6 +63,13 @@ tournament_results:
     tournamentId: '\d+'
     numberOfResults: '\d+'
 
+tournament_schedule_overdue:
+  path: /tournaments/{tournamentId}/overdue/{numberOfFixtures}
+  controller: App\Controller\TournamentController:getTournamentOverdueSchedule
+  requirements:
+    tournamentId: '\d+'
+    numberOfFixtures: '\d+'
+
 tournament_schedule:
   path: /tournaments/{tournamentId}/fixtures/{numberOfFixtures}
   controller: App\Controller\TournamentController:getTournamentSchedule

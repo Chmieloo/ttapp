@@ -10,7 +10,7 @@
             {{ match.groupName }}
           </td>
           <td class="playerName txt-right">
-            <router-link :to="'/player/' + match.awayPlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
+            <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
           </td>
           <td class="padl20 padr20" style="text-align: center;">-</td>
           <td class="playerName">
@@ -22,10 +22,6 @@
         </tr>
       </table>
     </div>
-    <div class="containerLink">
-      <i class="fas fa-arrow-circle-right"></i>
-      <router-link to="/tournament/match/list">show full schedule</router-link>
-    </div>
   </div>
 </template>
 
@@ -33,14 +29,14 @@
 import axios from 'axios'
 
 export default {
-  name: 'MatchSchedule',
+  name: 'MatchScheduleOverdue',
   data () {
     return {
       matches: []
     }
   },
   mounted () {
-    axios.get('/api/tournaments/0/fixtures/20').then((res) => {
+    axios.get('/api/tournaments/0/overdue/10').then((res) => {
       this.matches = res.data
     })
   }
@@ -54,6 +50,7 @@ export default {
 }
 
 .mainMatchContainer {
+  margin-bottom: 20px;
   background: #3e3e3e;
   padding: 20px;
   table {
@@ -73,14 +70,6 @@ export default {
     }
     .setScores {
       color: #979797;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-    a:hover {
-      color: white;
-      text-decoration: underline;
     }
   }
 }

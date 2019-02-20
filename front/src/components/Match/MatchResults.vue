@@ -4,11 +4,11 @@
       <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
         <td>{{ match.datePlayed }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
-          {{ match.homePlayerDisplayName }}
+          <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
         </td>
         <td style="width: 30px; text-align: center;">-</td>
         <td v-bind:class="match.winnerId == match.awayPlayerId ? 'winner-color' : ''">
-          {{ match.awayPlayerDisplayName }}
+          <router-link :to="'/player/' + match.awayPlayerId + '/info'">{{ match.awayPlayerDisplayName }}</router-link>
         </td>
         <td>
           <span class="totalScore">
@@ -45,7 +45,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/tournaments/0/results/10').then((res) => {
+    axios.get('/api/tournaments/0/results/20').then((res) => {
       this.matches = res.data
     })
   }
@@ -66,6 +66,13 @@ export default {
     }
     .setScores {
       color: #979797;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    a:hover {
+      color: white;
     }
   }
 }

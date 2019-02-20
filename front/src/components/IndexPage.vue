@@ -1,13 +1,26 @@
 <template>
   <div class="mainContainer">
     <div class="halfContainer">
-      <span class="header-title">TOURNAMENT SCHEDULE</span>
+      <span class="header-title">
+        <i class="fas fa-clock marr20"></i>
+        OVERDUE MATCHES
+        </span>
+      <div class="inContainer90">
+        <MatchScheduleOverdue />
+      </div>
+      <span class="header-title"> 
+        <i class="fas fa-clipboard-list marr20"></i> 
+        TOURNAMENT SCHEDULE
+      </span>
       <div class="inContainer90">
         <MatchSchedule />
       </div>
     </div>
     <div class="halfContainer">
-      <span class="header-title">LAST 10 TOURNAMENT RESULTS</span>
+      <span class="header-title">
+        <i class="fas fa-trophy marr20"></i>
+        LAST 20 TOURNAMENT RESULTS
+      </span>
       <div class="inContainer90">
         <MatchResults />
       </div>
@@ -19,12 +32,14 @@
 <script>
 import MatchResults from './Match/MatchResults.vue'
 import MatchSchedule from './Match/MatchSchedule.vue'
+import MatchScheduleOverdue from './Match/MatchScheduleOverdue.vue'
 
 export default {
   name: 'IndexPage',
   components: {
     MatchResults,
-    MatchSchedule
+    MatchSchedule,
+    MatchScheduleOverdue
   },
   data () {
     return {
@@ -82,4 +97,7 @@ hr{
   height: 1px;
 }
 
+.marr20 {
+  margin-right: 20px;
+}
 </style>

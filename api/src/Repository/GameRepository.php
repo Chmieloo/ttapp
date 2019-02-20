@@ -53,6 +53,84 @@ class GameRepository extends ServiceEntityRepository
 
     /**
      * @param $id
+     * @param null $limit
+     * @return array
+     */
+    public function loadOverdueFixturesByTournamentId($id, $limit = null)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.tournament_id = :tournamentid ';
+        $baseSql .= 'and g.is_finished = 0 and g.date_of_match < now() ';
+        $baseSql .= 'order by g.date_of_match, g.id asc ';
+
+        $params = [
+            'tournamentid' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (is_numeric($limit) && $limit) {
+            $result = array_slice($result, 0, $limit);
+        }
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+
+            $setPoints = [
+                $match['s1hp'],
+                $match['s1ap'],
+                $match['s2hp'],
+                $match['s2ap'],
+                $match['s3hp'],
+                $match['s3ap'],
+                $match['s4hp'],
+                $match['s4ap'],
+            ];
+            $setPoints = array_filter($setPoints, function ($element) {
+                return is_numeric($element);
+            });
+            $numberOfSets = (int)(count($setPoints) / 2);
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'homePlayerId' => $match['homePlayerId'],
+                'awayPlayerId' => $match['awayPlayerId'],
+                'homePlayerName' => $match['homePlayerName'],
+                'awayPlayerName' => $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
+                'winnerId' => $match['winnerId'] ?: 0,
+                'homeScoreTotal' => $match['homeScoreTotal'],
+                'awayScoreTotal' => $match['awayScoreTotal'],
+                'numberOfSets' => $numberOfSets,
+                'scores' => $setScores,
+            ];
+        }
+
+        return $matchData;
+    }
+
+    /**
+     * @param $id
      * @param int $limit
      * @return array
      */
@@ -208,7 +286,7 @@ class GameRepository extends ServiceEntityRepository
 
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentid ';
-        $baseSql .= 'and g.is_finished = 0 ';
+        $baseSql .= 'and g.is_finished = 0 and g.date_of_match >= now() ';
         $baseSql .= 'order by g.date_of_match, g.id asc ';
 
         $params = [
