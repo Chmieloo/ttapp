@@ -61,12 +61,12 @@
       <div class="midInfoValue">
         <div class="tableSetScores">
           <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
-            <div v-for="(score, index) in match.scores" v-bind:key="score.id" class="rowData">
+            <div v-for="(score, index) in match.scores" v-bind:key="index" class="rowData">
               <span v-if="match.currentSet - 1 != index">{{ score.home }}</span>
             </div>
           </div>
           <div v-bind:class="flipped ? 'set-container-fl' : 'set-container-fr'">
-            <div v-for="(score, index) in match.scores" v-bind:key="score.id" class="rowData">
+            <div v-for="(score, index) in match.scores" v-bind:key="index" class="rowData">
               <span v-if="match.currentSet - 1 != index">{{ score.away }}</span>
             </div>
           </div>
@@ -86,6 +86,7 @@
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
     </div>
+    <div>{{ match.serverId }} | {{ this.flipped }} | {{ this.serverFlipped }}</div>
     <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
       <span v-if="this.numServes === 2" class="server">
         <i class="fas fa-table-tennis"></i>
@@ -125,7 +126,7 @@ export default {
       awayScore: 0,
       endSet: 0,
       matchScores: [],
-      serverFlipped: null,
+      serverFlipped: 0,
       numServes: 2,
       idle: true
     }
@@ -140,18 +141,48 @@ export default {
   methods: {
     checkServer () {
       if (this.homeScore === 0 && this.awayScore === 0) {
-        return false
+        this.numServes = 2
+        var setNumber = this.match.currentSet
+        // if this is odd number set, first server is the same as current
+        // so depending on player, flip or unflip
+        if ((setNumber + 1) % 2 === 0) {
+          // same as initial
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = this.flipped
+          } else {
+            this.serverFlipped = (this.flipped + 1) % 2
+          }
+        } else {
+          // example: set 2, first server was home
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = (this.flipped + 1) % 2
+          } else {
+            this.serverFlipped = this.flipped
+          }
+        }
       }
-      if (this.homeScore <= 10 && this.awayScore <= 10) {
-        this.numServes = 2 - ((this.homeScore + this.awayScore) % 2)
-        if (((this.homeScore + this.awayScore) % 2) === 0) {
+      var totalScore = this.homeScore + this.awayScore
+      if (this.match.serverId === this.match.homePlayerId) {
+        if (totalScore < 20) {
+          this.numServes = 2 - (totalScore % 2)
+          if (totalScore % 2 === 0) {
+            this.flipServer()
+          }
+        } else {
+          this.numServes = 1
           this.flipServer()
         }
-      } else {
-        this.numServes = 1
-        this.flipServer()
+      } else if (this.match.serverId === this.match.awayPlayerId) {
+        if (totalScore < 20) {
+          this.numServes = 2 - (totalScore % 2)
+          if (totalScore % 2 === 0) {
+            this.flipServer()
+          }
+        } else {
+          this.numServes = 1
+          this.flipServer()
+        }
       }
-      // when should we flip sides ?
     },
     // logic to check if set is finished
     isFinishedSet () {
@@ -204,6 +235,7 @@ export default {
     },
     flipSides () {
       this.flipped = (this.flipped + 1) % 2
+      this.checkServer()
     },
     flipServer () {
       this.serverFlipped = (this.serverFlipped + 1) % 2
@@ -261,11 +293,15 @@ export default {
     subPointLeft () {
       if (this.idle) {
         if (this.flipped) {
-          this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
-          this.delPoint(0, 1, this.match.matchId)
+          if (this.awayScore > 0) {
+            this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
+            this.delPoint(0, 1, this.match.matchId)
+          }
         } else {
-          this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
-          this.delPoint(1, 0, this.match.matchId)
+          if (this.homeScore > 0) {
+            this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
+            this.delPoint(1, 0, this.match.matchId)
+          }
         }
         this.checkFinalScore()
         this.checkServer()
@@ -274,11 +310,15 @@ export default {
     subPointRight () {
       if (this.idle) {
         if (this.flipped) {
-          this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
-          this.delPoint(1, 0, this.match.matchId)
+          if (this.homeScore > 0) {
+            this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
+            this.delPoint(1, 0, this.match.matchId)
+          }
         } else {
-          this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
-          this.delPoint(0, 1, this.match.matchId)
+          if (this.awayScore > 0) {
+            this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
+            this.delPoint(0, 1, this.match.matchId)
+          }
         }
         this.checkFinalScore()
         this.checkServer()
