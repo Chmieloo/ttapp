@@ -61,13 +61,13 @@
       <div class="midInfoValue">
         <div class="tableSetScores">
           <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
-            <div v-for="score in match.scores" v-bind:key="score.id" class="rowData">
-              <span>{{ score.home }}</span>
+            <div v-for="(score, index) in match.scores" v-bind:key="score.id" class="rowData">
+              <span v-if="match.currentSet - 1 != index">{{ score.home }}</span>
             </div>
           </div>
           <div v-bind:class="flipped ? 'set-container-fl' : 'set-container-fr'">
-            <div v-for="score in match.scores" v-bind:key="score.id" class="rowData">
-              <span>{{ score.away }}</span>
+            <div v-for="(score, index) in match.scores" v-bind:key="score.id" class="rowData">
+              <span v-if="match.currentSet - 1 != index">{{ score.away }}</span>
             </div>
           </div>
         </div>
@@ -108,11 +108,6 @@ import VueGamepad from 'vue-gamepad'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 
-// import CustomView from './Custom/CustomDialog.vue';
-
-// const VIEW_NAME = 'custom-comonent';
-// Vue.dialog.registerComponent(VIEW_NAME, CustomView);
-
 Vue.use(VuejsDialog)
 Vue.use(VueGamepad)
 
@@ -131,17 +126,16 @@ export default {
       endSet: 0,
       matchScores: [],
       serverFlipped: null,
-      numServes: 2
+      numServes: 2,
+      idle: true
     }
   },
   mounted () {
+    this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
+      this.idle = true
     })
-  },
-  created: function () {
-    // window.addEventListener('gamepadconnected', this.handleGamepadConnect)
-    // window.addEventListener('gamepaddisconnected', this.handleGamepadDisconnect)
   },
   methods: {
     checkServer () {
@@ -183,13 +177,15 @@ export default {
       }
     },
     finalizeSet () {
-      if (this.endSet) {
+      if (this.endSet && this.idle) {
+        this.idle = false
         axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
           if (res.data) {
             this.endSet = 0
             this.flipSides()
             this.resetScores()
             this.match = res.data
+            this.idle = true
             this.numServes = 2
             console.log(res.data)
             if (this.flipped === 1) {
@@ -213,12 +209,19 @@ export default {
       this.serverFlipped = (this.serverFlipped + 1) % 2
     },
     setServer () {
+      // allow only if we are in the idle state
+      if (this.idle === false) {
+        return false
+      }
+      // set idle state to 1, as we are sending request to change server
+      this.idle = false
       // change INITIAL server, by default it is home
       axios.get('/api/matches/' + this.$route.params.id + '/server').then((res) => {
         if (res.data) {
           this.flipServer()
           this.match = res.data
           this.checkServer()
+          this.idle = true
         }
       })
     },
@@ -227,7 +230,7 @@ export default {
       this.awayScore = 0
     },
     addPointLeft () {
-      if (!this.endSet) {
+      if (!this.endSet && this.idle) {
         if (this.flipped) {
           this.awayScore++
           this.savePoint(0, 1, this.match.matchId)
@@ -240,7 +243,7 @@ export default {
       }
     },
     addPointRight () {
-      if (!this.endSet) {
+      if (!this.endSet && this.idle) {
         if (this.flipped) {
           this.homeScore++
           this.savePoint(1, 0, this.match.matchId)
@@ -252,33 +255,46 @@ export default {
         this.checkServer()
       }
     },
+    /**
+     * Substract points from player on the left side of the screen
+     */
     subPointLeft () {
-      if (this.flipped) {
-        this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
-        this.delPoint(0, 1, this.match.matchId)
-      } else {
-        this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
-        this.delPoint(1, 0, this.match.matchId)
+      if (this.idle) {
+        if (this.flipped) {
+          this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
+          this.delPoint(0, 1, this.match.matchId)
+        } else {
+          this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
+          this.delPoint(1, 0, this.match.matchId)
+        }
+        this.checkFinalScore()
+        this.checkServer()
       }
-      this.checkFinalScore()
-      this.checkServer()
     },
     subPointRight () {
-      if (this.flipped) {
-        this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
-        this.delPoint(1, 0, this.match.matchId)
-      } else {
-        this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
-        this.delPoint(0, 1, this.match.matchId)
+      if (this.idle) {
+        if (this.flipped) {
+          this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
+          this.delPoint(1, 0, this.match.matchId)
+        } else {
+          this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
+          this.delPoint(0, 1, this.match.matchId)
+        }
+        this.checkFinalScore()
+        this.checkServer()
       }
-      this.checkFinalScore()
-      this.checkServer()
     },
     isConnected () {
       var body = document.getElementsByTagName('body')
       return body[0].classList.contains('gamepad-connected')
     },
     savePoint (homeScore, awayScore, matchId) {
+      // allow only when idle
+      if (this.idle === false) {
+        return false
+      }
+      // set state
+      this.idle = false
       axios.post('/api/points/add', {
         headers: {
           'Content-type': 'application/x-www-form-urlencoded'
@@ -287,12 +303,22 @@ export default {
         away: awayScore,
         matchId: matchId
       }).then((res) => {
+        // TODO log
         console.log('Point added')
+        this.idle = true
       }).catch(error => {
+        // TODO log
+        this.idle = true
         console.log(error.response)
       })
     },
     delPoint (homeScore, awayScore, matchId) {
+      // allow only when idle
+      if (this.idle === false) {
+        return false
+      }
+      // set state
+      this.idle = false
       axios.post('/api/points/del', {
         headers: {
           'Content-type': 'application/x-www-form-urlencoded'
@@ -301,8 +327,12 @@ export default {
         away: awayScore,
         matchId: matchId
       }).then((res) => {
+        // TODO log
+        this.idle = true
         console.log('Point removed')
       }).catch(error => {
+        // TODO log
+        this.idle = true
         console.log(error.response)
       })
     }
@@ -421,7 +451,7 @@ export default {
 }
 
 .server {
-  font-size: 50px;
+  font-size: 70px;
   color: white;
 }
 
