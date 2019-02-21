@@ -8,8 +8,8 @@
       <div class="inContainer90">
         <MatchScheduleOverdue />
       </div>
-      <span class="header-title"> 
-        <i class="fas fa-clipboard-list marr20"></i> 
+      <span class="header-title">
+        <i class="fas fa-clipboard-list marr20"></i>
         TOURNAMENT SCHEDULE
       </span>
       <div class="inContainer90">

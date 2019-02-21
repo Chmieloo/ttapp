@@ -4,8 +4,14 @@
       <div id="addMatchForm">
         <span class="header-icon"><i class="fas fa-plus-circle"></i></span>
         <span class="header-title">Edit results</span>
+        <span class="tglVisibility" v-if="showAll">
+          <a @click="toggleVisibility()">SHOW NOT PLAYED ONLY</a>
+        </span>
+        <span class="tglVisibility" v-else>
+          <a @click="toggleVisibility()">SHOW ALL</a>
+        </span>
         <table>
-          <tr v-for="match in matches" v-bind:key="match.matchId" v-bind:value="match.matchId">
+          <tr v-for="match in matches" v-bind:key="match.matchId" v-bind:value="match.matchId" v-bind:class="!showAll && match.isFinished == 1 ? 'row-hidden' : ''">
               <td>{{ match.matchId }}</td>
               <td class="padl20">{{ match.dateOfMatch }}</td>
               <td class="padl20">{{ match.homePlayerName }}</td>
@@ -19,13 +25,13 @@
                       <input type="text" :name="'home_set_' + score.set" :value=score.home />
                       <input type="text" :name="'away_set_' + score.set" :value=score.away />
                   </div>
-                  <div v-if="match.scores.length == 0">
+                  <div v-if="match.scores.length == 0" class="fl">
                     <span v-for="i in range(1, match.maxSets)" v-bind:key="i" class="span-score">
                       <input type="text" :name="'home_set_' + i" value="" />
                       <input type="text" :name="'away_set_' + i" value="" />
                     </span>
                   </div>
-                  <div v-else-if="match.scores.length < match.maxSets" class="span-score">
+                  <div v-else-if="match.scores.length < match.maxSets" class="span-score fl">
                     <span v-for="i in range(match.maxSets - (match.maxSets - match.scores.length) +  1, match.maxSets)" v-bind:key="i" class="span-score">
                       <input type="text" :name="'home_set_' + i" value="" />
                       <input type="text" :name="'away_set_' + i" value="" />
@@ -59,7 +65,8 @@ export default {
   data () {
     return {
       matches: [],
-      errors: []
+      errors: [],
+      showAll: false
     }
   },
   mounted () {
@@ -72,6 +79,9 @@ export default {
     })
   },
   methods: {
+    toggleVisibility () {
+      this.showAll = !this.showAll
+    },
     range: function (min, max) {
       var array = []
       var j = 0
@@ -136,5 +146,18 @@ export default {
 
 div.span-label {
   width: 300px;
+}
+
+.row-hidden {
+  display: none;
+}
+
+.fl {
+  float: left;
+}
+
+.tglVisibility {
+  margin-left: 50px;
+  cursor: pointer;
 }
 </style>

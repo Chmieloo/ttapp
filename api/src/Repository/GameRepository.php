@@ -37,7 +37,7 @@ class GameRepository extends ServiceEntityRepository
             's4.home_points as s4hp, s4.away_points s4ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
             'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
-            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join player p1 on p1.id = g.home_player_id ' .
@@ -257,6 +257,7 @@ class GameRepository extends ServiceEntityRepository
 
             $matchData[] = [
                 'matchId' => $matchId,
+                'isFinished' => $match['isFinished'],
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => $match['dateOfMatch'],
                 'homePlayerId' => $match['homePlayerId'],
@@ -506,6 +507,7 @@ class GameRepository extends ServiceEntityRepository
         $matchData = [
             'matchId' => $matchId,
             'serverId' => $result['serverId'],
+            'maxSets' => $result['maxSets'],
             'currentSet' => $result['currentSet'],
             'groupName' => $result['groupName'],
             'dateOfMatch' => date("D M j", strtotime($result['dateOfMatch'])),

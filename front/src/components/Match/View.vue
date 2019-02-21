@@ -55,6 +55,9 @@
       </div>
     </div>
     <div class="container-mid">
+      <div style="margin-bottom: 20px;" v-if="!match.isFinished">
+        <a class="result-button" @click="toggleVisibility()">ENTER RESULT</a>
+      </div>
       <div class="midInfoHeader">MATCH MODE</div>
       <div class="midInfoValue">BO4</div>
       <div class="midInfoHeader">SET SCORE</div>
@@ -71,6 +74,42 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="result-dialog" v-if="resultVisible">
+        <table style="margin: 0 auto;">
+          <tr>
+            <td>
+              <form class="mart10" v-bind:key="'form_' + match.matchId" method="post" @submit.prevent="postResults">
+                <div>
+                  <input type="hidden" name="matchId" :value=match.matchId />
+                </div>
+                <div style="font-size: 40px;">
+                  <span class="padl20">{{ match.homePlayerName }}</span> -
+                  <span>{{ match.awayPlayerName }}</span>
+                </div>
+                <div v-for="score in match.scores" v-bind:key="score.set" class="span-score">
+                    <input type="text" :name="'home_set_' + score.set" :value=score.home />
+                    <input type="text" :name="'away_set_' + score.set" :value=score.away />
+                </div>
+                <div v-if="match.scores.length == 0" class="fl">
+                  <span v-for="i in range(1, match.maxSets)" v-bind:key="i" class="span-score">
+                    <input type="text" :name="'home_set_' + i" value="" />
+                    <input type="text" :name="'away_set_' + i" value="" />
+                  </span>
+                </div>
+                <div v-else-if="match.scores.length < match.maxSets" class="span-score fl">
+                  <span v-for="i in range(match.maxSets - (match.maxSets - match.scores.length) +  1, match.maxSets)" v-bind:key="i" class="span-score">
+                    <input type="text" :name="'home_set_' + i" value="" />
+                    <input type="text" :name="'away_set_' + i" value="" />
+                  </span>
+                </div>
+                <div style="float: left;">
+                  <input type="submit" value="save" class="submit-button" />
+                </div>
+              </form>
+            </td>
+          </tr>
+        </table>
       </div>
       <div v-show="endSet" class="endSet" v-gamepad:shoulder-right="finalizeSet">
         <div>Press [R] to confirm set score.</div>
@@ -127,7 +166,8 @@ export default {
       matchScores: [],
       serverFlipped: 0,
       numServes: 2,
-      idle: true
+      idle: true,
+      resultVisible: false
     }
   },
   mounted () {
@@ -138,6 +178,46 @@ export default {
     })
   },
   methods: {
+    toggleVisibility () {
+      this.resultVisible = !this.resultVisible
+    },
+    postResults (event) {
+      axios.post('/api/matches/save', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        matchId: event.target.elements.matchId.value,
+        h1: typeof event.target.elements.home_set_1 === 'undefined' ? '' : event.target.elements.home_set_1.value,
+        h2: typeof event.target.elements.home_set_2 === 'undefined' ? '' : event.target.elements.home_set_2.value,
+        h3: typeof event.target.elements.home_set_3 === 'undefined' ? '' : event.target.elements.home_set_3.value,
+        h4: typeof event.target.elements.home_set_4 === 'undefined' ? '' : event.target.elements.home_set_4.value,
+        a1: typeof event.target.elements.away_set_1 === 'undefined' ? '' : event.target.elements.away_set_1.value,
+        a2: typeof event.target.elements.away_set_2 === 'undefined' ? '' : event.target.elements.away_set_2.value,
+        a3: typeof event.target.elements.away_set_3 === 'undefined' ? '' : event.target.elements.away_set_3.value,
+        a4: typeof event.target.elements.away_set_4 === 'undefined' ? '' : event.target.elements.away_set_4.value
+      }).then((res) => {
+        this.errors = []
+        // alert('Result saved')
+        console.log(res.data)
+        if (res.status === 200) {
+          document.location.href = '/'
+          // this.$router.push({ path : '/match/' + res.data.matchId + '/view' })
+          return true
+        }
+      }).catch(error => {
+        console.log(error)
+        this.errors = []
+      })
+    },
+    range: function (min, max) {
+      var array = []
+      var j = 0
+      for (var i = min; i <= max; i++) {
+        array[j] = i
+        j++
+      }
+      return array
+    },
     checkServer () {
       if (this.homeScore === 0 && this.awayScore === 0) {
         this.numServes = 2
@@ -489,6 +569,26 @@ export default {
   border-left: 1px solid #222;
 }
 
+.submit-button {
+  font-size: 16px;
+  padding: 10px 20px;
+  background: #909090;
+  color: white;
+  font-weight: 600;
+}
+
+.span-score {
+  min-width: 100px;
+  float: left;
+  margin-right: 30px;
+  input {
+    max-width: 30px;
+    padding: 10px 10px;
+    margin: 0px 3px;
+    text-align: center;
+  }
+}
+
 .server {
   font-size: 70px;
   color: white;
@@ -497,5 +597,28 @@ export default {
 .header-title {
   font-size: 50px;
   color: #40c500;
+}
+
+.result-button {
+  background-color: #666666ed;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.fl {
+  float: left;
+}
+
+.result-dialog {
+  color: white;
+  width: 100%;
+  height: 100%;
+  background-color: #000000ed;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
 }
 </style>

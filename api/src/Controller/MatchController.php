@@ -355,7 +355,8 @@ class MatchController extends BaseController
 
         return new JsonResponse([
             'status' => 0,
-            'errorText' => $requiredWins
+            'errorText' => $requiredWins,
+            'matchId' => $matchId
         ],
             JsonResponse::HTTP_OK
         );
