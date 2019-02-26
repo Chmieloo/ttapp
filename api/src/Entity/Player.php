@@ -53,6 +53,11 @@ class Player
      */
     private $display_name;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $slackName;
+
     public function __construct()
     {
         $this->home_games = new ArrayCollection();
@@ -182,6 +187,18 @@ class Player
     public function setDisplayName(?string $display_name): self
     {
         $this->display_name = $display_name;
+
+        return $this;
+    }
+
+    public function getSlackName(): ?string
+    {
+        return $this->slackName;
+    }
+
+    public function setSlackName(string $slackName): self
+    {
+        $this->slackName = $slackName;
 
         return $this;
     }

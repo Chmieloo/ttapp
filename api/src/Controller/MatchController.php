@@ -275,6 +275,17 @@ class MatchController extends BaseController
         $awaySet[3] = (int)$data['a3'];
         $awaySet[4] = (int)$data['a4'];
 
+        if (count($homeSet) < 3 || count($awaySet) < 3) {
+            return new JsonResponse([
+                'status' => 0,
+                'errorText' => 0,
+                'matchId' => $matchId,
+                'message' => null
+            ],
+                JsonResponse::HTTP_BAD_REQUEST
+            );
+        }
+
         # Reset match values
         $homeSetScore = 0;
         $awaySetScore = 0;
@@ -297,6 +308,8 @@ class MatchController extends BaseController
             $em->remove($score);
             $em->flush();
         }
+
+        $textSetsScore = [];
 
         # Insert new scores
         for ($i = 1; $i <= 4; $i++) {
@@ -325,6 +338,8 @@ class MatchController extends BaseController
             ) {
                 $awaySetScore++;
             }
+
+            $textSetsScore[$i] = $homeSet[$i] . '-' . $awaySet[$i];
         }
 
         $finished = 0;
@@ -353,10 +368,25 @@ class MatchController extends BaseController
         $em->persist($match);
         $em->flush();
 
+        if ($data['post2Channel'] && true === $data['post2Channel']) {
+            $textSetsScore = join(', ', $textSetsScore);
+            $text =
+                $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
+                ' ' .
+                $match->getHomeScore() . ' - ' . $match->getAwayScore() .
+                ' (' . $textSetsScore . ')';
+            $message = [
+                'text' => $text
+            ];
+        } else {
+            $message = null;
+        }
+
         return new JsonResponse([
             'status' => 0,
             'errorText' => $requiredWins,
-            'matchId' => $matchId
+            'matchId' => $matchId,
+            'message' => $message
         ],
             JsonResponse::HTTP_OK
         );

@@ -167,7 +167,8 @@ export default {
       serverFlipped: 0,
       numServes: 2,
       idle: true,
-      resultVisible: false
+      resultVisible: false,
+      post2Channel: false
     }
   },
   mounted () {
@@ -187,6 +188,7 @@ export default {
           'Content-type': 'application/x-www-form-urlencoded'
         },
         matchId: event.target.elements.matchId.value,
+        post2Channel: this.post2Channel,
         h1: typeof event.target.elements.home_set_1 === 'undefined' ? '' : event.target.elements.home_set_1.value,
         h2: typeof event.target.elements.home_set_2 === 'undefined' ? '' : event.target.elements.home_set_2.value,
         h3: typeof event.target.elements.home_set_3 === 'undefined' ? '' : event.target.elements.home_set_3.value,
@@ -197,13 +199,36 @@ export default {
         a4: typeof event.target.elements.away_set_4 === 'undefined' ? '' : event.target.elements.away_set_4.value
       }).then((res) => {
         this.errors = []
-        // alert('Result saved')
         console.log(res.data)
         if (res.status === 200) {
-          document.location.href = '/'
-          // this.$router.push({ path : '/match/' + res.data.matchId + '/view' })
-          return true
+          if (this.post2Channel) {
+            var slackWebhook = ''
+
+            const options = {
+              channel: '#trd-offtopic-tt-bot',
+              text: res.data.message.text,
+              method: 'post',
+              contentType: 'application/json',
+              muteHttpExceptions: true,
+              link_names: 1,
+              username: 'tabletennisbot',
+              icon_emoji: ':table_tennis_paddle_and_ball:'
+            }
+
+            axios.post(slackWebhook, JSON.stringify(options))
+              .then((response) => {
+                console.log('SUCCEEDED: Sent slack webhook: \n', response.data)
+              })
+              .catch((error) => {
+                console.log('FAILED: Send slack webhook', error)
+              })
+          }
         }
+        // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
+        // TODO for now - fix that to use router
+        document.location.href = '/'
+
+        return true
       }).catch(error => {
         console.log(error)
         this.errors = []
