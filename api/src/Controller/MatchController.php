@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\Config;
 use App\Entity\Game;
 use App\Entity\GameMode;
 use App\Entity\Player;
 use App\Entity\Scores;
 use App\Entity\Tournament;
 use App\Entity\TournamentGroup;
+use App\Repository\ConfigRepository;
 use App\Repository\GameRepository;
 use App\Repository\ScoresRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Client;
 
 class MatchController extends BaseController
 {
@@ -100,6 +103,19 @@ class MatchController extends BaseController
             $em->flush();
 
             $data = $gameRepository->loadById($matchId);
+
+            $message = $data['homeSlackName'] . ' - ' . $data['awaySlackName'] . ' ' . $data['prettyScore'];
+            $payload = [
+                'text' => $message,
+                'method' => 'post',
+                'contentType' => 'application/json',
+                'muteHttpExceptions' => true,
+                'link_names' => 1,
+                'username' => 'tabletennisbot',
+                'icon_emoji' => ':table_tennis_paddle_and_ball:'
+            ];
+
+            $this->post2Slack($payload);
 
             return $this->sendJsonResponse($data);
         } else {
@@ -259,8 +275,32 @@ class MatchController extends BaseController
         );
     }
 
+    public function post2Slack($data)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ConfigRepository $configRepository */
+        $configRepository = $em->getRepository(Config::class);
+        $config = $configRepository->find(Config::CONFIG_TYPE_SLACK_HOOK);
+
+        $data_string = json_encode($data);
+
+        $ch = curl_init($config->getValue());
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string))
+        );
+
+        return curl_exec($ch);
+    }
+
     public function saveMatch(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $data = json_decode($request->getContent(), true);
 
         $matchId = $data['matchId'];
@@ -296,8 +336,6 @@ class MatchController extends BaseController
             ->getDoctrine()
             ->getRepository(Game::class)
             ->find($matchId);
-
-        $em = $this->getDoctrine()->getManager();
 
         # Get required wins value
         $requiredWins = $match->getGameMode()->getWinsRequired();
@@ -370,14 +408,23 @@ class MatchController extends BaseController
 
         if ($data['post2Channel'] && true === $data['post2Channel']) {
             $textSetsScore = join(', ', $textSetsScore);
-            $text =
+            $message =
                 $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
                 ' ' .
                 $match->getHomeScore() . ' - ' . $match->getAwayScore() .
                 ' (' . $textSetsScore . ')';
-            $message = [
-                'text' => $text
+
+            $payload = [
+                'text' => $message,
+                'method' => 'post',
+                'contentType' => 'application/json',
+                'muteHttpExceptions' => true,
+                'link_names' => 1,
+                'username' => 'tabletennisbot',
+                'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
+
+            $this->post2Slack($payload);
         } else {
             $message = null;
         }

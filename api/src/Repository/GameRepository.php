@@ -37,6 +37,7 @@ class GameRepository extends ServiceEntityRepository
             's4.home_points as s4hp, s4.away_points s4ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
             'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
+            'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
@@ -471,11 +472,16 @@ class GameRepository extends ServiceEntityRepository
             'gameId' => $id,
         ];
 
+
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
         $stmt-> execute($params);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $prettyScore =
+            $result['homeScoreTotal'] . ' - ' . $result['awayScoreTotal'] . ' (';
+
 
         $matchId = $result['id'];
         $setPoints = [
@@ -502,7 +508,11 @@ class GameRepository extends ServiceEntityRepository
                 'home' => $result[$homeScoreVar],
                 'away' => $result[$awayScoreVar],
             ];
+
+            $prettyScore .= $result[$homeScoreVar] . '-' . $result[$awayScoreVar] . ', ';
         }
+
+        $prettyScore = trim($prettyScore, ', ') . ')';
 
         $matchData = [
             'matchId' => $matchId,
@@ -523,6 +533,9 @@ class GameRepository extends ServiceEntityRepository
             'awayScoreTotal' => $result['awayScoreTotal'],
             'numberOfSets' => $numberOfSets,
             'scores' => $setScores,
+            'prettyScore' => $prettyScore,
+            'homeSlackName' => $result['homeSlackName'],
+            'awaySlackName' => $result['awaySlackName'],
         ];
 
 

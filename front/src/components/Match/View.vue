@@ -61,6 +61,13 @@
       <div class="midInfoHeader">MATCH MODE</div>
       <div class="midInfoValue">BO4</div>
       <div class="midInfoHeader">SET SCORE</div>
+      <div>flipped ? {{ flipped }}</div>
+      <div>serverFlipped ? {{ serverFlipped }}</div>
+      <div>currentSet ? {{ match.currentSet }}</div>
+      <div>initialServer ? {{ match.serverId }}</div>
+      <div>homeId ? {{ match.homePlayerId }}</div>
+      <div>awayId ? {{ match.awayPlayerId }}</div>
+      <div>serves ? {{ numServes }}</div>
       <div class="midInfoValue">
         <div class="tableSetScores">
           <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
@@ -158,17 +165,17 @@ export default {
   data () {
     return {
       match: [],
-      flipped: 0,
+      flipped: false,
       gamepadConnected: 0,
       homeScore: 0,
       awayScore: 0,
       endSet: 0,
       matchScores: [],
-      serverFlipped: 0,
+      serverFlipped: false,
       numServes: 2,
       idle: true,
       resultVisible: false,
-      post2Channel: false
+      post2Channel: true
     }
   },
   mounted () {
@@ -177,6 +184,7 @@ export default {
       this.match = res.data
       this.idle = true
     })
+    this.checkServer()
   },
   methods: {
     toggleVisibility () {
@@ -201,33 +209,10 @@ export default {
         this.errors = []
         console.log(res.data)
         if (res.status === 200) {
-          if (this.post2Channel) {
-            var slackWebhook = ''
-
-            const options = {
-              channel: '#trd-offtopic-tt-bot',
-              text: res.data.message.text,
-              method: 'post',
-              contentType: 'application/json',
-              muteHttpExceptions: true,
-              link_names: 1,
-              username: 'tabletennisbot',
-              icon_emoji: ':table_tennis_paddle_and_ball:'
-            }
-
-            axios.post(slackWebhook, JSON.stringify(options))
-              .then((response) => {
-                console.log('SUCCEEDED: Sent slack webhook: \n', response.data)
-              })
-              .catch((error) => {
-                console.log('FAILED: Send slack webhook', error)
-              })
-          }
+          // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
+          // TODO for now - fix that to use router
+          document.location.href = '/'
         }
-        // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
-        // TODO for now - fix that to use router
-        document.location.href = '/'
-
         return true
       }).catch(error => {
         console.log(error)
@@ -244,47 +229,61 @@ export default {
       return array
     },
     checkServer () {
+      var setNumber = this.match.currentSet === 0 || this.match.currentSet === undefined ? 1 : this.match.currentSet
       if (this.homeScore === 0 && this.awayScore === 0) {
         this.numServes = 2
-        var setNumber = this.match.currentSet
-        // if this is odd number set, first server is the same as current
-        // so depending on player, flip or unflip
-        if ((setNumber + 1) % 2 === 0) {
-          // same as initial
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = this.flipped
-          } else {
-            this.serverFlipped = (this.flipped + 1) % 2
-          }
+
+        if (this.match.serverId === this.match.homePlayerId) {
+          this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
         } else {
-          // example: set 2, first server was home
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = (this.flipped + 1) % 2
-          } else {
-            this.serverFlipped = this.flipped
-          }
+          this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
         }
       }
       var totalScore = this.homeScore + this.awayScore
-      if (this.match.serverId === this.match.homePlayerId) {
-        if (totalScore < 20) {
-          this.numServes = 2 - (totalScore % 2)
-          if (totalScore % 2 === 0) {
-            this.flipServer()
+      if (totalScore < 20) {
+        this.numServes = 2 - (totalScore % 2)
+
+        var mod4 = (totalScore % 4)
+        if (mod4 === 1) {
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
+          } else {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
           }
-        } else {
-          this.numServes = 1
-          this.flipServer()
+        } else if (mod4 === 2) {
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
+          } else {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
+          }
+        } else if (mod4 === 3) {
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
+          } else {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
+          }
+        } else if (mod4 === 0) {
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
+          } else {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
+          }
         }
-      } else if (this.match.serverId === this.match.awayPlayerId) {
-        if (totalScore < 20) {
-          this.numServes = 2 - (totalScore % 2)
-          if (totalScore % 2 === 0) {
-            this.flipServer()
+      } else {
+        this.numServes = 1
+        var mod2 = (totalScore % 2)
+        if (mod2 === 1) {
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
+          } else {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
           }
-        } else {
-          this.numServes = 1
-          this.flipServer()
+        } else if (mod2 === 0) {
+          if (this.match.serverId === this.match.homePlayerId) {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
+          } else {
+            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
+          }
         }
       }
     },
@@ -323,26 +322,17 @@ export default {
             this.idle = true
             this.numServes = 2
             console.log(res.data)
-            if (this.flipped === 1) {
-              // home on the right
-            } else {
-              // home on the left
-            }
-            if (res.data.serverId === res.data.homePlayerId) {
-              // TODO
-            } else {
-              // TODO
-            }
+            this.checkServer()
           }
         })
       }
     },
     flipSides () {
-      this.flipped = (this.flipped + 1) % 2
+      this.flipped = !!((this.flipped + 1) % 2)
       this.checkServer()
     },
     flipServer () {
-      this.serverFlipped = (this.serverFlipped + 1) % 2
+      this.serverFlipped = !!((this.serverFlipped + 1) % 2)
     },
     setServer () {
       // allow only if we are in the idle state
@@ -448,7 +438,7 @@ export default {
         matchId: matchId
       }).then((res) => {
         // TODO log
-        console.log('Point added')
+        // console.log('Point added')
         this.idle = true
       }).catch(error => {
         // TODO log
@@ -473,7 +463,7 @@ export default {
       }).then((res) => {
         // TODO log
         this.idle = true
-        console.log('Point removed')
+        // console.log('Point removed')
       }).catch(error => {
         // TODO log
         this.idle = true

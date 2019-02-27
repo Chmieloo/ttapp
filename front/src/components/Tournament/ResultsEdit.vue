@@ -66,7 +66,8 @@ export default {
     return {
       matches: [],
       errors: [],
-      showAll: false
+      showAll: false,
+      post2Channel: false
     }
   },
   mounted () {
@@ -98,6 +99,7 @@ export default {
           'Content-type': 'application/x-www-form-urlencoded'
         },
         matchId: event.target.elements.matchId.value,
+        post2Channel: this.post2Channel,
         h1: typeof event.target.elements.home_set_1 === 'undefined' ? '' : event.target.elements.home_set_1.value,
         h2: typeof event.target.elements.home_set_2 === 'undefined' ? '' : event.target.elements.home_set_2.value,
         h3: typeof event.target.elements.home_set_3 === 'undefined' ? '' : event.target.elements.home_set_3.value,
