@@ -61,13 +61,6 @@
       <div class="midInfoHeader">MATCH MODE</div>
       <div class="midInfoValue">BO4</div>
       <div class="midInfoHeader">SET SCORE</div>
-      <div>flipped ? {{ flipped }}</div>
-      <div>serverFlipped ? {{ serverFlipped }}</div>
-      <div>currentSet ? {{ match.currentSet }}</div>
-      <div>initialServer ? {{ match.serverId }}</div>
-      <div>homeId ? {{ match.homePlayerId }}</div>
-      <div>awayId ? {{ match.awayPlayerId }}</div>
-      <div>serves ? {{ numServes }}</div>
       <div class="midInfoValue">
         <div class="tableSetScores">
           <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
