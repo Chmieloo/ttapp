@@ -18,9 +18,12 @@
           <td class="txt-center">{{ tournament.participants }}</td>
           <td class="txt-center">{{ tournament.finished }}</td>
           <td class="txt-center">{{ tournament.scheduled }}</td>
-          <td class="txt-center cell-options">
+          <td class="txt-center cell-options" v-if="tournament.isPlayoffs == 0">
             <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link> |
             <router-link :to="'/tournament/' + tournament.id + '/results/edit'">edit results</router-link>
+          </td>
+          <td class="txt-center cell-options" v-else>
+            ladder
           </td>
         </tr>
       </table>

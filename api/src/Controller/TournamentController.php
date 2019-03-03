@@ -17,9 +17,10 @@ class TournamentController extends BaseController
      */
     public function getTournaments()
     {
-        $tournaments = $this->getDoctrine()
-            ->getRepository(Tournament::class)
-            ->loadList();
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+
+        $tournaments = $tournamentRepository->loadList();
 
         if (!$tournaments) {
             throw $this->createNotFoundException(

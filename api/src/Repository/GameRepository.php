@@ -44,7 +44,7 @@ class GameRepository extends ServiceEntityRepository
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join player p1 on p1.id = g.home_player_id ' .
             'join player p2 on p2.id = g.away_player_id ' .
-            'join tournament_group tg on tg.id = g.tournament_group_id ' .
+            'left join tournament_group tg on tg.id = g.tournament_group_id ' .
             'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
             'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
             'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .

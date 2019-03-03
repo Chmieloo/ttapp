@@ -26,12 +26,12 @@ class TournamentRepository extends ServiceEntityRepository
     public function loadList()
     {
         $sql =
-            'select t.id, t.name, t.start_time, ' .
+            'select t.id, t.name, t.start_time, t.is_playoffs as isPlayoffs, ' .
             'case when t.is_playoffs = 0 then \'group\' else \'playoffs\' end as phase, ' .
             't.is_finished as finished, count(distinct(g.home_player_id)) as participants, ' .
             'count(g.id) as scheduled, sum(g.is_finished) as finished ' .
             'from tournament t ' .
-            'join game g on g.tournament_id = t.id ' .
+            'left join game g on g.tournament_id = t.id ' .
             'where t.is_official = 1 ' .
             'group by t.id';
 
@@ -50,7 +50,7 @@ class TournamentRepository extends ServiceEntityRepository
     public function loadCurrentTournament(): ?Tournament
     {
         return $this->createQueryBuilder('t')
-            ->andWhere('t.is_finished = 0')
+            ->andWhere('t.is_finished = 0 and t.is_playoffs = 0')
             ->getQuery()
             ->getOneOrNullResult();
     }
