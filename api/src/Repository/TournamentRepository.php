@@ -62,7 +62,7 @@ class TournamentRepository extends ServiceEntityRepository
     public function getStandingsByTournamentId($tournamentId)
     {
         $sql =
-            'select p.id as playerId, p.name as playerName, ptg.group_id as groupId, tg.name as groupName, ' .
+            'select p.id as playerId, p.name as playerName, ptg.group_id as groupId, tg.name as groupName, tg.color_template as colorTemplate, ' .
             'SUM(if (g1.is_finished = 1, 1, 0)) as played, tg.abbreviation as groupAbbreviation, ' .
             'SUM(if (g1.winner_id = ptg.player_id, 1, 0)) as wins, ' .
             'SUM(if (g1.is_finished = 1 AND g1.winner_id = 0, 1, 0)) as draws, ' .
@@ -105,6 +105,7 @@ class TournamentRepository extends ServiceEntityRepository
         foreach ($result as $item) {
             $groupId = $item['groupId'];
             $groupName = $item['groupName'];
+            $colorTemplate = explode('.', $item['colorTemplate']);
             $groupAbbreviation = $item['groupAbbreviation'];
             $playerId = $item['playerId'];
             $playerName = $item['playerName'];
@@ -135,8 +136,11 @@ class TournamentRepository extends ServiceEntityRepository
                 $pos = 1;
             }
 
+            $playerPositionColor = $colorTemplate[$pos - 1];
+
             $currentGroup['players'][] = [
                 'pos' => $pos,
+                'posColor' => $playerPositionColor,
                 'playerId' => $playerId,
                 'playerName' => $playerName,
                 'played' => $played,

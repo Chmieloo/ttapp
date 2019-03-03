@@ -71,7 +71,7 @@ button {
 input {
   border: none;
   border-radius: 3px;
-  font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   padding: 8px;
   font-weight: 400;
@@ -116,7 +116,7 @@ h1 {
 .mart10 {margin-top: 10px;}
 
 #app {
-  font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Nunito', 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

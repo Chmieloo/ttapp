@@ -283,18 +283,20 @@ class MatchController extends BaseController
         $configRepository = $em->getRepository(Config::class);
         $config = $configRepository->find(Config::CONFIG_TYPE_SLACK_HOOK);
 
-        $data_string = json_encode($data);
+        if ($config) {
+            $data_string = json_encode($data);
 
-        $ch = curl_init($config->getValue());
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data_string))
-        );
+            $ch = curl_init($config->getValue());
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
 
-        return curl_exec($ch);
+            return curl_exec($ch);
+        }
     }
 
     public function saveMatch(Request $request)

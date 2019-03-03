@@ -50,7 +50,7 @@ class PointController extends BaseController
 
         # Get current set number, if it is not set, add another score object to match
         # and point object to that score
-        if (!$match->getCurrentSet()) {
+        if (!count($match->getScores())) {
             $score = new Scores();
             $score->setGame($match);
             $score->setSetNumber(1);
@@ -81,8 +81,8 @@ class PointController extends BaseController
         $em->flush();
 
         return new JsonResponse([
-            'status'    => 'done',
-            'errorText' => 'Point added'
+            'text' => 'Point added',
+            'currentSet' => $match->getCurrentSet(),
         ],
             JsonResponse::HTTP_OK
         );

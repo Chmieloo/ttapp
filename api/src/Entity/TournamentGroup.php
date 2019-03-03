@@ -49,6 +49,11 @@ class TournamentGroup
      */
     private $is_official;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $color_template;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
@@ -146,6 +151,18 @@ class TournamentGroup
     public function setIsOfficial(bool $is_official): self
     {
         $this->is_official = $is_official;
+
+        return $this;
+    }
+
+    public function getColorTemplate(): ?string
+    {
+        return $this->color_template;
+    }
+
+    public function setColorTemplate(string $color_template): self
+    {
+        $this->color_template = $color_template;
 
         return $this;
     }

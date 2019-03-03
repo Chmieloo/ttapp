@@ -63,9 +63,9 @@ class TournamentController extends BaseController
 
     public function getStandings($id)
     {
-        $standings = $this->getDoctrine()
-            ->getRepository(Tournament::class)
-            ->getStandingsByTournamentId($id);
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $standings = $tournamentRepository->getStandingsByTournamentId($id);
 
         return $this->sendJsonResponse($standings);
     }

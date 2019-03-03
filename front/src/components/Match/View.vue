@@ -125,14 +125,16 @@
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
     </div>
-    <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
-      <span v-if="this.numServes === 2" class="server">
-        <i class="fas fa-table-tennis"></i>
-        <i class="fas fa-table-tennis"></i>
-      </span>
-      <span v-if="this.numServes === 1" class="server">
-        <i class="fas fa-table-tennis"></i>
-      </span>
+    <div v-if="!match.isFinished">
+      <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
+        <span v-if="this.numServes === 2" class="server">
+          <i class="fas fa-table-tennis"></i>
+          <i class="fas fa-table-tennis"></i>
+        </span>
+        <span v-if="this.numServes === 1" class="server">
+          <i class="fas fa-table-tennis"></i>
+        </span>
+      </div>
     </div>
     <div v-if="isConnected()">
       <i class="fas fa-gamepad pad"></i>
@@ -175,9 +177,11 @@ export default {
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
+      this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0,
+      this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0,
       this.idle = true
+      this.checkServer()
     })
-    this.checkServer()
   },
   methods: {
     toggleVisibility () {
@@ -222,7 +226,9 @@ export default {
       return array
     },
     checkServer () {
-      var setNumber = this.match.currentSet === 0 || this.match.currentSet === undefined ? 1 : this.match.currentSet
+      console.log('Checking server.')
+      console.log('Current set: ' + this.match.currentSet)
+      var setNumber = this.match.currentSet
       if (this.homeScore === 0 && this.awayScore === 0) {
         this.numServes = 2
 
@@ -430,13 +436,12 @@ export default {
         away: awayScore,
         matchId: matchId
       }).then((res) => {
-        // TODO log
-        // console.log('Point added')
+        console.log('response status: ' + res.status + ', ' + res.data.text)
+        this.match.currentSet = res.data.currentSet
         this.idle = true
       }).catch(error => {
-        // TODO log
         this.idle = true
-        console.log(error.response)
+        console.log('error while adding point: ' + error.response)
       })
     },
     delPoint (homeScore, awayScore, matchId) {

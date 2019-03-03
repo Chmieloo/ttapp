@@ -38,7 +38,8 @@ class GameRepository extends ServiceEntityRepository
             'p1.display_name as homePlayerDisplayName, ' .
             'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
-            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
+            'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join player p1 on p1.id = g.home_player_id ' .
@@ -47,7 +48,9 @@ class GameRepository extends ServiceEntityRepository
             'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
             'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
             'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
-            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ';
+            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ' .
+            'left join scores ss on ss.game_id = g.id and g.current_set = ss.set_number ' .
+            'left join points pp on pp.score_id = ss.id ';
 
         return $sql;
     }
@@ -64,6 +67,7 @@ class GameRepository extends ServiceEntityRepository
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentid ';
         $baseSql .= 'and g.is_finished = 0 and g.date_of_match < now() ';
+        $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match, g.id asc ';
 
         $params = [
@@ -142,6 +146,7 @@ class GameRepository extends ServiceEntityRepository
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
         $baseSql .= 'and g.is_finished = 1 ';
+        $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_played desc ';
 
         $params['tournamentId'] = $id;
@@ -217,6 +222,7 @@ class GameRepository extends ServiceEntityRepository
 
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
+        $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match desc';
 
         $params['tournamentId'] = $id;
@@ -289,6 +295,7 @@ class GameRepository extends ServiceEntityRepository
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentid ';
         $baseSql .= 'and g.is_finished = 0 and g.date_of_match >= now() ';
+        $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match, g.id asc ';
 
         $params = [
@@ -366,6 +373,7 @@ class GameRepository extends ServiceEntityRepository
         $baseSql = $this->baseQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
         $baseSql .= 'and g.is_finished = 0 ';
+        $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match, g.id asc';
 
         $params['tournamentId'] = $id;
@@ -472,7 +480,6 @@ class GameRepository extends ServiceEntityRepository
             'gameId' => $id,
         ];
 
-
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
         $stmt-> execute($params);
@@ -536,6 +543,8 @@ class GameRepository extends ServiceEntityRepository
             'prettyScore' => $prettyScore,
             'homeSlackName' => $result['homeSlackName'],
             'awaySlackName' => $result['awaySlackName'],
+            'currentHomePoints' => $result['currentHomePoints'],
+            'currentAwayPoints' => $result['currentAwayPoints'],
         ];
 
 
