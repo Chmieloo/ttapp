@@ -88,16 +88,16 @@ export default {
 }
 
 .level-c1 {
-    background-color:  #b6d7a8;
+    background-color:  #93c47d;
 }
 .level-c2 {
-    background-color:  #d9ead3;
+    background-color:  #b6d7a8;
 }
 .level-c3 {
-    background-color:  #fff2cc;
+    background-color:  #d9ead3;
 }
 .level-c4 {
-    background-color:  #fce5cd;
+    background-color:  #fff2cc;
 }
 .level-c5 {
     background-color:  #f4cccc;
