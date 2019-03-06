@@ -91,19 +91,19 @@ export default {
     background-color:  #93c47d;
 }
 .level-c2 {
-    background-color:  #b6d7a8;
+    background-color:  #93c47d;
 }
 .level-c3 {
-    background-color:  #d9ead3;
+    background-color:  #91f591;
 }
 .level-c4 {
-    background-color:  #fff2cc;
+    background-color:  #91f591;
 }
 .level-c5 {
-    background-color:  #f4cccc;
+    background-color:  #bbf3ff;
 }
 .level-c6 {
-    background-color:  #e6b8af;
+    background-color:  #bbf3ff;
 }
 
 .empty-th, .empty-td {
