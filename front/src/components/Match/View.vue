@@ -177,8 +177,8 @@ export default {
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
-      this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0,
-      this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0,
+      this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0
+      this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
       this.idle = true
       this.checkServer()
     })

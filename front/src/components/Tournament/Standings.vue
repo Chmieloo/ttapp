@@ -88,22 +88,22 @@ export default {
 }
 
 .level-c1 {
-    background-color:  #b8d8a2;
+    background-color:  #b6d7a8;
 }
 .level-c2 {
-    background-color:  #daead1;
+    background-color:  #d9ead3;
 }
 .level-c3 {
-    background-color:  #fef3c7;
+    background-color:  #fff2cc;
 }
 .level-c4 {
-    background-color:  #fbe6ca;
+    background-color:  #fce5cd;
 }
 .level-c5 {
-    background-color:  #f2cccc;
+    background-color:  #f4cccc;
 }
 .level-c6 {
-    background-color:  #e4b8ad;
+    background-color:  #e6b8af;
 }
 
 .empty-th, .empty-td {
