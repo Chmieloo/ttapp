@@ -53,6 +53,11 @@ class Tournament
      */
     private $is_official;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $parent_tournament;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
@@ -182,6 +187,18 @@ class Tournament
     public function setIsOfficial(bool $is_official): self
     {
         $this->is_official = $is_official;
+
+        return $this;
+    }
+
+    public function getParentTournament(): ?int
+    {
+        return $this->parent_tournament;
+    }
+
+    public function setParentTournament(?int $parent_tournament): self
+    {
+        $this->parent_tournament = $parent_tournament;
 
         return $this;
     }

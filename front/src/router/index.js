@@ -11,6 +11,7 @@ import TournamentMatchList from '@/components/Tournament/MatchList'
 import GroupAdd from '@/components/Group/Add'
 import MatchAdd from '@/components/Match/Add'
 import MatchView from '@/components/Match/View'
+import MatchSpectate from '@/components/Match/Spectate'
 import MatchNew from '@/components/Match/New'
 import TournamentResultsEdit from '@/components/Tournament/ResultsEdit'
 import PlayerInfo from '@/components/Player/Info'
@@ -34,6 +35,7 @@ export default new Router({
     { path: '/match/new', name: 'MatchNew', component: MatchNew },
     { path: '/tournament/:id/results/edit', name: 'TournamentResultsEdit', component: TournamentResultsEdit },
     { path: '/match/:id/view', name: 'MatchView', component: MatchView },
+    { path: '/match/:id/spectate', name: 'MatchSpectate', component: MatchSpectate },
     { path: '/player/:id/info', name: 'PlayerInfo', component: PlayerInfo },
     { path: '/quickmatches', name: 'QuickMatchList', component: QuickMatchList }
   ]
