@@ -15,10 +15,9 @@ class PlayerController extends BaseController
     const STARTING_ELO = 1500;
 
     /**
-     * Get player by id
-     *
      * @param $id
      * @return Response
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getPlayerById($id)
     {
@@ -36,10 +35,9 @@ class PlayerController extends BaseController
     }
 
     /**
-     * Get player by id
-     *
      * @param $id
      * @return Response
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getPlayerResults($id)
     {
@@ -62,12 +60,6 @@ class PlayerController extends BaseController
         $playerRepository = $this->getDoctrine()->getRepository(Player::class);
 
         $player = $playerRepository->loadPlayerSchedule($id);
-
-        if (!$player) {
-            throw $this->createNotFoundException(
-                'Player not found with id: ' . $id
-            );
-        }
 
         return $this->sendJsonResponse($player);
     }
