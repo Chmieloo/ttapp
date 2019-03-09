@@ -102,6 +102,11 @@ class GameCup
      */
     private $name;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Level", inversedBy="gameCups")
+     */
+    private $level;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -307,6 +312,18 @@ class GameCup
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getLevel(): ?Level
+    {
+        return $this->level;
+    }
+
+    public function setLevel(?Level $level): self
+    {
+        $this->level = $level;
 
         return $this;
     }
