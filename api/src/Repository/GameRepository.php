@@ -273,7 +273,7 @@ class GameRepository extends ServiceEntityRepository
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
             'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints ' .
-            'from game g ' .
+            'from game_cup g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join player p1 on p1.id = g.home_player_id ' .
             'join player p2 on p2.id = g.away_player_id ' .

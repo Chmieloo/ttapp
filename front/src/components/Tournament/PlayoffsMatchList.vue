@@ -1,25 +1,27 @@
 <template>
-  <div class="mainMatchContainer">
-    <table style="width: 100%">
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
-        <td>
-          {{ match.dateOfMatch }}
-        </td>
-        <td class="padl20 padr20">
-          {{ match.groupName }}
-        </td>
-        <td class="playerName txt-right">
-          {{ match.homePlayerDisplayName }}
-        </td>
-        <td class="padl20 padr20">-</td>
-        <td class="playerName">
-          {{ match.awayPlayerDisplayName }}
-        </td>
-        <td style="text-align: center; min-width: 50px;">
-          <router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
-        </td>
-      </tr>
-    </table>
+  <div class="mainContainer">
+    <div class="mainMatchContainer">
+      <table style="width: 100%">
+        <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
+          <td>
+            {{ match.dateOfMatch }}
+          </td>
+          <td class="padl20 padr20">
+            {{ match.groupName }}
+          </td>
+          <td class="playerName txt-right">
+            {{ match.homePlayerDisplayName }}
+          </td>
+          <td class="padl20 padr20">-</td>
+          <td class="playerName">
+            {{ match.awayPlayerDisplayName }}
+          </td>
+          <td style="text-align: center; min-width: 50px;">
+            <router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -34,7 +36,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/tournaments/0/fixtures/0').then((res) => {
+    axios.get('/api/playoffs/0').then((res) => {
       this.matches = res.data
     })
   }

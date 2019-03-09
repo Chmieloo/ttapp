@@ -176,7 +176,7 @@ class TournamentController extends BaseController
      * @param $numberOfFixtures
      * @return Response
      */
-    public function getTournamentPlayoffsSchedule($tournamentId, $numberOfFixtures)
+    public function getTournamentPlayoffsData($tournamentId, $numberOfFixtures)
     {
         /** @var TournamentRepository $tournamentRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
@@ -188,7 +188,7 @@ class TournamentController extends BaseController
             $tournamentRepository->find($tournamentId) :
             $tournamentRepository->loadCurrentPlayoffsTournament();
 
-        $data = $gameRepository->loadUpcomingFixturesByTournamentId($tournament->getId(), $numberOfFixtures);
+        $data = $gameRepository->loadPlayoffsFixturesByTournamentId($tournament->getId(), $numberOfFixtures);
 
         return $this->sendJsonResponse($data);
     }

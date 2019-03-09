@@ -1,14 +1,13 @@
 <template>
   <div class="mainContainer">
-    <div class="playoffBanner">
-      <span class="header-title">
-        <i class="fas fa-crown marr20"></i>
-        PLAYOFFS WINTER 2019 !!!
-        </span>
+    <router-link to="/playoffs/match/list" tag="div" class="playoffBanner">
+      <div style="width: 100%;">
         <span class="header-title">
-          SCHEDULE
-          </span>
-    </div>
+          <i class="fas fa-crown marr20"></i>
+          PLAYOFFS WINTER 2019 !!!
+        </span>
+      </div>
+    </router-link>
     <div class="halfContainer">
       <span class="header-title">
         <i class="fas fa-clock marr20"></i>
@@ -116,5 +115,10 @@ hr{
    padding: 20px; 
    width: 95%;
    border-radius: 10px;
+}
+
+.playoffBanner:hover {
+  background-color: #9cbed2;
+  cursor: pointer;
 }
 </style>
