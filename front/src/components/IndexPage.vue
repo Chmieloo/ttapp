@@ -5,9 +5,6 @@
         <i class="fas fa-crown marr20"></i>
         PLAYOFFS WINTER 2019 SCHEDULE
         </span>
-      <div class="inContainer90">
-        <SchedulePlayoffs />
-        </div>
     </div>
     <div class="halfContainer">
       <span class="header-title">
@@ -41,7 +38,6 @@
 <script>
 import MatchResults from './Match/MatchResults.vue'
 import MatchSchedule from './Match/MatchSchedule.vue'
-import SchedulePlayoffs from './Tournament/SchedulePlayoffs.vue'
 import MatchScheduleOverdue from './Match/MatchScheduleOverdue.vue'
 
 export default {
@@ -49,8 +45,7 @@ export default {
   components: {
     MatchResults,
     MatchSchedule,
-    MatchScheduleOverdue,
-    SchedulePlayoffs
+    MatchScheduleOverdue
   },
   data () {
     return {
