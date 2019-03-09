@@ -83,6 +83,15 @@ tournament_matches_fullfeed:
   requirements:
     tournamentId: '\d+'
 
+# PLAYOFFS
+
+tournament_playoffs_schedule:
+  path: /playoffs/{tournamentId}/fixtures/{numberOfFixtures}
+  controller: App\Controller\TournamentController:getTournamentPlayoffsSchedule
+  requirements:
+    tournamentId: '\d+'
+    numberOfFixtures: '\d+'
+
 # GROUP ROUTES
 
 groups_by_tournament:

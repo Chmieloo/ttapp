@@ -288,6 +288,109 @@ class GameRepository extends ServiceEntityRepository
      * @param null $limit
      * @return array
      */
+    public function loadPlayoffsFixturesByTournamentId($id, $limit = null)
+    {
+        $matchData = [];
+
+        $baseSql =
+            'select g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
+            'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
+            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
+            's1.home_points as s1hp, s1.away_points s1ap, ' .
+            's2.home_points as s2hp, s2.away_points s2ap, ' .
+            's3.home_points as s3hp, s3.away_points s3ap, ' .
+            's4.home_points as s4hp, s4.away_points s4ap, ' .
+            'p1.display_name as homePlayerDisplayName, ' .
+            'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
+            'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
+            'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints ' .
+            'from game g ' .
+            'join game_mode gm on gm.id = g.game_mode_id ' .
+            'join player p1 on p1.id = g.home_player_id ' .
+            'join player p2 on p2.id = g.away_player_id ' .
+            'left join tournament_group tg on tg.id = g.tournament_group_id ' .
+            'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
+            'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
+            'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
+            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ' .
+            'left join scores ss on ss.game_id = g.id and g.current_set = ss.set_number ' .
+            'left join points pp on pp.score_id = ss.id ';
+        $baseSql .= 'where g.tournament_id = :tournamentid ';
+        $baseSql .= 'and g.is_finished = 0 and g.date_of_match >= now() ';
+        $baseSql .= 'group by g.id ';
+        $baseSql .= 'order by g.date_of_match, g.id asc ';
+
+        $params = [
+            'tournamentid' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (is_numeric($limit) && $limit) {
+            $result = array_slice($result, 0, $limit);
+        }
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+
+            $setPoints = [
+                $match['s1hp'],
+                $match['s1ap'],
+                $match['s2hp'],
+                $match['s2ap'],
+                $match['s3hp'],
+                $match['s3ap'],
+                $match['s4hp'],
+                $match['s4ap'],
+            ];
+            $setPoints = array_filter($setPoints, function ($element) {
+                return is_numeric($element);
+            });
+            $numberOfSets = (int)(count($setPoints) / 2);
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'homePlayerId' => $match['homePlayerId'],
+                'awayPlayerId' => $match['awayPlayerId'],
+                'homePlayerName' => $match['homePlayerName'],
+                'awayPlayerName' => $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
+                'winnerId' => $match['winnerId'] ?: 0,
+                'homeScoreTotal' => $match['homeScoreTotal'],
+                'awayScoreTotal' => $match['awayScoreTotal'],
+                'numberOfSets' => $numberOfSets,
+                'scores' => $setScores,
+            ];
+        }
+
+        return $matchData;
+    }
+
+
+    /**
+     * @param $id
+     * @param null $limit
+     * @return array
+     */
     public function loadUpcomingFixturesByTournamentId($id, $limit = null)
     {
         $matchData = [];

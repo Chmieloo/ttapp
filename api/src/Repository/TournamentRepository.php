@@ -56,6 +56,17 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return Tournament|null
+     */
+    public function loadCurrentPlayoffsTournament(): ?Tournament
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.is_finished = 0 and t.is_playoffs = 1')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @param $tournamentId
      * @return array
      */

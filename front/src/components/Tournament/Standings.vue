@@ -103,7 +103,6 @@ export default {
     background-color:  #e6b8af;
 }
 
-
 .level-c11 {
     background-color:  #b6d7a8;
 }
