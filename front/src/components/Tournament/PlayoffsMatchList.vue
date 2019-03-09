@@ -27,7 +27,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'FullMatchSchedulePlayoffs',
+  name: 'PlayoffsMatchList',
   data () {
     return {
       matches: []

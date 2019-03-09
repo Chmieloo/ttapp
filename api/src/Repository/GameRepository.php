@@ -35,6 +35,9 @@ class GameRepository extends ServiceEntityRepository
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
+            's4.home_points as s5hp, s4.away_points s5ap, ' .
+            's4.home_points as s6hp, s4.away_points s6ap, ' .
+            's4.home_points as s7hp, s4.away_points s7ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
             'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
@@ -172,6 +175,12 @@ class GameRepository extends ServiceEntityRepository
                 $match['s3ap'],
                 $match['s4hp'],
                 $match['s4ap'],
+                $match['s5hp'],
+                $match['s5ap'],
+                $match['s6hp'],
+                $match['s6ap'],
+                $match['s7hp'],
+                $match['s7ap'],
             ];
             $setPoints = array_filter($setPoints, function ($element) {
                 return is_numeric($element);
@@ -245,6 +254,12 @@ class GameRepository extends ServiceEntityRepository
                 $match['s3ap'],
                 $match['s4hp'],
                 $match['s4ap'],
+                $match['s5hp'],
+                $match['s5ap'],
+                $match['s6hp'],
+                $match['s6ap'],
+                $match['s7hp'],
+                $match['s7ap'],
             ];
             $setPoints = array_filter($setPoints, function ($element) {
                 return is_numeric($element);
@@ -347,6 +362,12 @@ class GameRepository extends ServiceEntityRepository
                 $match['s3ap'],
                 $match['s4hp'],
                 $match['s4ap'],
+                $match['s5hp'],
+                $match['s5ap'],
+                $match['s6hp'],
+                $match['s6ap'],
+                $match['s7hp'],
+                $match['s7ap'],
             ];
             $setPoints = array_filter($setPoints, function ($element) {
                 return is_numeric($element);
@@ -427,6 +448,12 @@ class GameRepository extends ServiceEntityRepository
                 $match['s3ap'],
                 $match['s4hp'],
                 $match['s4ap'],
+                $match['s5hp'],
+                $match['s5ap'],
+                $match['s6hp'],
+                $match['s6ap'],
+                $match['s7hp'],
+                $match['s7ap'],
             ];
             $setPoints = array_filter($setPoints, function ($element) {
                 return is_numeric($element);
@@ -499,6 +526,12 @@ class GameRepository extends ServiceEntityRepository
                 $match['s3ap'],
                 $match['s4hp'],
                 $match['s4ap'],
+                $match['s5hp'],
+                $match['s5ap'],
+                $match['s6hp'],
+                $match['s6ap'],
+                $match['s7hp'],
+                $match['s7ap'],
             ];
             $setPoints = array_filter($setPoints, function ($element) {
                 return is_numeric($element);
@@ -594,20 +627,10 @@ class GameRepository extends ServiceEntityRepository
 
 
         $matchId = $result['id'];
-        $setPoints = [
-            $result['s1hp'],
-            $result['s1ap'],
-            $result['s2hp'],
-            $result['s2ap'],
-            $result['s3hp'],
-            $result['s3ap'],
-            $result['s4hp'],
-            $result['s4ap'],
-        ];
-        $setPoints = array_filter($setPoints, function ($element) {
-            return is_numeric($element);
-        });
-        $numberOfSets = (int)(count($setPoints) / 2);
+
+        $numberOfSets = $result['isFinished'] == 1 ?
+            $result['homeScoreTotal'] + $result['awayScoreTotal'] :
+            $result['currentSet'];
 
         $setScores = [];
         for ($i = 1; $i <= $numberOfSets; $i++) {

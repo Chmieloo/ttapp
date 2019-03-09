@@ -22,6 +22,9 @@
         </tr>
       </table>
     </div>
+    <div v-else>
+      No overdue matches
+      </div>
   </div>
 </template>
 

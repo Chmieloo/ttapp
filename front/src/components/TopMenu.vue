@@ -4,8 +4,8 @@
     <div><router-link to="/player/list">players</router-link></div>
     <div><router-link to="/tournament/1/standings">standings</router-link></div>
     <div><router-link to="/tournament/list">tournaments</router-link></div>
-    <div><router-link to="/tournament/match/list">tournament matches</router-link></div>
-    <div><router-link to="/quickmatches">quick play</router-link></div>
+    <div><router-link to="/tournament/match/list">tournament schedule</router-link></div>
+    <div><router-link to="/playoffs/match/list">playoffs</router-link></div>
   </div>
 </template>
 
