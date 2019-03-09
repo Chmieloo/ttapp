@@ -173,10 +173,10 @@ class TournamentController extends BaseController
 
     /**
      * @param $tournamentId
-     * @param $numberOfFixtures
      * @return Response
+     * @internal param $numberOfFixtures
      */
-    public function getTournamentPlayoffsData($tournamentId, $numberOfFixtures)
+    public function getTournamentPlayoffsData($tournamentId)
     {
         /** @var TournamentRepository $tournamentRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
@@ -188,7 +188,30 @@ class TournamentController extends BaseController
             $tournamentRepository->find($tournamentId) :
             $tournamentRepository->loadCurrentPlayoffsTournament();
 
-        $data = $gameRepository->loadPlayoffsFixturesByTournamentId($tournament->getId(), $numberOfFixtures);
+        $data = $gameRepository->loadPlayoffsFixturesByTournamentId($tournament->getId());
+
+        return $this->sendJsonResponse($data);
+    }
+
+    /**
+     * @param $tournamentId
+     * @param $groupId
+     * @return Response
+     * @internal param $numberOfFixtures
+     */
+    public function getTournamentPlayoffsDivisionData($tournamentId, $groupId)
+    {
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        # If empty, load current
+        $tournament = $tournamentId ?
+            $tournamentRepository->find($tournamentId) :
+            $tournamentRepository->loadCurrentPlayoffsTournament();
+
+        $data = $gameRepository->loadPlayoffsFixturesByTournamentIdAndDivision($tournament->getId(), $groupId);
 
         return $this->sendJsonResponse($data);
     }

@@ -1,13 +1,93 @@
 <template>
   <div class="mainContainer">
+    <table style="width: 100%; margin-bottom: 20px;">
+      <tr>
+        <td style="padding-right: 20px;">
+          <router-link to="/playoffs/group/8/ladder" tag="div" class="playoffBanner">
+            <div style="width: 100%; text-align: center;">
+              <div style="margin-bottom: 10px;">
+                <span class="header-title">
+                  PREMIER LEAGUE LADDER
+                </span>
+              </div>
+              <div>
+                <span class="fa-stack">
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield"></i>
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield-reversed"></i>
+                    <i class="fas fa-star fa-stack-2x stack-star"></i>
+                </span>
+                <span class="fa-stack">
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield"></i>
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield-reversed"></i>
+                    <i class="fas fa-star fa-stack-2x stack-star"></i>
+                </span>
+                <span class="fa-stack">
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield"></i>
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield-reversed"></i>
+                    <i class="fas fa-star fa-stack-2x stack-star"></i>
+                </span>
+              </div>
+            </div>
+          </router-link>
+        </td>
+        <td style="padding-right: 20px;">
+          <router-link to="/playoffs/group/9/ladder" tag="div" class="playoffBanner">
+            <div style="width: 100%; text-align: center;">
+              <div style="margin-bottom: 10px;">
+                <span class="header-title">
+                  CHAMPIONSHIP LADDER
+                </span>
+              </div>
+              <div>
+                <span class="fa-stack">
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield"></i>
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield-reversed"></i>
+                    <i class="fas fa-star fa-stack-2x stack-star"></i>
+                </span>
+                <span class="fa-stack">
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield"></i>
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield-reversed"></i>
+                    <i class="fas fa-star fa-stack-2x stack-star"></i>
+                </span>
+              </div>
+            </div>
+          </router-link>
+        </td>
+        <td style="width: 30%;">
+          <router-link to="/playoffs/group/10/ladder" tag="div" class="playoffBanner">
+            <div style="width: 100%; text-align: center;">
+              <div style="margin-bottom: 10px;">
+                <span class="header-title">
+                  CONFERENCE LADDER
+                </span>
+              </div>
+              <div>
+                <span class="fa-stack">
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield"></i>
+                    <i class="fas fa-shield-alt fa-stack-2x stack-shield-reversed"></i>
+                    <i class="fas fa-star fa-stack-2x stack-star"></i>
+                </span>
+              </div>
+            </div>
+          </router-link>
+        </td>
+      </tr>
+    </table>
+    <span class="header-title">
+      <i class="fas fa-clipboard-list marr20"></i>
+      PLAYOFFS SCHEDULE
+    </span>
     <div class="mainMatchContainer">
       <table style="width: 100%">
         <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
           <td>
+            {{ match.order }}
+          </td>
+          <td>
             {{ match.dateOfMatch }}
           </td>
           <td class="padl20 padr20">
-            {{ match.groupName }}
+            {{ match.division }}
           </td>
           <td class="playerName txt-right">
             {{ match.homePlayerDisplayName }}
@@ -15,6 +95,9 @@
           <td class="padl20 padr20">-</td>
           <td class="playerName">
             {{ match.awayPlayerDisplayName }}
+          </td>
+          <td class="playerName">
+            {{ match.name }}
           </td>
           <td style="text-align: center; min-width: 50px;">
             <router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
@@ -48,6 +131,7 @@ export default {
 .mainMatchContainer {
   background: #3e3e3e;
   padding: 20px;
+  margin-top: 20px;
   table {
     .padl20 {
       padding-left: 20px;
@@ -79,11 +163,43 @@ export default {
   color: #40c500;
 }
 
+.header-title {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
 .w30pc {
   width: 30%;
 }
 
 .score + .score:before {
   content: ", ";
+}
+
+.playoffBanner {
+   margin-top: 40px;
+   background-color: #607d8b;
+   padding: 20px;
+   width: 95%;
+   border-radius: 10px;
+}
+
+.playoffBanner:hover {
+  background-color: #9cbed2;
+  cursor: pointer;
+}
+
+.stack-shield-reversed {
+  transform: scale(-1, 1);
+}
+
+.stack-shield-reversed, .stack-shield {
+  color: white;
+}
+
+.stack-star {
+  color: #617c8c;
+  font-size: 15px;
+  margin-top: 7px;
 }
 </style>

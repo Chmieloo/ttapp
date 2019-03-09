@@ -148,9 +148,7 @@ import Vue from 'vue'
 import VueGamepad from 'vue-gamepad'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
-import VueWebsocket from 'vue-websocket'
 
-Vue.use(VueWebsocket)
 Vue.use(VuejsDialog)
 Vue.use(VueGamepad)
 
@@ -186,44 +184,6 @@ export default {
     })
   },
   methods: {
-    add () {
-      // Emit the server side
-      this.$socket.emit('add', { a: 5, b: 3 })
-    },
-    get () {
-      this.$socket.emit('get', { id: 12 }, (response) => {
-        console.log('got response')
-      })
-    },
-    socket: {
-      // Prefix for event names
-      // prefix: "/counter/",
-
-      // If you set `namespace`, it will create a new socket connection to the namespace instead of `/`
-      // namespace: "/counter",
-      events: {
-        // Similar as this.$socket.on("changed", (msg) => { ... });
-        // If you set `prefix` to `/counter/`, the event name will be `/counter/changed`
-        //
-        changed (msg) {
-          console.log('Something changed: ' + msg)
-        }
-
-        /* common socket.io events
-        connect() {
-            console.log("Websocket connected to " + this.$socket.nsp);
-        },
-
-        disconnect() {
-            console.log("Websocket disconnected from " + this.$socket.nsp);
-        },
-
-        error(err) {
-            console.error("Websocket error!", err);
-        }
-        */
-      }
-    },
     toggleVisibility () {
       this.resultVisible = !this.resultVisible
     },

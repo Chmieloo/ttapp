@@ -110,9 +110,9 @@ hr{
 }
 
 .playoffBanner {
-   margin-top: 40px; 
-   background-color: #607d8b; 
-   padding: 20px; 
+   margin-top: 40px;
+   background-color: #607d8b;
+   padding: 20px;
    width: 95%;
    border-radius: 10px;
 }

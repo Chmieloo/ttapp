@@ -100,6 +100,36 @@ class Game
      */
     private $server_id;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $play_order;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $stage;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $name;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $level;
+
+    /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    private $playoff_home_player_id;
+
+    /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    private $playoff_away_player_id;
+
     public function __construct()
     {
         $this->scores = new ArrayCollection();
@@ -337,6 +367,78 @@ class Game
     public function setServerId(?int $server_id): self
     {
         $this->server_id = $server_id;
+
+        return $this;
+    }
+
+    public function getPlayOrder(): ?int
+    {
+        return $this->play_order;
+    }
+
+    public function setPlayOrder(?int $play_order): self
+    {
+        $this->play_order = $play_order;
+
+        return $this;
+    }
+
+    public function getStage(): ?int
+    {
+        return $this->stage;
+    }
+
+    public function setStage(?int $stage): self
+    {
+        $this->stage = $stage;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getLevel(): ?int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(?int $level): self
+    {
+        $this->level = $level;
+
+        return $this;
+    }
+
+    public function getPlayoffHomePlayerId(): ?string
+    {
+        return $this->playoff_home_player_id;
+    }
+
+    public function setPlayoffHomePlayerId(?string $playoff_home_player_id): self
+    {
+        $this->playoff_home_player_id = $playoff_home_player_id;
+
+        return $this;
+    }
+
+    public function getPlayoffAwayPlayerId(): ?string
+    {
+        return $this->playoff_away_player_id;
+    }
+
+    public function setPlayoffAwayPlayerId(?string $playoff_away_player_id): self
+    {
+        $this->playoff_away_player_id = $playoff_away_player_id;
 
         return $this;
     }
