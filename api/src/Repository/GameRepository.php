@@ -90,20 +90,9 @@ class GameRepository extends ServiceEntityRepository
         foreach ($result as $match) {
             $matchId = $match['id'];
 
-            $setPoints = [
-                $match['s1hp'],
-                $match['s1ap'],
-                $match['s2hp'],
-                $match['s2ap'],
-                $match['s3hp'],
-                $match['s3ap'],
-                $match['s4hp'],
-                $match['s4ap'],
-            ];
-            $setPoints = array_filter($setPoints, function ($element) {
-                return is_numeric($element);
-            });
-            $numberOfSets = (int)(count($setPoints) / 2);
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
 
             $setScores = [];
             for ($i = 1; $i <= $numberOfSets; $i++) {
@@ -165,27 +154,9 @@ class GameRepository extends ServiceEntityRepository
 
         foreach ($result as $match) {
             $matchId = $match['id'];
-
-            $setPoints = [
-                $match['s1hp'],
-                $match['s1ap'],
-                $match['s2hp'],
-                $match['s2ap'],
-                $match['s3hp'],
-                $match['s3ap'],
-                $match['s4hp'],
-                $match['s4ap'],
-                $match['s5hp'],
-                $match['s5ap'],
-                $match['s6hp'],
-                $match['s6ap'],
-                $match['s7hp'],
-                $match['s7ap'],
-            ];
-            $setPoints = array_filter($setPoints, function ($element) {
-                return is_numeric($element);
-            });
-            $numberOfSets = (int)(count($setPoints) / 2);
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
 
             $setScores = [];
             for ($i = 1; $i <= $numberOfSets; $i++) {
@@ -244,27 +215,9 @@ class GameRepository extends ServiceEntityRepository
 
         foreach ($result as $match) {
             $matchId = $match['id'];
-
-            $setPoints = [
-                $match['s1hp'],
-                $match['s1ap'],
-                $match['s2hp'],
-                $match['s2ap'],
-                $match['s3hp'],
-                $match['s3ap'],
-                $match['s4hp'],
-                $match['s4ap'],
-                $match['s5hp'],
-                $match['s5ap'],
-                $match['s6hp'],
-                $match['s6ap'],
-                $match['s7hp'],
-                $match['s7ap'],
-            ];
-            $setPoints = array_filter($setPoints, function ($element) {
-                return is_numeric($element);
-            });
-            $numberOfSets = (int)(count($setPoints) / 2);
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
 
             $setScores = [];
             for ($i = 1; $i <= $numberOfSets; $i++) {
@@ -352,27 +305,9 @@ class GameRepository extends ServiceEntityRepository
 
         foreach ($result as $match) {
             $matchId = $match['id'];
-
-            $setPoints = [
-                $match['s1hp'],
-                $match['s1ap'],
-                $match['s2hp'],
-                $match['s2ap'],
-                $match['s3hp'],
-                $match['s3ap'],
-                $match['s4hp'],
-                $match['s4ap'],
-                $match['s5hp'],
-                $match['s5ap'],
-                $match['s6hp'],
-                $match['s6ap'],
-                $match['s7hp'],
-                $match['s7ap'],
-            ];
-            $setPoints = array_filter($setPoints, function ($element) {
-                return is_numeric($element);
-            });
-            $numberOfSets = (int)(count($setPoints) / 2);
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
 
             $setScores = [];
             for ($i = 1; $i <= $numberOfSets; $i++) {
@@ -438,27 +373,9 @@ class GameRepository extends ServiceEntityRepository
 
         foreach ($result as $match) {
             $matchId = $match['id'];
-
-            $setPoints = [
-                $match['s1hp'],
-                $match['s1ap'],
-                $match['s2hp'],
-                $match['s2ap'],
-                $match['s3hp'],
-                $match['s3ap'],
-                $match['s4hp'],
-                $match['s4ap'],
-                $match['s5hp'],
-                $match['s5ap'],
-                $match['s6hp'],
-                $match['s6ap'],
-                $match['s7hp'],
-                $match['s7ap'],
-            ];
-            $setPoints = array_filter($setPoints, function ($element) {
-                return is_numeric($element);
-            });
-            $numberOfSets = (int)(count($setPoints) / 2);
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
 
             $setScores = [];
             for ($i = 1; $i <= $numberOfSets; $i++) {
@@ -516,27 +433,9 @@ class GameRepository extends ServiceEntityRepository
 
         foreach ($result as $match) {
             $matchId = $match['id'];
-
-            $setPoints = [
-                $match['s1hp'],
-                $match['s1ap'],
-                $match['s2hp'],
-                $match['s2ap'],
-                $match['s3hp'],
-                $match['s3ap'],
-                $match['s4hp'],
-                $match['s4ap'],
-                $match['s5hp'],
-                $match['s5ap'],
-                $match['s6hp'],
-                $match['s6ap'],
-                $match['s7hp'],
-                $match['s7ap'],
-            ];
-            $setPoints = array_filter($setPoints, function ($element) {
-                return is_numeric($element);
-            });
-            $numberOfSets = (int)(count($setPoints) / 2);
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
 
             $setScores = [];
             for ($i = 1; $i <= $numberOfSets; $i++) {

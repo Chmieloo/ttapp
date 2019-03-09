@@ -1,10 +1,13 @@
 <template>
   <div class="mainContainer">
-    <div style="margin-top: 20px;">
+    <div class="playoffBanner">
       <span class="header-title">
         <i class="fas fa-crown marr20"></i>
-        PLAYOFFS WINTER 2019 SCHEDULE
+        PLAYOFFS WINTER 2019 !!!
         </span>
+        <span class="header-title">
+          SCHEDULE
+          </span>
     </div>
     <div class="halfContainer">
       <span class="header-title">
@@ -105,5 +108,13 @@ hr{
 
 .marr20 {
   margin-right: 20px;
+}
+
+.playoffBanner {
+   margin-top: 40px; 
+   background-color: #607d8b; 
+   padding: 20px; 
+   width: 95%;
+   border-radius: 10px;
 }
 </style>
