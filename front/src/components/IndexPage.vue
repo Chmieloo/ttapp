@@ -3,8 +3,11 @@
     <router-link to="/playoffs/match/list" tag="div" class="playoffBanner">
       <div style="width: 100%;">
         <span class="header-title">
-          <i class="fas fa-crown marr20"></i>
-          PLAYOFFS WINTER 2019 !!!
+          <span class="fa-stack">
+            <i class="fas fa-stack-2x fa-circle stackCircle"></i>
+            <i class="fas fa-stack-2x fa-table-tennis stackPaddle"></i>
+          </span>
+          <span>PLAYOFFS WINTER 2019 !!!</span>
         </span>
       </div>
     </router-link>
@@ -111,14 +114,41 @@ hr{
 
 .playoffBanner {
    margin-top: 40px;
-   background-color: #607d8b;
+   background: linear-gradient(150deg, #3d9a56 30%, #3e3e3e 60%);
    padding: 20px;
    width: 95%;
-   border-radius: 10px;
+   overflow: hidden;
+   height: 75px;
+}
+
+.insetshadow {
+  color: #202020;
+  background-color: #2d2d2d;
+  letter-spacing: .1em;
+  text-shadow: 
+    -1px -1px 1px #111, 
+    2px 2px 1px #363636;
 }
 
 .playoffBanner:hover {
   background-color: #9cbed2;
   cursor: pointer;
+}
+
+.bannerImg {
+  margin-left: 700px;
+  font-size: 150px;
+  margin-top: -180px;
+}
+
+.stackCircle {
+  font-size: 75px;
+  color: #ffffff;
+}
+
+.stackPaddle {
+  color: #459a4c;
+  font-size: 50px;
+  margin-top: 10px;
 }
 </style>
