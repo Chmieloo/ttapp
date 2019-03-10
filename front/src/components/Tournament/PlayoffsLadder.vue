@@ -33,7 +33,6 @@
         </td>
       </tr>
     </table>
-
     <div class="mainMatchContainer" style="margin-top: 20px;">
       <table style="width: 100%;">
         <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
@@ -56,8 +55,8 @@
           <td class="playerName">
             {{ match.name }}
           </td>
-          <td style="text-align: center; min-width: 50px;">
-            <router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
+          <td style="text-align: center; min-width: 50px;" v-if="playoffs">
+            <router-link :to="{ name: 'MatchPlayoffView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
           </td>
         </tr>
       </table>
@@ -74,7 +73,8 @@ export default {
     return {
       matches: [],
       stages: 4,
-      division: null
+      division: null,
+      playoffs: false
     }
   },
   mounted () {

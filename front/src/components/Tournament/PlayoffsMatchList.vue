@@ -99,7 +99,7 @@
           <td class="playerName">
             {{ match.name }}
           </td>
-          <td style="text-align: center; min-width: 50px;">
+          <td style="text-align: center; min-width: 50px;" v-if="playoffs">
             <router-link :to="{ name: 'MatchPlayoffView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
           </td>
         </tr>
@@ -115,7 +115,8 @@ export default {
   name: 'PlayoffsMatchList',
   data () {
     return {
-      matches: []
+      matches: [],
+      playoffs: false
     }
   },
   mounted () {
