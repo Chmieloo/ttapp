@@ -1,0 +1,53 @@
+class {}
+
+style.less {
+  .topMenu {
+    background-color: #3e3e3e;
+    clear: both;
+    height: 50px;
+    line-height: 50px;
+    padding-left: 15px;
+    font-weight: 600;
+    box-shadow: 0px 4px 4px black;
+  }
+
+  .topMenu div {
+    float: left;
+    margin-right: 40px;
+    text-transform: uppercase;
+  }
+
+  .topMenu div:first-child a {
+    color: white;
+  }
+
+  a {
+    color: #9e9e9e;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: white;
+  }
+}
+
+<div class="topMenu">
+  <div>
+    <a href="#/" class="router-link-exact-active router-link-active">ttapp</a>
+  </div>
+  <div>
+    <a href="#/player/list">players</a>
+  </div>
+  <div>
+    <a href="#/tournament/1/standings">standings</a>
+  </div>
+  <div>
+    <a href="#/tournament/list">tournaments</a>
+  </div>
+  <div>
+    <a href="#/tournament/match/list">tournament schedule</a>
+  </div>
+  <div>
+    <a href="#/playoffs/match/list">playoffs</a>
+  </div>
+</div>
