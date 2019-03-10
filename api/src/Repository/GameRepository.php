@@ -25,20 +25,65 @@ class GameRepository extends ServiceEntityRepository
      * Base sql string
      * @return string
      */
-    public function baseQuery()
+    public function basePlayoffsQuery()
     {
         $sql =
-            'select g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
+            'select g.home_player_id as hpid, g.away_player_id as apid, ' .
+            'g.play_order as playOrder, g.name as matchName, g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
             'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
             's1.home_points as s1hp, s1.away_points s1ap, ' .
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
-            's4.home_points as s5hp, s4.away_points s5ap, ' .
-            's4.home_points as s6hp, s4.away_points s6ap, ' .
-            's4.home_points as s7hp, s4.away_points s7ap, ' .
+            's5.home_points as s5hp, s4.away_points s5ap, ' .
+            's6.home_points as s6hp, s4.away_points s6ap, ' .
+            's7.home_points as s7hp, s4.away_points s7ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
+            'g.tournament_id as tournamentId, ' .
+            'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
+            'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
+            'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints, ' .
+            'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
+            'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName ' .
+            'from game g ' .
+            'join game_mode gm on gm.id = g.game_mode_id ' .
+            'left join player p1 on p1.id = g.home_player_id ' .
+            'left join player p2 on p2.id = g.away_player_id ' .
+            'left join tournament_group tg on tg.id = g.tournament_group_id ' .
+            'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
+            'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
+            'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
+            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ' .
+            'left join scores s5 on s5.game_id = g.id and s5.set_number = 5 ' .
+            'left join scores s6 on s6.game_id = g.id and s6.set_number = 6 ' .
+            'left join scores s7 on s7.game_id = g.id and s7.set_number = 7 ' .
+            'left join scores ss on ss.game_id = g.id and g.current_set = ss.set_number ' .
+            'left join points pp on pp.score_id = ss.id ';
+
+        return $sql;
+    }
+
+    /**
+     * Base sql string
+     * @return string
+     */
+    public function baseQuery()
+    {
+        $sql =
+            'select g.play_order as playOrder, g.name as matchName, g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
+            'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
+            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
+            's1.home_points as s1hp, s1.away_points s1ap, ' .
+            's2.home_points as s2hp, s2.away_points s2ap, ' .
+            's3.home_points as s3hp, s3.away_points s3ap, ' .
+            's4.home_points as s4hp, s4.away_points s4ap, ' .
+            's5.home_points as s5hp, s4.away_points s5ap, ' .
+            's6.home_points as s6hp, s4.away_points s6ap, ' .
+            's7.home_points as s7hp, s4.away_points s7ap, ' .
+            'p1.display_name as homePlayerDisplayName, ' .
+            'g.tournament_id as tournamentId, ' .
             'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
@@ -52,6 +97,9 @@ class GameRepository extends ServiceEntityRepository
             'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
             'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
             'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ' .
+            'left join scores s5 on s5.game_id = g.id and s5.set_number = 5 ' .
+            'left join scores s6 on s6.game_id = g.id and s6.set_number = 6 ' .
+            'left join scores s7 on s7.game_id = g.id and s7.set_number = 7 ' .
             'left join scores ss on ss.game_id = g.id and g.current_set = ss.set_number ' .
             'left join points pp on pp.score_id = ss.id ';
 
@@ -261,12 +309,15 @@ class GameRepository extends ServiceEntityRepository
         $matchData = [];
 
         $baseSql =
-            'select ' .
+            'select g.home_player_id as hpid, g.away_player_id as apid, ' .
+            'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
+            'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName, ' .
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
             'g.playoff_home_player_id as homePlayer, g.playoff_away_player_id as awayPlayer, g.winner_id as winnerId, ' .
-            'g.playoff_home_player_id as homePlayerDisplayName, g.playoff_away_player_id as awayPlayerDisplayName, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal ' .
             'from game g ' .
+            'left join player p1 on p1.id = g.home_player_id ' .
+            'left join player p2 on p2.id = g.away_player_id ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join tournament t on t.id = g.tournament_id ' .
             'join tournament_group l on l.id = g.tournament_group_id ' .
@@ -296,28 +347,36 @@ class GameRepository extends ServiceEntityRepository
             $homePlayerString = '';
             $awayPlayerString = '';
 
-            if (strpos($match['homePlayerDisplayName'], '.') !== false) {
-                $homePlayerData = explode('.', $match['homePlayerDisplayName']);
-                if ($homePlayerData[0] == 'W') {
-                    $homePlayerString .= 'Winner, #' . $homePlayerData[1];
-                } elseif ($homePlayerData[0] == 'L') {
-                    $homePlayerString .= 'Loser, #' . $homePlayerData[1];
-                } else {
-                    $homePlayerString = $tournamentGroupRepository->find((int)$homePlayerData[0])->getName() .
-                        ', pos. ' . $homePlayerData[1];
+            if (!$match['hpid']) {
+                if (strpos($match['homePlayerDisplayName'], '.') !== false) {
+                    $homePlayerData = explode('.', $match['homePlayerDisplayName']);
+                    if ($homePlayerData[0] == 'W') {
+                        $homePlayerString .= 'Winner, #' . $homePlayerData[1];
+                    } elseif ($homePlayerData[0] == 'L') {
+                        $homePlayerString .= 'Loser, #' . $homePlayerData[1];
+                    } else {
+                        $homePlayerString = $tournamentGroupRepository->find((int)$homePlayerData[0])->getName() .
+                            ', pos. ' . $homePlayerData[1];
+                    }
                 }
+            } else {
+                $homePlayerString = $match['homePlayerDisplayName'];
             }
 
-            if (strpos($match['awayPlayerDisplayName'], '.') !== false) {
-                $awayPlayerData = explode('.', $match['awayPlayerDisplayName']);
-                if ($awayPlayerData[0] == 'W') {
-                    $awayPlayerString .= 'Winner, #' . $awayPlayerData[1];
-                } elseif ($awayPlayerData[0] == 'L') {
-                    $awayPlayerString .= 'Loser, #' . $awayPlayerData[1];
-                } else {
-                    $awayPlayerString = $tournamentGroupRepository->find((int)$awayPlayerData[0])->getName() .
-                        ', pos. ' . $awayPlayerData[1];
+            if (!$match['apid']) {
+                if (strpos($match['awayPlayerDisplayName'], '.') !== false) {
+                    $awayPlayerData = explode('.', $match['awayPlayerDisplayName']);
+                    if ($awayPlayerData[0] == 'W') {
+                        $awayPlayerString .= 'Winner, #' . $awayPlayerData[1];
+                    } elseif ($awayPlayerData[0] == 'L') {
+                        $awayPlayerString .= 'Loser, #' . $awayPlayerData[1];
+                    } else {
+                        $awayPlayerString = $tournamentGroupRepository->find((int)$awayPlayerData[0])->getName() .
+                            ', pos. ' . $awayPlayerData[1];
+                    }
                 }
+            } else {
+                $awayPlayerString = $match['awayPlayerDisplayName'];
             }
 
             $matchData[] = [
@@ -326,6 +385,8 @@ class GameRepository extends ServiceEntityRepository
                 'division' => $match['division'],
                 'name' => $match['name'],
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'homePlayerId' => $match['hpid'],
+                'awayPlayerId' => $match['apid'],
                 'homePlayerDisplayName' => $homePlayerString ? : 'TBD',
                 'awayPlayerDisplayName' => $awayPlayerString ? : 'TBD',
                 'winnerId' => $match['winnerId'] ?: 0,
@@ -348,12 +409,15 @@ class GameRepository extends ServiceEntityRepository
         $matchData = [];
 
         $baseSql =
-            'select g.stage, ' .
+            'select g.home_player_id as hpid, g.away_player_id as apid, .g.stage, ' .
+            'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
+            'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName, ' .
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
             'g.playoff_home_player_id as homePlayer, g.playoff_away_player_id as awayPlayer, g.winner_id as winnerId, ' .
-            'g.playoff_home_player_id as homePlayerDisplayName, g.playoff_away_player_id as awayPlayerDisplayName, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal ' .
             'from game g ' .
+            'left join player p1 on p1.id = g.home_player_id ' .
+            'left join player p2 on p2.id = g.away_player_id ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join tournament t on t.id = g.tournament_id ' .
             'join tournament_group l on l.id = g.tournament_group_id ' .
@@ -380,28 +444,36 @@ class GameRepository extends ServiceEntityRepository
             $homePlayerString = '';
             $awayPlayerString = '';
 
-            if (strpos($match['homePlayerDisplayName'], '.') !== false) {
-                $homePlayerData = explode('.', $match['homePlayerDisplayName']);
-                if ($homePlayerData[0] == 'W') {
-                    $homePlayerString .= 'Winner, #' . $homePlayerData[1];
-                } elseif ($homePlayerData[0] == 'L') {
-                    $homePlayerString .= 'Loser, #' . $homePlayerData[1];
-                } else {
-                    $homePlayerString = $tournamentGroupRepository->find((int)$homePlayerData[0])->getName() .
-                        ', pos. ' . $homePlayerData[1];
+            if (!$match['hpid']) {
+                if (strpos($match['homePlayerDisplayName'], '.') !== false) {
+                    $homePlayerData = explode('.', $match['homePlayerDisplayName']);
+                    if ($homePlayerData[0] == 'W') {
+                        $homePlayerString .= 'Winner, #' . $homePlayerData[1];
+                    } elseif ($homePlayerData[0] == 'L') {
+                        $homePlayerString .= 'Loser, #' . $homePlayerData[1];
+                    } else {
+                        $homePlayerString = $tournamentGroupRepository->find((int)$homePlayerData[0])->getName() .
+                            ', pos. ' . $homePlayerData[1];
+                    }
                 }
+            } else {
+                $homePlayerString = $match['homePlayerDisplayName'];
             }
 
-            if (strpos($match['awayPlayerDisplayName'], '.') !== false) {
-                $awayPlayerData = explode('.', $match['awayPlayerDisplayName']);
-                if ($awayPlayerData[0] == 'W') {
-                    $awayPlayerString .= 'Winner, #' . $awayPlayerData[1];
-                } elseif ($awayPlayerData[0] == 'L') {
-                    $awayPlayerString .= 'Loser, #' . $awayPlayerData[1];
-                } else {
-                    $awayPlayerString = $tournamentGroupRepository->find((int)$awayPlayerData[0])->getName() .
-                        ', pos. ' . $awayPlayerData[1];
+            if (!$match['apid']) {
+                if (strpos($match['awayPlayerDisplayName'], '.') !== false) {
+                    $awayPlayerData = explode('.', $match['awayPlayerDisplayName']);
+                    if ($awayPlayerData[0] == 'W') {
+                        $awayPlayerString .= 'Winner, #' . $awayPlayerData[1];
+                    } elseif ($awayPlayerData[0] == 'L') {
+                        $awayPlayerString .= 'Loser, #' . $awayPlayerData[1];
+                    } else {
+                        $awayPlayerString = $tournamentGroupRepository->find((int)$awayPlayerData[0])->getName() .
+                            ', pos. ' . $awayPlayerData[1];
+                    }
                 }
+            } else {
+                $awayPlayerString = $match['awayPlayerDisplayName'];
             }
 
             $matchData[] = [
@@ -412,6 +484,8 @@ class GameRepository extends ServiceEntityRepository
                 'stage' => $match['stage'],
                 'maxStage' => 4,
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'homePlayerId' => $match['hpid'],
+                'awayPlayerId' => $match['apid'],
                 'homePlayerDisplayName' => $homePlayerString ? : 'TBD',
                 'awayPlayerDisplayName' => $awayPlayerString ? : 'TBD',
                 'winnerId' => $match['winnerId'] ?: 0,
@@ -627,8 +701,26 @@ class GameRepository extends ServiceEntityRepository
 
         $prettyScore = trim($prettyScore, ', ') . ')';
 
+        $nextMatchName = '';
+        $nextMatchHomePlayer = '';
+        $nextMatchAwayPlayer = '';
+        if ($result['playOrder']) {
+            $nextInOrder = $result['playOrder'] + 1;
+            $tournamentId = $result['tournamentId'];
+            // Load next match for this tournament
+            $nextMatch = $this->loadNextInPlayoffs($nextInOrder, $tournamentId);
+
+            if ($nextMatch) {
+                $nextMatchName = $nextMatch['matchName'];
+                $nextMatchHomePlayer = $nextMatch['nextMatchHomePlayer'];
+                $nextMatchAwayPlayer = $nextMatch['nextMatchAwayPlayer'];
+            }
+        }
+
         $matchData = [
             'matchId' => $matchId,
+            'modeName' => $result['name'],
+            'matchName' => $result['matchName'],
             'serverId' => $result['serverId'],
             'maxSets' => $result['maxSets'],
             'currentSet' => $result['currentSet'],
@@ -651,10 +743,77 @@ class GameRepository extends ServiceEntityRepository
             'awaySlackName' => $result['awaySlackName'],
             'currentHomePoints' => $result['currentHomePoints'],
             'currentAwayPoints' => $result['currentAwayPoints'],
+            'nextMatchName' => $nextMatchName,
+            'nextMatchHomePlayer' => $nextMatchHomePlayer,
+            'nextMatchAwayPlayer' => $nextMatchAwayPlayer,
         ];
 
 
         return $matchData;
+    }
+
+    /**
+     * @param $order
+     * @param $tournamentId
+     * @return mixed
+     */
+    public function loadNextInPlayoffs($order, $tournamentId)
+    {
+        /** @var TournamentGroupRepository $tournamentGroupRepository */
+        $tournamentGroupRepository = $this->getEntityManager()->getRepository(TournamentGroup::class);
+
+        $baseSql = $this->basePlayoffsQuery();
+        $baseSql .= 'where g.play_order = :order and g.tournament_id = :tournamentId ';
+
+        $params = [
+            'order' => $order,
+            'tournamentId' => $tournamentId
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $match = $stmt->fetch(PDO::FETCH_ASSOC);
+        $homePlayerString = '';
+        $awayPlayerString = '';
+
+        if (!$match['hpid']) {
+            if (strpos($match['homePlayerDisplayName'], '.') !== false) {
+                $homePlayerData = explode('.', $match['homePlayerDisplayName']);
+                if ($homePlayerData[0] == 'W') {
+                    $homePlayerString .= 'Winner, #' . $homePlayerData[1];
+                } elseif ($homePlayerData[0] == 'L') {
+                    $homePlayerString .= 'Loser, #' . $homePlayerData[1];
+                } else {
+                    $homePlayerString = $tournamentGroupRepository->find((int)$homePlayerData[0])->getName() .
+                        ', pos. ' . $homePlayerData[1];
+                }
+            }
+        } else {
+            $homePlayerString = $match['homePlayerDisplayName'];
+        }
+
+        if (!$match['apid']) {
+            if (strpos($match['awayPlayerDisplayName'], '.') !== false) {
+                $awayPlayerData = explode('.', $match['awayPlayerDisplayName']);
+                if ($awayPlayerData[0] == 'W') {
+                    $awayPlayerString .= 'Winner, #' . $awayPlayerData[1];
+                } elseif ($awayPlayerData[0] == 'L') {
+                    $awayPlayerString .= 'Loser, #' . $awayPlayerData[1];
+                } else {
+                    $awayPlayerString = $tournamentGroupRepository->find((int)$awayPlayerData[0])->getName() .
+                        ', pos. ' . $awayPlayerData[1];
+                }
+            }
+        } else {
+            $awayPlayerString = $match['awayPlayerDisplayName'];
+        }
+
+        $match['nextMatchHomePlayer'] = $homePlayerString;
+        $match['nextMatchAwayPlayer'] = $awayPlayerString;
+
+        return $match;
     }
 
     /**

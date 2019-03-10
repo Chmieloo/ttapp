@@ -9,6 +9,11 @@
           </span>
           <span>PLAYOFFS WINTER 2019 !!!</span>
         </span>
+        <div class="tableImg">
+          <div style="border-right: 2px solid white; width: 50%; height: 100%;">
+            <div style="border-bottom: 2px solid white; width: 100%; height: 50%;"></div>
+          </div>
+        </div>
       </div>
     </router-link>
     <div class="halfContainer">
@@ -114,20 +119,11 @@ hr{
 
 .playoffBanner {
    margin-top: 40px;
-   background: linear-gradient(150deg, #3d9a56 30%, #3e3e3e 60%);
    padding: 20px;
    width: 95%;
    overflow: hidden;
    height: 75px;
-}
-
-.insetshadow {
-  color: #202020;
-  background-color: #2d2d2d;
-  letter-spacing: .1em;
-  text-shadow: 
-    -1px -1px 1px #111, 
-    2px 2px 1px #363636;
+   background-color: #3e3e3e;
 }
 
 .playoffBanner:hover {
@@ -147,8 +143,19 @@ hr{
 }
 
 .stackPaddle {
-  color: #459a4c;
+  color: #000;
   font-size: 50px;
   margin-top: 10px;
+}
+
+.tableImg {
+  float: right;
+  background: linear-gradient(100deg, #556187 30%, #333e6c 60%);
+  height: 300px;
+  width: 600px;
+  border: 10px solid white;
+  transform: rotate(10deg);
+  margin-right: 50px;
+  margin-top: -50px;
 }
 </style>

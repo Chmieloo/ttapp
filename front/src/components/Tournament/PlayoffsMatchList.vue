@@ -100,7 +100,7 @@
             {{ match.name }}
           </td>
           <td style="text-align: center; min-width: 50px;">
-            <router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
+            <router-link :to="{ name: 'MatchPlayoffView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
           </td>
         </tr>
       </table>
@@ -178,8 +178,8 @@ export default {
 
 .playoffBanner {
    margin-top: 40px;
-   background-color: #607d8b;
-   padding: 20px;
+   background-color: #556187;
+   padding: 20px 10px;
    width: 95%;
    border-radius: 10px;
 }
@@ -198,7 +198,7 @@ export default {
 }
 
 .stack-star {
-  color: #617c8c;
+  color: #556187;
   font-size: 15px;
   margin-top: 7px;
 }
