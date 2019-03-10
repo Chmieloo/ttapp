@@ -63,7 +63,7 @@ class MatchController extends BaseController
 
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
-        /** @var ScoresRepository $gameRepository */
+        /** @var ScoresRepository $scoreRepository */
         $scoreRepository = $this->getDoctrine()->getRepository(Scores::class);
 
         /** @var Game $match */
@@ -98,11 +98,22 @@ class MatchController extends BaseController
             $match->setIsFinished(1);
         }
 
+        /*
+         * If match is finished, save it, load by id
+         * send slack message if configured
+         *
+         * Additionally, check if this is playoffs game
+         * and if so, update all consequent matches with winner and loser id
+         * consequent matches have the same tournament id and play_order set
+         *
+         */
         if ($match->getIsFinished() == 1) {
             $em->persist($match);
             $em->flush();
 
             $data = $gameRepository->loadById($matchId);
+
+            $gameRepository->updatePlayoffs($matchId);
 
             $message = $data['homeSlackName'] . ' - ' . $data['awaySlackName'] . ' ' . $data['prettyScore'];
             $payload = [

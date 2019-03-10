@@ -90,11 +90,13 @@
             {{ match.division }}
           </td>
           <td class="playerName txt-right">
-            {{ match.homePlayerDisplayName }}
+            <span style="color: #aaa;" v-if="match.homePlayerId == 0">{{ match.homePlayerDisplayName }}</span>
+            <span v-else>{{ match.homePlayerDisplayName }}</span>
           </td>
-          <td class="padl20 padr20">-</td>
-          <td class="playerName">
-            {{ match.awayPlayerDisplayName }}
+          <td class="padl20 padr20 txt-center">-</td>
+          <td class="playerName txt-left">
+            <span style="color: #aaa;" v-if="match.awayPlayerId == 0">{{ match.awayPlayerDisplayName }}</span>
+            <span v-else>{{ match.awayPlayerDisplayName }}</span>
           </td>
           <td class="playerName">
             {{ match.name }}
@@ -116,7 +118,7 @@ export default {
   data () {
     return {
       matches: [],
-      playoffs: false
+      playoffs: true
     }
   },
   mounted () {
@@ -202,5 +204,9 @@ export default {
   color: #556187;
   font-size: 15px;
   margin-top: 7px;
+}
+
+.txt-left {
+  text-align: left;
 }
 </style>

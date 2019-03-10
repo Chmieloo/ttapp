@@ -659,6 +659,71 @@ class GameRepository extends ServiceEntityRepository
         return $group;
     }
 
+    public function updatePlayoffs($matchId)
+    {
+        /** @var Game $match */
+        $match = $this->loadById($matchId);
+
+        if ($match['winnerId']) {
+            $homePlayerId = $match['homePlayerId'];
+            $awayPlayerId = $match['awayPlayerId'];
+
+            if ($match['winnerId'] == $homePlayerId) {
+                $winnerId = $homePlayerId;
+                $loserId = $awayPlayerId;
+            } else {
+                $winnerId = $awayPlayerId;
+                $loserId = $homePlayerId;
+            }
+
+            $tournamentId = $match['tournamentId'];
+            $matchNumber = $match['playOrder'];
+
+            $em = $this->getEntityManager();
+
+            // Update next matches in current tournament
+
+            // 1. Winner as home
+            $query = 'update game g set g.home_player_id = :winnerId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
+            $params = [
+                'winnerId' => $winnerId,
+                'code' => 'W.' . $matchNumber,
+                'tournamentId' => $tournamentId
+            ];
+            $stmt = $em->getConnection()->prepare($query);
+            $stmt->execute($params);
+
+            // 2. Winner as away
+            $query = 'update game g set g.away_player_id = :winnerId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
+            $params = [
+                'winnerId' => $winnerId,
+                'code' => 'W.' . $matchNumber,
+                'tournamentId' => $tournamentId
+            ];
+            $stmt = $em->getConnection()->prepare($query);
+            $stmt->execute($params);
+
+            // 3. Loser as home
+            $query = 'update game g set g.home_player_id = :loserId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
+            $params = [
+                'loserId' => $loserId,
+                'code' => 'L.' . $matchNumber,
+                'tournamentId' => $tournamentId
+            ];
+            $stmt = $em->getConnection()->prepare($query);
+            $stmt->execute($params);
+
+            $query = 'update game g set g.away_player_id = :loserId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
+            $params = [
+                'loserId' => $loserId,
+                'code' => 'L.' . $matchNumber,
+                'tournamentId' => $tournamentId
+            ];
+            $stmt = $em->getConnection()->prepare($query);
+            $stmt->execute($params);
+        }
+    }
+
     /**
      * @param $id
      * @return array
@@ -759,6 +824,8 @@ class GameRepository extends ServiceEntityRepository
 
         $matchData = [
             'matchId' => $matchId,
+            'tournamentId' => $result['tournamentId'],
+            'playOrder' => $result['playOrder'],
             'modeName' => $result['name'],
             'matchName' => $result['matchName'],
             'serverId' => $result['serverId'],
