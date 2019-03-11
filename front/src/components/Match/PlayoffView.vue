@@ -102,6 +102,12 @@
                 <span style="color: #6f6f6f;">vs</span>
                 <span>{{ match.nextMatchAwayPlayer }}</span>
               </div>
+              <div>
+                <ul class="circles">
+                  <li>playoffs</li>
+                  <li>table tennis</li>
+                </ul>
+              </div>
             </td>
           </tr>
         </table>
@@ -186,7 +192,7 @@ export default {
   },
   methods: {
     setupClock () {
-      this.warmupSeconds = 20
+      this.warmupSeconds = 180
       var currentTime = Date.parse(new Date())
       this.warmupDeadline = new Date(currentTime + (this.warmupSeconds / 60) * 60 * 1000)
       this.clockInterval = setInterval(this.runClock, 1000)
@@ -733,5 +739,53 @@ export default {
   width: 200px;
   border: 5px solid white;
   transform: rotate(10deg);
+}
+
+.circles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.circles li {
+    position: absolute;
+    display: block;
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    animation: animate 25s linear infinite;
+    bottom: -150px;
+}
+
+.circles li:nth-child(1) {
+  top: 0;
+  left: 100%;
+  font-size: 600px;
+  animation-delay: 0s;
+}
+
+.circles li:nth-child(2) {
+  top: 0;
+  left: 100%;
+  width: 1000px;
+  height: 20px;
+  font-size: 100px;
+  animation-delay: 2s;
+  animation-duration: 60s;
+}
+
+@keyframes animate {
+  0%{
+    transform: translateX(0) rotate(0deg);
+    opacity: 0.05;
+  }
+  100%{
+    transform: translateX(-3000px) rotate(0deg);
+    opacity: 0.01;
+  }
 }
 </style>
