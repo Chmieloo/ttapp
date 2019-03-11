@@ -91,7 +91,7 @@
     </table>
     <span class="header-title">
       <i class="fas fa-clipboard-list marr20"></i>
-      PLAYOFFS SCHEDULE
+      PLAYOFFS SCHEDULE <span style="margin-left: 40px;">( * TO BE DECIDED )</span>
     </span>
     <div class="mainMatchContainer">
       <table style="width: 100%">
@@ -107,12 +107,12 @@
           </td>
           <td class="playerName txt-right">
             <span style="color: #aaa;" v-if="match.homePlayerId == 0">{{ match.homePlayerDisplayName }}</span>
-            <span v-else>{{ match.homePlayerDisplayName }}</span>
+            <span v-else>{{ match.homePlayerDisplayName }} *</span>
           </td>
           <td class="padl20 padr20 txt-center">-</td>
           <td class="playerName txt-left">
             <span style="color: #aaa;" v-if="match.awayPlayerId == 0">{{ match.awayPlayerDisplayName }}</span>
-            <span v-else>{{ match.awayPlayerDisplayName }}</span>
+            <span v-else>{{ match.awayPlayerDisplayName }} *</span>
           </td>
           <td class="playerName">
             {{ match.name }}
@@ -134,7 +134,7 @@ export default {
   data () {
     return {
       matches: [],
-      playoffs: true
+      playoffs: false
     }
   },
   mounted () {
