@@ -172,4 +172,18 @@ class TournamentRepository extends ServiceEntityRepository
 
         return $groups;
     }
+
+    public function loadGroupsByPlayoffsId($tournamentId)
+    {
+        $query = 'select id, name from tournament_group tg where tg.tournament_id = :tournamentId';
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
 }

@@ -2,7 +2,23 @@
   <div class="mainContainer">
     <table style="width: 100%; margin-bottom: 20px;">
       <tr>
-        <td style="padding-right: 20px;">
+        <td style="padding-right: 20px; width: 25%;">
+          <router-link to="/playoffs/ladders" tag="div" class="playoffBanner">
+            <div style="width: 100%; text-align: center;">
+              <div style="margin-bottom: 10px;">
+                <span class="header-title">
+                  SHOW ALL LADDERS
+                </span>
+              </div>
+              <div>
+                <span class="fa-stack">
+                    <i class="fas fa-trophy" style="font-size: 25px; color: white;"></i>
+                </span>
+              </div>
+            </div>
+          </router-link>
+        </td>
+        <td style="padding-right: 20px; width: 25%;">
           <router-link to="/playoffs/group/8/ladder" tag="div" class="playoffBanner">
             <div style="width: 100%; text-align: center;">
               <div style="margin-bottom: 10px;">
@@ -30,7 +46,7 @@
             </div>
           </router-link>
         </td>
-        <td style="padding-right: 20px;">
+        <td style="padding-right: 20px; width: 25%;">
           <router-link to="/playoffs/group/9/ladder" tag="div" class="playoffBanner">
             <div style="width: 100%; text-align: center;">
               <div style="margin-bottom: 10px;">
@@ -53,7 +69,7 @@
             </div>
           </router-link>
         </td>
-        <td style="width: 30%;">
+        <td style="width: 25%;">
           <router-link to="/playoffs/group/10/ladder" tag="div" class="playoffBanner">
             <div style="width: 100%; text-align: center;">
               <div style="margin-bottom: 10px;">
@@ -101,7 +117,7 @@
           <td class="playerName">
             {{ match.name }}
           </td>
-          <td style="text-align: center; min-width: 50px;" v-if="playoffs">
+          <td style="text-align: center; min-width: 50px;" v-if="playoffs && !match.winnerId && match.homePlayerId != 0 && match.awayPlayerId != 0">
             <router-link :to="{ name: 'MatchPlayoffView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
           </td>
         </tr>

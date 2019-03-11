@@ -141,6 +141,16 @@
     <div v-if="isConnected()">
       <i class="fas fa-gamepad pad"></i>
     </div>
+    <div class="footer" v-if="warmupVisible == 0 && match.nextMatchId">
+      <span>next:</span>
+      <span>{{ match.nextMatchName }}</span>
+      <span class="playerName">{{ match.nextMatchHomePlayer }}</span>
+      <span>vs</span>
+      <span class="playerName">{{ match.nextMatchAwayPlayer }}</span>
+      <span v-if="match.nextMatchId && match.isFinished">
+        <router-link :to="{ name: 'PlayoffsMatchList' }"><i class="fas fa-play-circle"></i></router-link>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -192,7 +202,7 @@ export default {
   },
   methods: {
     setupClock () {
-      this.warmupSeconds = 180
+      this.warmupSeconds = 1
       var currentTime = Date.parse(new Date())
       this.warmupDeadline = new Date(currentTime + (this.warmupSeconds / 60) * 60 * 1000)
       this.clockInterval = setInterval(this.runClock, 1000)
@@ -506,6 +516,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.maincontainer {
+  overflow: hidden;
+}
+
 .rowData {
   border: none;
   font-size: 60px;
@@ -734,6 +748,7 @@ export default {
 }
 
 .tableImg {
+  overflow: hidden;
   background: linear-gradient(100deg, #556187 30%, #333e6c 60%);
   height: 100px;
   width: 200px;
@@ -786,6 +801,22 @@ export default {
   100%{
     transform: translateX(-3000px) rotate(0deg);
     opacity: 0.01;
+  }
+}
+
+.footer {
+  left: 0;
+  width: 100%;
+  line-height: 80px;
+  height: 80px;
+  background-color: black;
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+  font-size: 40px;
+  .playerName {
+    color: white;
+    font-weight: 600;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="mainContainer">
-    <div style="margin-bottom: 10px; padding: 0px 10px;">
+    <div style="padding: 0px 10px;">
       <span class="header-title">
         {{ division }} LADDER
       </span>
@@ -10,21 +10,37 @@
         <td v-for="i in this.stages" v-bind:key="i" class="stageColumn">
           <div class="stageDiv">
             <div v-for="match in matches" v-bind:key="match.id">
-              <div v-if="match.stage == i" style="margin-bottom: 20px;">
+              <div v-if="match.stage == i" style="margin-bottom: 20px;" class="matchContainer">
                 <table class="ladderTable">
                   <tr>
                     <td rowspan="3" class="matchOrder">
-                      {{ match.order }}
+                      <span class="fa-stack">
+                        <i class="fas fa-circle fa-stack-2x stack-shield"></i>
+                        <i class="fas fa-stack-2x stack-star matchNum">{{ match.order }}</i>
+                      </span>
                     </td>
-                    <td style="padding-left: 20px;" class="matchName">
-                      {{ match.name }}
+                    <td style="padding-left: 20px;" class="matchName" colspan="2" v-if="match.winnerId == 0">
+                      <span>{{ match.name }}</span>
+                    </td>
+                    <td style="padding-left: 20px;" class="matchNameDone" colspan="2" v-else>
+                      <span>{{ match.name }}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-left: 20px;">{{ match.homePlayerDisplayName }}</td>
+                    <td style="padding-left: 10px;" v-bind:class="match.winnerId != 0 && match.winnerId == match.homePlayerId ? 'winner-color' : ''">{{ match.homePlayerDisplayName }}</td>
+                    <td style="text-align: right;">
+                      <span v-if="match.winnerId != 0">
+                      {{ match.homeScoreTotal }}
+                      </span>
+                    </td>
                   </tr>
                   <tr>
-                    <td style="padding-left: 20px;">{{ match.awayPlayerDisplayName }}</td>
+                    <td style="padding-left: 10px;" v-bind:class="match.winnerId != 0 && match.winnerId == match.awayPlayerId ? 'winner-color' : ''">{{ match.awayPlayerDisplayName }}</td>
+                    <td style="text-align: right;">
+                      <span v-if="match.winnerId != 0">
+                      {{ match.awayScoreTotal }}
+                      </span>
+                    </td>
                   </tr>
                 </table>
               </div>
@@ -136,7 +152,7 @@ export default {
   .stageDiv {
     padding: 20px;
     padding-top: 40px;
-    background-color: #151515;
+    // background-color: #151515;
   }
 }
 
@@ -145,11 +161,19 @@ export default {
   color: white;
   width: 50px;
   text-align: center;
+  border-radius: 5px 0px 5px 5px;
 }
 
 .matchName {
   padding-left: 20px;
   background-color: brown;
+  border-radius: 0px 5px 5px 0px;
+}
+
+.matchNameDone {
+  background-color: #6b8e42;
+  padding-left: 20px;
+  border-radius: 0px 5px 5px 0px;
 }
 
 .ladderTable {
@@ -158,5 +182,23 @@ export default {
    td {
      padding: 10px 10px;
    }
+}
+
+.matchContainer {
+  background-color: #3e3e3e;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.winner-color {
+  color: #40c500;
+}
+
+.matchNum {
+  color: black;
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 6px;
 }
 </style>

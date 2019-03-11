@@ -98,6 +98,12 @@ tournament_playoffs_division:
     tournamentId: '\d+'
     groupId: '\d+'
 
+tournament_playoffs_divisions:
+  path: /playoffs/{tournamentId}/groups
+  controller: App\Controller\TournamentController:getTournamentPlayoffsDivisionsData
+  requirements:
+    tournamentId: '\d+'
+
 # GROUP ROUTES
 
 groups_by_tournament:

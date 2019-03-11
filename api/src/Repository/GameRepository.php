@@ -424,7 +424,7 @@ class GameRepository extends ServiceEntityRepository
             'join tournament t on t.id = g.tournament_id ' .
             'join tournament_group l on l.id = g.tournament_group_id ' .
             'where t.is_finished = 0 and t.id = :tournamentid and l.id = :groupId ' .
-            'order by g.stage, g.play_order';
+            'order by g.stage asc, g.play_order desc';
 
         $params = [
             'tournamentid' => $id,
@@ -781,6 +781,7 @@ class GameRepository extends ServiceEntityRepository
             $nextMatch = $this->loadNextInPlayoffs($nextInOrder, $tournamentId);
 
             if ($nextMatch) {
+                $nextMatchId = $nextMatch['nextMatchId'];
                 $nextMatchName = $nextMatch['matchName'];
                 $nextMatchHomePlayer = $nextMatch['nextMatchHomePlayer'];
                 $nextMatchAwayPlayer = $nextMatch['nextMatchAwayPlayer'];
@@ -851,6 +852,7 @@ class GameRepository extends ServiceEntityRepository
             'currentHomePoints' => $result['currentHomePoints'],
             'currentAwayPoints' => $result['currentAwayPoints'],
             'nextMatchName' => $nextMatchName,
+            'nextMatchId' => $nextMatchId,
             'nextMatchHomePlayer' => $nextMatchHomePlayer,
             'nextMatchAwayPlayer' => $nextMatchAwayPlayer,
         ];
@@ -917,6 +919,7 @@ class GameRepository extends ServiceEntityRepository
             $awayPlayerString = $match['awayPlayerDisplayName'];
         }
 
+        $match['nextMatchId'] = $match['id'];
         $match['nextMatchHomePlayer'] = $homePlayerString;
         $match['nextMatchAwayPlayer'] = $awayPlayerString;
 

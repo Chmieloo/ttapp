@@ -194,11 +194,11 @@ class TournamentController extends BaseController
     }
 
     /**
-     * @param $tournamentId
-     * @param $groupId
-     * @return Response
-     * @internal param $numberOfFixtures
-     */
+ * @param $tournamentId
+ * @param $groupId
+ * @return Response
+ * @internal param $numberOfFixtures
+ */
     public function getTournamentPlayoffsDivisionData($tournamentId, $groupId)
     {
         /** @var TournamentRepository $tournamentRepository */
@@ -212,6 +212,40 @@ class TournamentController extends BaseController
             $tournamentRepository->loadCurrentPlayoffsTournament();
 
         $data = $gameRepository->loadPlayoffsFixturesByTournamentIdAndDivision($tournament->getId(), $groupId);
+
+        return $this->sendJsonResponse($data);
+    }
+
+    /**
+     * @param $tournamentId
+     * @return Response
+     * @internal param $numberOfFixtures
+     */
+    public function getTournamentPlayoffsDivisionsData($tournamentId)
+    {
+        $data = [];
+
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        # If empty, load current
+        $tournament = $tournamentId ?
+            $tournamentRepository->find($tournamentId) :
+            $tournamentRepository->loadCurrentPlayoffsTournament();
+
+        $tournamentGroups = $tournamentRepository->loadGroupsByPlayoffsId($tournament->getId());
+
+        foreach ($tournamentGroups as $group) {
+            $divisionId = $group['id'];
+            $divisionName = $group['name'];
+            $data[] = [
+                'divisionId' => $divisionId,
+                'divisionName' => $divisionName,
+                'data' => $gameRepository->loadPlayoffsFixturesByTournamentIdAndDivision($tournament->getId(), $divisionId)
+            ];
+        }
 
         return $this->sendJsonResponse($data);
     }
