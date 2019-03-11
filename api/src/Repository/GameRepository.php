@@ -36,9 +36,9 @@ class GameRepository extends ServiceEntityRepository
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
-            's5.home_points as s5hp, s4.away_points s5ap, ' .
-            's6.home_points as s6hp, s4.away_points s6ap, ' .
-            's7.home_points as s7hp, s4.away_points s7ap, ' .
+            's5.home_points as s5hp, s5.away_points s5ap, ' .
+            's6.home_points as s6hp, s6.away_points s6ap, ' .
+            's7.home_points as s7hp, s7.away_points s7ap, ' .
             'p1.display_name as homePlayerDisplayName, ' .
             'g.tournament_id as tournamentId, ' .
             'p2.display_name as awayPlayerDisplayName, g.server_id as serverId, current_set as currentSet, ' .
@@ -80,9 +80,9 @@ class GameRepository extends ServiceEntityRepository
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
-            's5.home_points as s5hp, s4.away_points s5ap, ' .
-            's6.home_points as s6hp, s4.away_points s6ap, ' .
-            's7.home_points as s7hp, s4.away_points s7ap, ' .
+            's5.home_points as s5hp, s5.away_points s5ap, ' .
+            's6.home_points as s6hp, s6.away_points s6ap, ' .
+            's7.home_points as s7hp, s7.away_points s7ap, ' .
             'g.tournament_id as tournamentId, ' .
             'g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
