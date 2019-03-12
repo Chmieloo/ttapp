@@ -771,6 +771,7 @@ class GameRepository extends ServiceEntityRepository
 
         $prettyScore = trim($prettyScore, ', ') . ')';
 
+        $nextMatchId = null;
         $nextMatchName = '';
         $nextMatchHomePlayer = '';
         $nextMatchAwayPlayer = '';
