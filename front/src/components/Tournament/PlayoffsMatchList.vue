@@ -134,7 +134,7 @@ export default {
   data () {
     return {
       matches: [],
-      playoffs: false
+      playoffs: true
     }
   },
   mounted () {
