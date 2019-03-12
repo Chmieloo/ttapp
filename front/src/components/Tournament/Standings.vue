@@ -34,7 +34,6 @@
                         </tr>
                         <tr v-for="player in group.players" v-bind:key="player.playerId" class="group-container player-row">
                             <td :class="['level', 'level-c' + player.posColor]">
-                                <span style="color:black;">{{ player.playerId }}</span>
                                 <router-link :to="'/player/' + player.playerId + '/info'">{{ player.playerName }}</router-link>
                             </td>
                             <td class="txt-center">{{ player.played }}</td>
