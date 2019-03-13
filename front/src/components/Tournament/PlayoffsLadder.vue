@@ -27,7 +27,10 @@
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-left: 10px;" v-bind:class="match.winnerId != 0 && match.winnerId == match.homePlayerId ? 'winner-color' : ''">{{ match.homePlayerDisplayName }}</td>
+                    <td style="padding-left: 10px;" v-bind:class="match.winnerId != 0 && match.winnerId == match.homePlayerId ? 'winner-color' : ''">
+                      <span style="color: #aaa;" v-if="match.homePlayerId == 0">{{ match.homePlayerDisplayName }}</span>
+                      <span v-else>{{ match.homePlayerDisplayName }}</span>
+                    </td>
                     <td style="text-align: right;">
                       <span v-if="match.winnerId != 0">
                       {{ match.homeScoreTotal }}
@@ -35,7 +38,10 @@
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-left: 10px;" v-bind:class="match.winnerId != 0 && match.winnerId == match.awayPlayerId ? 'winner-color' : ''">{{ match.awayPlayerDisplayName }}</td>
+                    <td style="padding-left: 10px;" v-bind:class="match.winnerId != 0 && match.winnerId == match.awayPlayerId ? 'winner-color' : ''">
+                      <span style="color: #aaa;" v-if="match.awayPlayerId == 0">{{ match.awayPlayerDisplayName }}</span>
+                      <span v-else>{{ match.awayPlayerDisplayName }}</span>
+                    </td>
                     <td style="text-align: right;">
                       <span v-if="match.winnerId != 0">
                       {{ match.awayScoreTotal }}
