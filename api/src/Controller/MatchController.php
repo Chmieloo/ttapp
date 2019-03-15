@@ -56,6 +56,7 @@ class MatchController extends BaseController
     /**
      * @param $matchId
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function finishSet($matchId)
     {
@@ -108,6 +109,10 @@ class MatchController extends BaseController
          *
          */
         if ($match->getIsFinished() == 1) {
+            $datePlayed = new \DateTime(null, new \DateTimeZone('Europe/Berlin'));
+            $datePlayed->format('Y-m-d H:i:s');
+            $match->setDatePlayed($datePlayed);
+
             $em->persist($match);
             $em->flush();
 
