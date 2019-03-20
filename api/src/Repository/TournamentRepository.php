@@ -81,6 +81,8 @@ class TournamentRepository extends ServiceEntityRepository
             '(SUM(if (g1.winner_id = ptg.player_id, 1, 0)) * 2 + SUM(if (g1.is_finished = 1 AND g1.winner_id = 0, 1, 0))) as points, ' .
             '(SUM(if (g1.home_player_id = ptg.player_id, g1.home_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.away_score, 0))) as setsFor, ' .
             '(SUM(if (g1.home_player_id = ptg.player_id, g1.away_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.home_score, 0))) as setsAgainst, ' .
+            '((SUM(if (g1.home_player_id = ptg.player_id, g1.home_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.away_score, 0))) - ' .
+            '(SUM(if (g1.home_player_id = ptg.player_id, g1.away_score, 0)) + SUM(if (g1.away_player_id = ptg.player_id, g1.home_score, 0)))) as setDf, ' .
             'u.ralliesFor, u.ralliesAgainst, u.df ' .
             'from player_tournament_group ptg ' .
             'left join game g1 on (g1.home_player_id = ptg.player_id or g1.away_player_id = ptg.player_id) and g1.tournament_id = :tournamentId ' .
@@ -102,7 +104,7 @@ class TournamentRepository extends ServiceEntityRepository
             ') u on u.player = ptg.player_id ' .
             'where ptg.tournament_id = :tournamentId ' .
             'group by ptg.player_id ' .
-            'order by ptg.group_id asc, points desc, u.df desc ';
+            'order by ptg.group_id asc, points desc, setDf desc, u.df desc ';
 
         $params['tournamentId'] = $tournamentId;
 
