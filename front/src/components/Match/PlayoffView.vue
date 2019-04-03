@@ -5,7 +5,12 @@
       </div>
     <div v-bind:class="flipped ? 'container-fr' : 'container-fl'">
       <div>
-        <span class="header-title">{{ match.homePlayerDisplayName }}</span>
+        <span class="header-title">
+          {{ match.homePlayerDisplayName }}
+        </span>
+        <span v-if="!match.isFinished">
+          <a @click="walkover(match.homePlayerId, match.homePlayerDisplayName)">w/o</a>
+        </span>
         <div v-if="match.isFinished == 1">
           <div v-if="match.winnerId == 0">
             <div class="rallyScore">
@@ -32,7 +37,12 @@
     </div>
     <div v-bind:class="flipped ? 'container-fl' : 'container-fr'">
       <div>
-        <span class="header-title">{{ match.awayPlayerDisplayName }}</span>
+        <span class="header-title">
+          {{ match.awayPlayerDisplayName }}
+        </span>
+        <span v-if="!match.isFinished">
+          <a @click="walkover(match.awayPlayerId, match.awayPlayerDisplayName)">w/o</a>
+        </span>
         <div v-if="match.isFinished == 1">
           <div v-if="match.winnerId == 0">
             <div class="rallyScore">
@@ -203,8 +213,12 @@ export default {
     this.setupClock()
   },
   methods: {
-    forceRerender () {
-      this.componentKey += 1
+    walkover (playerId, playerName) {
+      if (confirm('Are you sure player ' + playerName + ' wins by walkover?')) {
+        axios.get('/api/matches/' + this.$route.params.id + '/walkover/' + playerId).then((res) => {
+          this.match = res.data
+        })
+      }
     },
     setupClock () {
       this.warmupSeconds = 180
@@ -242,6 +256,8 @@ export default {
       } else {
         var currentTime = Date.parse(new Date())
         this.warmupDeadline = new Date(currentTime + (this.clockRemaining / 60) * 60 * 1000)
+        var t = this.timeRemaining(this.warmupDeadline)
+        this.clock = t.minutes + ':' + t.seconds
         this.clockInterval = setInterval(this.runClock, 1000)
         this.clockPaused = false
       }

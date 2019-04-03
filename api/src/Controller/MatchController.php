@@ -456,4 +456,88 @@ class MatchController extends BaseController
             JsonResponse::HTTP_OK
         );
     }
+
+    public function walkover($matchId, $playerId)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var Game $match */
+        $match = $this
+            ->getDoctrine()
+            ->getRepository(Game::class)
+            ->find($matchId);
+
+
+        # Meh. Remove old scores
+        $scores = $match->getScores();
+        foreach ($scores as $score) {
+            $em->remove($score);
+            $em->flush();
+        }
+
+        $homePlayer = $match->getHomePlayer();
+        $awayPlayer = $match->getAwayPlayer();
+
+        # Get required wins value
+        $requiredWins = $match->getGameMode()->getWinsRequired();
+
+        $datePlayed = new \DateTime(null, new \DateTimeZone('Europe/Berlin'));
+        $datePlayed->format('Y-m-d H:i:s');
+
+        if ($playerId == $homePlayer->getId()) {
+            $match->setWinnerId($playerId);
+            $match->setAwayScore(0);
+            $match->setHomeScore($requiredWins);
+
+
+            for ($i = 1; $i <= $requiredWins; $i++) {
+                $newScore = new Scores();
+                $newScore->setGame($match);
+                $newScore->setSetNumber($i);
+                $newScore->setHomePoints(11);
+                $newScore->setAwayPoints(0);
+                $em->persist($newScore);
+                $em->flush();
+
+                $match->addScore($newScore);
+            }
+        } else {
+            $match->setWinnerId($awayPlayer->getId());
+            $match->setAwayScore($requiredWins);
+            $match->setHomeScore(0);
+
+            for ($i = 1; $i <= $requiredWins; $i++) {
+                $newScore = new Scores();
+                $newScore->setGame($match);
+                $newScore->setSetNumber($i);
+                $newScore->setHomePoints(0);
+                $newScore->setAwayPoints(11);
+                $em->persist($newScore);
+                $em->flush();
+
+                $match->addScore($newScore);
+            }
+        }
+
+        $match->setCurrentSet(0);
+        $match->setIsFinished(true);
+        $match->setIsWalkover(true);
+        $match->setDatePlayed($datePlayed);
+
+        $em->persist($match);
+        $em->flush();
+
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository->updatePlayoffs($matchId);
+        $data = $gameRepository->loadById($matchId);
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
 }

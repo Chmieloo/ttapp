@@ -137,6 +137,14 @@ match_finish:
   requirements:
     matchId: '\d+'
 
+match_walkover:
+  path: /matches/{matchId}/walkover/{playerId}
+  controller: App\Controller\MatchController::walkover
+  methods: [GET]
+  requirements:
+    matchId: '\d+'
+    playerId: '\d+'
+
 match:
   path: /matches/{id}
   controller: App\Controller\MatchController::getMatch
