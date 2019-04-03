@@ -256,8 +256,7 @@ export default {
       } else {
         var currentTime = Date.parse(new Date())
         this.warmupDeadline = new Date(currentTime + (this.clockRemaining / 60) * 60 * 1000)
-        var t = this.timeRemaining(this.warmupDeadline)
-        this.clock = t.minutes + ':' + t.seconds
+        this.clock = this.timeRemaining(this.warmupDeadline).minutes + ':' + this.timeRemaining(this.warmupDeadline).seconds
         this.clockInterval = setInterval(this.runClock, 1000)
         this.clockPaused = false
       }

@@ -25,6 +25,9 @@
                       </td>
                       <td style="padding-left: 20px;" class="matchNameDone" colspan="2" v-else>
                         <span>{{ match.name }}</span>
+                        <span v-if="match.isWalkover" style='float: right;'>
+                          <i class="fas fa-flag"></i>
+                        </span>
                       </td>
                     </tr>
                     <tr>
@@ -75,9 +78,18 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/playoffs/0/groups').then((res) => {
-      this.ladders = res.data
-    })
+    this.getData()
+    setInterval(function () {
+      this.getData()
+    }.bind(this), 10000)
+  },
+  methods: {
+    getData () {
+      axios.get('/api/playoffs/0/groups').then((res) => {
+        this.ladders = res.data
+      })
+      console.log('requesting update ...')
+    }
   }
 }
 </script>

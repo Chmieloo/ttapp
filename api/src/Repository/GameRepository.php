@@ -411,7 +411,7 @@ class GameRepository extends ServiceEntityRepository
         $matchData = [];
 
         $baseSql =
-            'select g.home_player_id as hpid, g.away_player_id as apid, g.stage, ' .
+            'select g.home_player_id as hpid, g.away_player_id as apid, g.stage, g.is_walkover as isWalkover, ' .
             'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
             'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName, ' .
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
@@ -493,6 +493,7 @@ class GameRepository extends ServiceEntityRepository
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
+                'isWalkover' => (int) $match['isWalkover'],
             ];
         }
 
