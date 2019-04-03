@@ -842,7 +842,7 @@ class GameRepository extends ServiceEntityRepository
             'homePlayerDisplayName' => $homePlayerString ?? $result['homePlayerDisplayName'] ?? $result['homePlayerName'],
             'awayPlayerDisplayName' => $awayPlayerString ?? $result['awayPlayerDisplayName'] ?? $result['awayPlayerName'],
             'winnerId' => $result['winnerId'] ?: 0,
-            'isFinished' => $result['isFinished'] ?: 0,
+            'isFinished' => (int) $result['isFinished'] ?: 0,
             'homeScoreTotal' => $result['homeScoreTotal'],
             'awayScoreTotal' => $result['awayScoreTotal'],
             'numberOfSets' => $numberOfSets,

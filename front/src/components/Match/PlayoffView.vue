@@ -1,5 +1,5 @@
 <template>
-  <div class="mainContainer">
+  <div class="mainContainer" :key="componentKey">
     <div class="matchInfo">
       MATCH MODE: {{ match.modeName }}
       </div>
@@ -126,6 +126,7 @@
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
       <button v-gamepad:button-start="toggleVisibility">Press me!</button>
+      <button v-gamepad:left-analog-right="nextMatch">Press me!</button>
     </div>
     <div v-if="!match.isFinished">
       <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
@@ -147,9 +148,6 @@
       <span class="playerName">{{ match.nextMatchHomePlayer }}</span>
       <span>vs</span>
       <span class="playerName">{{ match.nextMatchAwayPlayer }}</span>
-      <span v-if="match.nextMatchId && match.isFinished">
-        <router-link :to="{ name: 'PlayoffsMatchList' }"><i class="fas fa-play-circle"></i></router-link>
-      </span>
     </div>
   </div>
 </template>
@@ -171,6 +169,7 @@ export default {
   },
   data () {
     return {
+      componentKey: 0,
       match: [],
       flipped: false,
       gamepadConnected: 0,
@@ -201,6 +200,9 @@ export default {
     this.setupClock()
   },
   methods: {
+    forceRerender () {
+      this.componentKey += 1
+    },
     setupClock () {
       this.warmupSeconds = 30
       var currentTime = Date.parse(new Date())
@@ -229,6 +231,11 @@ export default {
     },
     toggleVisibility () {
       this.warmupVisible = !this.warmupVisible
+    },
+    nextMatch () {
+      if (this.match.isFinished && this.match.nextMatchId) {
+        this.$router.push({ name: 'MatchPlayoffView', params: { id: this.match.nextMatchId } })
+      }
     },
     postResults (event) {
       axios.post('/api/matches/save', {
@@ -357,14 +364,22 @@ export default {
         this.idle = false
         axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
           if (res.data) {
-            this.endSet = 0
-            this.flipSides()
-            this.resetScores()
-            this.match = res.data
-            this.idle = true
-            this.numServes = 2
-            console.log(res.data)
-            this.checkServer()
+            if (res.data.isFinished === 1) {
+              this.endSet = 0
+              this.resetScores()
+              this.match = res.data
+              this.idle = true
+              this.numServes = 2
+            } else {
+              this.endSet = 0
+              this.flipSides()
+              this.resetScores()
+              this.match = res.data
+              this.idle = true
+              this.numServes = 2
+              console.log(res.data)
+              this.checkServer()
+            }
           }
         })
       }
