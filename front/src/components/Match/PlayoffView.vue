@@ -89,7 +89,7 @@
               <div class="label-clock">{{ this.clock }}</div>
               <div class="label-match-name">
                 <i class="fas fa-arrow-alt-circle-right"></i>
-                {{ match.matchName }}
+                {{ match.matchName }} / {{ match.groupName }}
                 </div>
               <div class="label-players">
                 <span>{{ match.homePlayerDisplayName }}</span>
@@ -127,6 +127,7 @@
       <button v-gamepad:button-select="setServer">Press me!</button>
       <button v-gamepad:button-start="toggleVisibility">Press me!</button>
       <button v-gamepad:left-analog-right="nextMatch">Press me!</button>
+      <button v-gamepad:left-analog-left="toggleWarmupTimer">Press me!</button>
     </div>
     <div v-if="!match.isFinished">
       <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
@@ -185,7 +186,9 @@ export default {
       clock: null,
       warmupSeconds: 0,
       warmupDeadline: null,
-      clockInterval: null
+      clockInterval: null,
+      clockPaused: false,
+      clockRemaining: 0
     }
   },
   mounted () {
@@ -204,7 +207,7 @@ export default {
       this.componentKey += 1
     },
     setupClock () {
-      this.warmupSeconds = 30
+      this.warmupSeconds = 180
       var currentTime = Date.parse(new Date())
       this.warmupDeadline = new Date(currentTime + (this.warmupSeconds / 60) * 60 * 1000)
       this.clockInterval = setInterval(this.runClock, 1000)
@@ -228,6 +231,20 @@ export default {
         seconds = '0' + seconds
       }
       return {'total': t, 'minutes': minutes, 'seconds': seconds}
+    },
+    toggleWarmupTimer () {
+      if (this.clockPaused === false) {
+        var t = this.timeRemaining(this.warmupDeadline)
+        this.clockInterval = clearInterval(this.clockInterval)
+        this.clockPaused = true
+        this.clockRemaining = t.total / 1000
+        this.clock = t.minutes + ':' + t.seconds + ' [paused]'
+      } else {
+        var currentTime = Date.parse(new Date())
+        this.warmupDeadline = new Date(currentTime + (this.clockRemaining / 60) * 60 * 1000)
+        this.clockInterval = setInterval(this.runClock, 1000)
+        this.clockPaused = false
+      }
     },
     toggleVisibility () {
       this.warmupVisible = !this.warmupVisible
