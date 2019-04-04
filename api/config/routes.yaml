@@ -137,6 +137,13 @@ match_finish:
   requirements:
     matchId: '\d+'
 
+match_startmessage:
+  path: /matches/{matchId}/startmessage
+  controller: App\Controller\MatchController::startMessage
+  methods: [GET]
+  requirements:
+    matchId: '\d+'
+
 match_walkover:
   path: /matches/{matchId}/walkover/{playerId}
   controller: App\Controller\MatchController::walkover

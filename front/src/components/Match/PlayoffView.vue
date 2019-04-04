@@ -5,11 +5,15 @@
       </div>
     <div v-bind:class="flipped ? 'container-fr' : 'container-fl'">
       <div>
+        <div>
+          <span v-if="!match.isFinished">
+            <a @click="walkover(match.homePlayerId, match.homePlayerDisplayName)">
+              <i class="fas fa-trophy" style="color: #313131;"></i>
+            </a>
+          </span>
+        </div>
         <span class="header-title">
           {{ match.homePlayerDisplayName }}
-        </span>
-        <span v-if="!match.isFinished">
-          <a @click="walkover(match.homePlayerId, match.homePlayerDisplayName)">w/o</a>
         </span>
         <div v-if="match.isFinished == 1">
           <div v-if="match.winnerId == 0">
@@ -37,11 +41,15 @@
     </div>
     <div v-bind:class="flipped ? 'container-fl' : 'container-fr'">
       <div>
+        <div>
+          <span v-if="!match.isFinished">
+            <a @click="walkover(match.awayPlayerId, match.awayPlayerDisplayName)">
+              <i class="fas fa-trophy" style="color: #313131;"></i>
+            </a>
+          </span>
+        </div>
         <span class="header-title">
           {{ match.awayPlayerDisplayName }}
-        </span>
-        <span v-if="!match.isFinished">
-          <a @click="walkover(match.awayPlayerId, match.awayPlayerDisplayName)">w/o</a>
         </span>
         <div v-if="match.isFinished == 1">
           <div v-if="match.winnerId == 0">
@@ -106,11 +114,13 @@
                 <span style="color: #6f6f6f;">vs</span>
                 <span>{{ match.awayPlayerDisplayName }}</span>
               </div>
-              <div class="label-match-name-next" style="margin-top: 30px;">next: {{ match.nextMatchName }}</div>
-              <div class="label-players-next">
-                <span>{{ match.nextMatchHomePlayer }}</span>
-                <span style="color: #6f6f6f;">vs</span>
-                <span>{{ match.nextMatchAwayPlayer }}</span>
+              <div v-if="match.nextMatchId">
+                <div class="label-match-name-next" style="margin-top: 30px;">next: {{ match.nextMatchName }}</div>
+                <div class="label-players-next">
+                  <span>{{ match.nextMatchHomePlayer }}</span>
+                  <span style="color: #6f6f6f;">vs</span>
+                  <span>{{ match.nextMatchAwayPlayer }}</span>
+                </div>
               </div>
               <div>
                 <ul class="circles">
@@ -232,6 +242,7 @@ export default {
       if (t.total <= 0) {
         clearInterval(this.clockInterval)
         this.warmupVisible = false
+        this.postMatchStart()
       }
     },
     timeRemaining (endtime) {
@@ -260,6 +271,13 @@ export default {
         this.clockInterval = setInterval(this.runClock, 1000)
         this.clockPaused = false
       }
+    },
+    postMatchStart () {
+      axios.get('/api/matches/' + this.$route.params.id + '/startmessage').then((res) => {
+        if (res.data) {
+          console.log(res.data)
+        }
+      })
     },
     toggleVisibility () {
       this.warmupVisible = !this.warmupVisible

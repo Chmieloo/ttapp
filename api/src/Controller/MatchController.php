@@ -169,6 +169,57 @@ class MatchController extends BaseController
     }
 
     /**
+     * @param $matchId
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function startMessage($matchId)
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        $data = $gameRepository->loadById($matchId);
+
+        $groupName = $data['groupName'];
+        $matchName = $data['matchName'];
+        $modeName = $data['modeName'];
+        $homePlayer = $data['homePlayerDisplayName'];
+        $awayPlayer = $data['awayPlayerDisplayName'];
+        $nextHomePlayer = $data['nextMatchHomePlayer'];
+        $nextAwayPlayer = $data['nextMatchAwayPlayer'];
+
+        $message = "";
+
+        //if ($data['matchName'] == "Grand final") {
+        //    $message .= ":trophy: ";
+        //} else {
+        $message .= ":table_tennis_paddle_and_ball: ";
+        //}
+
+        $message .= " Playoffs match is about to start (" . $groupName . ", " . $matchName . ", " . $modeName . "):\n";
+        $message .= "*" . $homePlayer . "* vs *" . $awayPlayer . "*\n";
+        if ($data['nextMatchId']) {
+            $message .= "next: *" . $nextHomePlayer . "* vs *" . $nextAwayPlayer . "*\n";
+        }
+        $message .= "Live ladder: <http://10.29.6.31:8080/#/playoffs/ladder|watch here>";
+
+        $payload = [
+            'text' => $message,
+            'method' => 'post',
+            'contentType' => 'application/json',
+            'muteHttpExceptions' => true,
+            'link_names' => 1,
+            'username' => 'tabletennisbot',
+            'icon_emoji' => ':table_tennis_paddle_and_ball:'
+        ];
+
+        $this->post2Slack($payload);
+
+        return $this->sendJsonResponse($data);
+    }
+
+
+    /**
      * @param Request $request
      * @return JsonResponse
      * @throws \Exception
@@ -523,6 +574,22 @@ class MatchController extends BaseController
         $match->setIsFinished(true);
         $match->setIsWalkover(true);
         $match->setDatePlayed($datePlayed);
+
+        $message =
+            $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
+            ' ' .
+            $match->getHomeScore() . ' - ' . $match->getAwayScore() .
+            ' (walkover)';
+        $payload = [
+            'text' => $message,
+            'method' => 'post',
+            'contentType' => 'application/json',
+            'muteHttpExceptions' => true,
+            'link_names' => 1,
+            'username' => 'tabletennisbot',
+            'icon_emoji' => ':table_tennis_paddle_and_ball:'
+        ];
+        $this->post2Slack($payload);
 
         $em->persist($match);
         $em->flush();
