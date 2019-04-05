@@ -106,13 +106,15 @@
             {{ match.division }}
           </td>
           <td class="playerName txt-right">
-            <span style="color: #aaa;" v-if="match.homePlayerId == 0">{{ match.homePlayerDisplayName }}</span>
-            <span v-else>{{ match.homePlayerDisplayName }}</span>
+            <span class="padr20" style="color: #aaa;" v-if="match.homePlayerId == 0">{{ match.homePlayerDisplayName }}</span>
+            <span v-else class="padr20">{{ match.homePlayerDisplayName }}</span>
+            <span v-if="match.winnerId != 0">{{ match.homeScoreTotal }}</span>
           </td>
-          <td class="padl20 padr20 txt-center">-</td>
+          <td class="txt-center">-</td>
           <td class="playerName txt-left">
-            <span style="color: #aaa;" v-if="match.awayPlayerId == 0">{{ match.awayPlayerDisplayName }}</span>
-            <span v-else>{{ match.awayPlayerDisplayName }}</span>
+            <span v-if="match.winnerId != 0">{{ match.awayScoreTotal }}</span>
+            <span class="padl20" style="color: #aaa;" v-if="match.awayPlayerId == 0">{{ match.awayPlayerDisplayName }}</span>
+            <span class="padl20" v-else>{{ match.awayPlayerDisplayName }}</span>
           </td>
           <td class="playerName">
             {{ match.name }}
@@ -152,6 +154,18 @@ export default {
   padding: 20px;
   margin-top: 20px;
   table {
+    .padl5 {
+      padding-left: 5px;
+    }
+    .padr5 {
+      padding-right: 5px;
+    }
+    .padl10 {
+      padding-left: 10px;
+    }
+    .padr10 {
+      padding-right: 10px;
+    }
     .padl20 {
       padding-left: 20px;
     }
