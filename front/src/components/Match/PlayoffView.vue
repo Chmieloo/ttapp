@@ -208,7 +208,8 @@ export default {
       warmupDeadline: null,
       clockInterval: null,
       clockPaused: false,
-      clockRemaining: 0
+      clockRemaining: 0,
+      posted: 0
     }
   },
   mounted () {
@@ -242,7 +243,10 @@ export default {
       if (t.total <= 0) {
         clearInterval(this.clockInterval)
         this.warmupVisible = false
-        this.postMatchStart()
+        if (this.posted === 0) {
+          this.postMatchStart()
+          this.posted = 1
+        }
       }
     },
     timeRemaining (endtime) {
