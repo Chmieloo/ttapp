@@ -727,6 +727,32 @@ class GameRepository extends ServiceEntityRepository
         }
     }
 
+    public function loadAllOrdered()
+    {
+        $sql = "select 
+                g.id,
+                home_player_id,
+                away_player_id,
+                tournament_id,
+                winner_id,
+                home_score,
+                away_score,
+                old_home_elo,
+                old_away_elo,
+                new_home_elo,
+                new_away_elo
+            from game g join tournament t on g.tournament_id = t.id and t.is_official = 1
+            where g.is_finished = 1 
+            order by g.tournament_id, g.date_played, g.date_of_match, g.id asc";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
     /**
      * @param $id
      * @return array
@@ -986,5 +1012,58 @@ class GameRepository extends ServiceEntityRepository
         $match = $this->loadById($matchId);
 
         return $match;
+    }
+
+    /**
+     * @param $gameId
+     * @param $oldHomeElo
+     * @param $oldAwayElo
+     * @param $newHomeElo
+     * @param $newAwayElo
+     * @return bool
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function updateGameElo($gameId, $oldHomeElo, $oldAwayElo, $newHomeElo, $newAwayElo)
+    {
+        $baseSql = 'UPDATE game g
+                    SET 
+                    g.old_home_elo = :oldHomeElo, 
+                    g.old_away_elo = :oldAwayElo, 
+                    g.new_home_elo = :newHomeElo, 
+                    g.new_away_elo = :newAwayElo
+                    where g.id = :gameId';
+
+        $params = [
+            'gameId' => $gameId,
+            'oldHomeElo' => $oldHomeElo,
+            'oldAwayElo' => $oldAwayElo,
+            'newHomeElo' => $newHomeElo,
+            'newAwayElo' => $newAwayElo,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        return true;
+    }
+
+    public function updatePlayerElo($playerId, $elo)
+    {
+        $baseSql = 'UPDATE player p
+                    SET  
+                    p.tournament_elo = :elo
+                    where p.id = :playerId';
+
+        $params = [
+            'playerId' => $playerId,
+            'elo' => $elo,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        return true;
     }
 }
