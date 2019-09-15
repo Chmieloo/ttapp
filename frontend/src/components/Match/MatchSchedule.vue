@@ -6,6 +6,9 @@
           <td>
             {{ match.dateOfMatch }}
           </td>
+          <td>
+            {{ match.timeOfMatch }}
+          </td>
           <td class="padl20 padr20">
             {{ match.groupName }}
           </td>
@@ -24,7 +27,7 @@
     </div>
     <div class="containerLink">
       <i class="fas fa-arrow-circle-right"></i>
-      <router-link to="/tournament/match/list">show full schedule</router-link>
+      <router-link :to="'/tournament/' + currentTournament + '/match/list'">show full schedule</router-link>
     </div>
   </div>
 </template>
@@ -36,12 +39,14 @@ export default {
   name: 'MatchSchedule',
   data () {
     return {
-      matches: []
+      matches: [],
+      currentTournament: 0
     }
   },
   mounted () {
     axios.get('/api/tournaments/0/fixtures/20').then((res) => {
       this.matches = res.data
+      this.currentTournament = res.data[0].tournamentId
     })
   }
 }

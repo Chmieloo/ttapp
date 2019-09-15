@@ -547,8 +547,10 @@ class GameRepository extends ServiceEntityRepository
             }
 
             $matchData[] = [
+                'tournamentId' => $id,
                 'matchId' => $matchId,
                 'groupName' => $match['groupName'],
+                'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
                 'homePlayerId' => $match['homePlayerId'],
                 'awayPlayerId' => $match['awayPlayerId'],

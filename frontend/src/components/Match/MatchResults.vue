@@ -29,7 +29,7 @@
     </table>
     <div class="containerLink">
       <i class="fas fa-arrow-circle-right"></i>
-      <router-link to="/tournament/match/list">show all tournament matches</router-link>
+      <router-link to="/tournament/0/match/list">show all tournament matches</router-link>
     </div>
   </div>
 </template>

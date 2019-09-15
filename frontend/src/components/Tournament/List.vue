@@ -21,6 +21,12 @@
           <td class="txt-center cell-options">
             <span v-if="tournament.isPlayoffs == 0">
               <router-link :to="'/tournament/' + tournament.id + '/standings'">standings</router-link>
+              <span v-if="tournament.isFinished == 0">
+                | <router-link :to="'/tournament/' + tournament.id + '/match/list'">schedule</router-link>
+              </span>
+              <span v-if="tournament.isFinished == 1">
+                | <router-link :to="'/tournament/' + tournament.id + '/match/list'">results</router-link>
+              </span>
             </span>
             <span v-else>
               <router-link :to="'/playoffs/' + tournament.id + '/ladders'">ladder</router-link>

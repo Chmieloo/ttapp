@@ -58,6 +58,7 @@ export default {
   name: 'App',
   data () {
     return {
+      tournament: null,
       groups: []
     }
   },

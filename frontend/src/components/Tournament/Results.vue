@@ -41,7 +41,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/tournaments/0/results/0').then((res) => {
+    axios.get('/api/tournaments/' + this.$route.params.id + '/results/0').then((res) => {
       this.matches = res.data
     })
   }

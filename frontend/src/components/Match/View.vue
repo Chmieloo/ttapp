@@ -88,22 +88,28 @@
                   <span>{{ match.awayPlayerName }}</span>
                 </div>
                 <div v-for="score in match.scores" v-bind:key="score.set" class="span-score">
+                  <div>
                     <input type="text" :name="'home_set_' + score.set" :value=score.home />
                     <input type="text" :name="'away_set_' + score.set" :value=score.away />
+                  </div>
                 </div>
-                <div v-if="match.scores.length == 0" class="fl">
+                <div v-if="match.scores.length == 0">
                   <span v-for="i in range(1, match.maxSets)" v-bind:key="i" class="span-score">
-                    <input type="text" :name="'home_set_' + i" value="" />
-                    <input type="text" :name="'away_set_' + i" value="" />
+                    <div>
+                      <input type="text" :name="'home_set_' + i" value="" />
+                      <input type="text" :name="'away_set_' + i" value="" />
+                    </div>
                   </span>
                 </div>
-                <div v-else-if="match.scores.length < match.maxSets" class="span-score fl">
+                <div v-else-if="match.scores.length < match.maxSets" class="span-score">
                   <span v-for="i in range(match.maxSets - (match.maxSets - match.scores.length) +  1, match.maxSets)" v-bind:key="i" class="span-score">
-                    <input type="text" :name="'home_set_' + i" value="" />
-                    <input type="text" :name="'away_set_' + i" value="" />
+                    <div>
+                      <input type="text" :name="'home_set_' + i" value="" />
+                      <input type="text" :name="'away_set_' + i" value="" />
+                    </div>
                   </span>
                 </div>
-                <div style="float: left;">
+                <div>
                   <input type="submit" value="save" class="submit-button" />
                 </div>
               </form>
@@ -592,7 +598,6 @@ export default {
 
 .span-score {
   min-width: 100px;
-  float: left;
   margin-right: 30px;
   input {
     max-width: 30px;

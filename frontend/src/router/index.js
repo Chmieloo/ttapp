@@ -34,7 +34,7 @@ export default new Router({
     { path: '/tournament/list', name: 'TournamentList', component: TournamentList },
     { path: '/tournament/add', name: 'TournamentAdd', component: TournamentAdd },
     { path: '/tournament/:id/standings', name: 'TournamentStandings', component: TournamentStandings },
-    { path: '/tournament/match/list', name: 'TournamentMatchList', component: TournamentMatchList },
+    { path: '/tournament/:id/match/list', name: 'TournamentMatchList', component: TournamentMatchList },
     { path: '/group/add', name: 'GroupAdd', component: GroupAdd },
     { path: '/match/add', name: 'MatchAdd', component: MatchAdd },
     { path: '/match/new', name: 'MatchNew', component: MatchNew },
