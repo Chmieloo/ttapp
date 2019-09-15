@@ -423,7 +423,7 @@ class GameRepository extends ServiceEntityRepository
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join tournament t on t.id = g.tournament_id ' .
             'join tournament_group l on l.id = g.tournament_group_id ' .
-            'where t.is_finished = 0 and t.id = :tournamentid and l.id = :groupId ' .
+            'where t.id = :tournamentid and l.id = :groupId ' .
             'order by g.stage asc, g.play_order desc';
 
         $params = [

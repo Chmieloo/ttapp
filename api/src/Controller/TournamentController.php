@@ -194,11 +194,12 @@ class TournamentController extends BaseController
     }
 
     /**
- * @param $tournamentId
- * @param $groupId
- * @return Response
- * @internal param $numberOfFixtures
- */
+     * @param $tournamentId
+     * @param $groupId
+     * @return Response
+     * @throws \Doctrine\DBAL\DBALException
+     * @internal param $numberOfFixtures
+     */
     public function getTournamentPlayoffsDivisionData($tournamentId, $groupId)
     {
         /** @var TournamentRepository $tournamentRepository */
@@ -236,6 +237,7 @@ class TournamentController extends BaseController
             $tournamentRepository->loadCurrentPlayoffsTournament();
 
         $tournamentGroups = $tournamentRepository->loadGroupsByPlayoffsId($tournament->getId());
+        //var_dump($tournamentGroups);
 
         foreach ($tournamentGroups as $group) {
             $divisionId = $group['id'];

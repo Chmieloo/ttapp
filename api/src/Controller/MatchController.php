@@ -328,6 +328,7 @@ class MatchController extends BaseController
         $game->setIsFinished(0);
         $game->setIsAbandoned(0);
         $game->setIsWalkover(0);
+        $game->setCurrentSet(0);
         $game->setTournamentGroup($group);
         $game->setWinnerId(0);
         $game->setHomeScore(0);

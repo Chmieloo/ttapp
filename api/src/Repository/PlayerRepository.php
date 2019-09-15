@@ -25,8 +25,8 @@ class PlayerRepository extends ServiceEntityRepository
         $sql = 'SELECT p.id, p.name, p.nickname, p.current_elo as elo, count(g.id) as gamesPlayed,
                 sum(if(g.winner_id = p.id, 1, 0)) as wins
                 from player p
-                join game g on p.id in (g.home_player_id, g.away_player_id)
-                where g.is_finished = 1
+                left join game g on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1
+                -- where g.is_finished = 1
                 group by p.id
                 order by p.name';
 
@@ -37,7 +37,8 @@ class PlayerRepository extends ServiceEntityRepository
         $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($players as &$player) {
-            $player['winPercentage'] = number_format($player['wins'] / $player['gamesPlayed'] * 100, 2);
+            $gamesPlayed = $player['gamesPlayed'] ? :1;
+            $player['winPercentage'] = number_format($player['wins'] / $gamesPlayed * 100, 2);
         }
         
         return $players;

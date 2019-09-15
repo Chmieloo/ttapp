@@ -28,8 +28,8 @@ class TournamentRepository extends ServiceEntityRepository
         $sql =
             'select t.id, t.name, t.start_time, t.is_playoffs as isPlayoffs, ' .
             'case when t.is_playoffs = 0 then \'group\' else \'playoffs\' end as phase, ' .
-            't.is_finished as finished, count(distinct(g.home_player_id)) as participants, ' .
-            'count(g.id) as scheduled, sum(g.is_finished) as finished ' .
+            't.is_finished as isFinished, count(distinct(g.home_player_id)) as participants, ' .
+            'count(g.id) as scheduled, if (sum(g.is_finished) is null, 0, sum(g.is_finished)) as finished ' .
             'from tournament t ' .
             'left join game g on g.tournament_id = t.id ' .
             'where t.is_official = 1 ' .
@@ -86,9 +86,9 @@ class TournamentRepository extends ServiceEntityRepository
             'u.ralliesFor, u.ralliesAgainst, u.df ' .
             'from player_tournament_group ptg ' .
             'left join game g1 on (g1.home_player_id = ptg.player_id or g1.away_player_id = ptg.player_id) and g1.tournament_id = :tournamentId ' .
-            'join player p on p.id = ptg.player_id ' .
-            'join tournament_group tg on tg.id = ptg.group_id ' .
-            'join ( ' .
+            'left join player p on p.id = ptg.player_id ' .
+            'left join tournament_group tg on tg.id = ptg.group_id ' .
+            'left join ( ' .
             'select player, sum(pointsFor) as ralliesFor, sum(pointsAgainst) as ralliesAgainst, (sum(pointsFor) - sum(pointsAgainst)) as df from ( ' .
             'SELECT g.id, g.home_player_id   AS player, sum(s.home_points) AS pointsFor, sum(s.away_points) AS pointsAgainst ' .
             'FROM scores s JOIN game g ON g.id = s.game_id ' .
