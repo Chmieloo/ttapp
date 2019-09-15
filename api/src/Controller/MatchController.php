@@ -611,4 +611,91 @@ class MatchController extends BaseController
 
         return $this->sendJsonResponse($data);
     }
+
+    public function recalculateElo()
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $data = $gameRepository->loadAllOrdered();
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        $playerCache = [];
+        $i = 0;
+        foreach ($data as $game) {
+            $winner = null;
+            $loser = null;
+
+            $winParam = 1;
+            $loseParam = 0;
+
+            $gameId = $game['id'];
+            $homePlayerId = $game['home_player_id'];
+            $awayPlayerId = $game['away_player_id'];
+            $homeScore = $game['home_score'];
+            $awayScore = $game['away_score'];
+            $winnerId = $game['winner_id'];
+
+            if (!array_key_exists($homePlayerId, $playerCache)) {
+                $playerCache[$homePlayerId] = [
+                    'elo' => 1500,
+                    'gamesPlayed' => 1
+                ];
+            }
+
+            if (!array_key_exists($awayPlayerId, $playerCache)) {
+                $playerCache[$awayPlayerId] = [
+                    'elo' => 1500,
+                    'gamesPlayed' => 1
+                ];
+            }
+
+            $oldHomeElo = $playerCache[$homePlayerId]['elo'];
+            $oldAwayElo = $playerCache[$awayPlayerId]['elo'];
+
+            if ($winnerId == $homePlayerId) {
+                $winner = $playerCache[$homePlayerId];
+                $loser = $playerCache[$awayPlayerId];
+            } elseif ($winnerId == $awayPlayerId) {
+                $winner = $playerCache[$awayPlayerId];
+                $loser = $playerCache[$homePlayerId];
+            } else {
+                $winner = $playerCache[$homePlayerId];
+                $loser = $playerCache[$awayPlayerId];
+                $winParam = 0.5;
+                $loseParam = 0.5;
+            }
+
+            $pointDifference = abs($homeScore - $awayScore);
+            $multiplier = log($pointDifference + 1) * (2.2 / (($winner['elo'] - $loser['elo']) * 0.001 + 2.2));
+
+            $winnerNewElo = $winner['elo'] + (int) (((800 / $winner['gamesPlayed']) * ($winParam - 1 / (1 + pow(10, (($loser['elo'] - $winner['elo']) / 400))))) * $multiplier);
+            $loserNewElo = $loser['elo'] + (int) (((800 / $winner['gamesPlayed']) * ($loseParam - 1 / (1 + pow(10, (($winner['elo'] - $loser['elo']) / 400))))) * $multiplier);
+
+            if ($winnerId == $awayPlayerId) {
+                $playerCache[$awayPlayerId]['elo'] = $winnerNewElo;
+                $playerCache[$awayPlayerId]['gamesPlayed']++;
+                $playerCache[$homePlayerId]['elo'] = $loserNewElo;
+                $playerCache[$homePlayerId]['gamesPlayed']++;
+            } else { // draw and home win handles the same
+                $playerCache[$homePlayerId]['elo'] = $winnerNewElo;
+                $playerCache[$homePlayerId]['gamesPlayed']++;
+                $playerCache[$awayPlayerId]['elo'] = $loserNewElo;
+                $playerCache[$awayPlayerId]['gamesPlayed']++;
+            }
+
+            $gameRepository->updateGameElo((int) $gameId, $oldHomeElo, $oldAwayElo, $playerCache[$homePlayerId]['elo'], $playerCache[$awayPlayerId]['elo']);
+        }
+
+        foreach ($playerCache as $playerId => $player) {
+            $elo = $player['elo'];
+            $gameRepository->updatePlayerElo($playerId, $elo);
+        }
+
+        return $this->sendJsonResponse($playerCache);
+    }
 }

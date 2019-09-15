@@ -22,7 +22,7 @@ class PlayerRepository extends ServiceEntityRepository
 
     public function loadAllPlayers()
     {
-        $sql = 'SELECT p.id, p.name, p.nickname, p.current_elo as elo, count(g.id) as gamesPlayed,
+        $sql = 'SELECT p.id, p.name, p.nickname, p.tournament_elo as elo, count(g.id) as gamesPlayed,
                 sum(if(g.winner_id = p.id, 1, 0)) as wins
                 from player p
                 left join game g on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1
