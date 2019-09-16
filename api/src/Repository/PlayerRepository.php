@@ -38,6 +38,7 @@ class PlayerRepository extends ServiceEntityRepository
 
         foreach ($players as &$player) {
             $gamesPlayed = $player['gamesPlayed'] ? :1;
+            $player['elo'] = (int) $player['elo'];
             $player['winPercentage'] = number_format($player['wins'] / $gamesPlayed * 100, 2);
         }
         
