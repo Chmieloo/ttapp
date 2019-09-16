@@ -16,7 +16,7 @@
           {{ match.awayPlayerDisplayName }}
         </td>
         <td style="text-align: center; min-width: 50px;">
-          <router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>
+          <!--<router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link>-->
         </td>
       </tr>
     </table>
