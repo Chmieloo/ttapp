@@ -1,7 +1,7 @@
 <template>
   <div class="mainMatchContainer">
     <table style="width: 100%">
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
+      <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
         <td>
           {{ match.dateOfMatch }}
         </td>
@@ -50,6 +50,7 @@ export default {
   background: #3e3e3e;
   padding: 20px;
   table {
+    border-collapse: collapse;
     .padl20 {
       padding-left: 20px;
     }
@@ -66,6 +67,13 @@ export default {
     }
     .setScores {
       color: #979797;
+    }
+    .row-schedule {
+      margin-left: 20px;
+      background-color: #3e3e3e;
+      padding: 0px 20px;
+      border-top: none;
+      border-bottom: 1px solid #797979;
     }
   }
 }

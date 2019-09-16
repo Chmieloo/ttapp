@@ -2,7 +2,7 @@
   <div class="mainMatchContainer">
     <div v-if="matches.length">
       <table class="fullWidth">
-        <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
+        <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
           <td>
             {{ match.dateOfMatch }}
           </td>
@@ -62,6 +62,7 @@ export default {
   background: #3e3e3e;
   padding: 20px;
   table {
+    border-collapse: collapse;
     .padl20 {
       padding-left: 20px;
     }
@@ -87,13 +88,19 @@ export default {
       color: white;
       text-decoration: underline;
     }
+    .row-schedule {
+      margin-left: 20px;
+      background-color: #3e3e3e;
+      padding: 0px 20px;
+      border-top: none;
+      border-bottom: 1px solid #797979;
+    }
   }
 }
 
 .containerLink {
   margin-top: 10px;
   padding: 20px 0px 0px 0px;
-  border-top: 1px solid #6f6f6f;
 }
 
 .winner-color {
