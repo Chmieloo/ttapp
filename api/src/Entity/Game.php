@@ -130,26 +130,6 @@ class Game
      */
     private $playoff_away_player_id;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $oldHomeELO;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $oldAwayELO;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $newHomeELO;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $newAwayELO;
-
     public function __construct()
     {
         $this->scores = new ArrayCollection();
@@ -459,54 +439,6 @@ class Game
     public function setPlayoffAwayPlayerId(?string $playoff_away_player_id): self
     {
         $this->playoff_away_player_id = $playoff_away_player_id;
-
-        return $this;
-    }
-
-    public function getOldHomeELO(): ?int
-    {
-        return $this->oldHomeELO;
-    }
-
-    public function setOldHomeELO(?int $oldHomeELO): self
-    {
-        $this->oldHomeELO = $oldHomeELO;
-
-        return $this;
-    }
-
-    public function getOldAwayELO(): ?int
-    {
-        return $this->oldAwayELO;
-    }
-
-    public function setOldAwayELO(?int $oldAwayELO): self
-    {
-        $this->oldAwayELO = $oldAwayELO;
-
-        return $this;
-    }
-
-    public function getNewHomeELO(): ?int
-    {
-        return $this->newHomeELO;
-    }
-
-    public function setNewHomeELO(?int $newHomeELO): self
-    {
-        $this->newHomeELO = $newHomeELO;
-
-        return $this;
-    }
-
-    public function getNewAwayELO(): ?int
-    {
-        return $this->newAwayELO;
-    }
-
-    public function setNewAwayELO(?int $newAwayELO): self
-    {
-        $this->newAwayELO = $newAwayELO;
 
         return $this;
     }

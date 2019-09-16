@@ -191,8 +191,3 @@ points_remove:
   path: /points/del
   controller: App\Controller\PointController::deletePoint
   methods: [POST]
-
-elo_recalculate:
-  path: /elo/recalculate
-  controller: App\Controller\MatchController::recalculateElo
-  methods: [GET]
