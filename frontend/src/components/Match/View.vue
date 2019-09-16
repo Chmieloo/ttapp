@@ -210,7 +210,6 @@ export default {
         a4: typeof event.target.elements.away_set_4 === 'undefined' ? '' : event.target.elements.away_set_4.value
       }).then((res) => {
         this.errors = []
-        console.log(res.data)
         if (res.status === 200) {
           // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
           // TODO for now - fix that to use router
@@ -232,8 +231,6 @@ export default {
       return array
     },
     checkServer () {
-      console.log('Checking server.')
-      console.log('Current set: ' + this.match.currentSet)
       var setNumber = this.match.currentSet
       if (this.homeScore === 0 && this.awayScore === 0) {
         this.numServes = 2
@@ -326,7 +323,6 @@ export default {
             this.match = res.data
             this.idle = true
             this.numServes = 2
-            console.log(res.data)
             this.checkServer()
           }
         })
@@ -442,7 +438,6 @@ export default {
         away: awayScore,
         matchId: matchId
       }).then((res) => {
-        console.log('response status: ' + res.status + ', ' + res.data.text)
         this.match.currentSet = res.data.currentSet
         this.idle = true
       }).catch(error => {

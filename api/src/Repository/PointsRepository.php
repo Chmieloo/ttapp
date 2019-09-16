@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Points;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\DBALException;
+use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -24,16 +26,15 @@ class PointsRepository extends ServiceEntityRepository
      * @param $away
      * @param $matchId
      * @return bool
+     * @throws DBALException
      */
     public function removeLastPoint($home, $away, $matchId)
     {
-        $baseSql = 'delete from points 
-                    where id IN (
-                    select max(p.id) from (select * from points) p 
-                    join scores s on s.id = p.score_id
-                    join game g on g.id = s.game_id
-                    where p.is_home_point = :homePoint and p.is_away_point = :awayPoint and g.id = :gameId
-                    )';
+        $selectSql =
+            'select max(p.id) as pointId
+            from points p
+            join scores s on s.id = p.score_id
+            where p.is_home_point = :homePoint and p.is_away_point = :awayPoint and s.game_id = :gameId';
 
         $params = [
             'gameId' => $matchId,
@@ -42,9 +43,26 @@ class PointsRepository extends ServiceEntityRepository
         ];
 
         $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt = $em->getConnection()->prepare($selectSql);
         $stmt-> execute($params);
 
-        return true;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $pointId = (int)$result['pointId'];
+
+        if ($pointId) {
+            $deleteSql = 'delete from points p where p.id = :pointId';
+
+            $params = [
+                'pointId' => $pointId,
+            ];
+
+            $em = $this->getEntityManager();
+            $stmt = $em->getConnection()->prepare($deleteSql);
+            $stmt-> execute($params);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }
