@@ -23,7 +23,7 @@ All database tables should be created during that process.
 #### 2. Frontend
 Navigate to frontend directory:
 ```
-$ cd front
+$ cd frontend
 ```
 run
 ```
