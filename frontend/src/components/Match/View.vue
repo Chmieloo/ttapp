@@ -8,15 +8,33 @@
             <div class="rallyScore">
               {{ match.homeScoreTotal }}
             </div>
+            <div class="eloInfo">
+              {{ match.homeElo }} ELO 
+            </div>
+            <div class="eloInfo">
+              {{ match.oldHomeElo }} &rarr; {{ match.newHomeElo }}
+            </div>
           </div>
           <div v-else-if="match.winnerId == match.homePlayerId">
             <div class="rallyScoreWinner">
               {{ match.homeScoreTotal }}
             </div>
+            <div class="eloInfo">
+              {{ match.homeElo }} ELO 
+            </div>
+            <div class="eloInfo">
+              {{ match.oldHomeElo }} &rarr; {{ match.newHomeElo }}
+            </div>
           </div>
           <div v-else>
             <div class="rallyScore">
               {{ match.homeScoreTotal }}
+            </div>
+            <div class="eloInfo">
+              {{ match.homeElo }} ELO 
+            </div>
+            <div class="eloInfo">
+              {{ match.oldHomeElo }} &rarr; {{ match.newHomeElo }}
             </div>
           </div>
         </div>
@@ -35,15 +53,33 @@
             <div class="rallyScore">
               {{ match.awayScoreTotal }}
             </div>
+            <div class="eloInfo">
+              {{ match.awayElo }} ELO 
+            </div>
+            <div class="eloInfo">
+              {{ match.oldAwayElo }} &rarr; {{ match.newAwayElo }}
+            </div>
           </div>
           <div v-else-if="match.winnerId == match.awayPlayerId">
             <div class="rallyScoreWinner">
               {{ match.awayScoreTotal }}
             </div>
+            <div class="eloInfo">
+              {{ match.awayElo }} ELO 
+            </div>
+            <div class="eloInfo">
+              {{ match.oldAwayElo }} &rarr; {{ match.newAwayElo }}
+            </div>
           </div>
           <div v-else>
             <div class="rallyScore">
               {{ match.awayScoreTotal }}
+            </div>
+            <div class="eloInfo">
+              {{ match.awayElo }} ELO 
+            </div>
+            <div class="eloInfo">
+              {{ match.oldAwayElo }} &rarr; {{ match.newAwayElo }}
             </div>
           </div>
         </div>
@@ -474,6 +510,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.eloInfo {
+  font-size: 20pt;
+}
+
 .rowData {
   border: none;
   font-size: 60px;

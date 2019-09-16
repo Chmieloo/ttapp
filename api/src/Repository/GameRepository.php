@@ -73,6 +73,7 @@ class GameRepository extends ServiceEntityRepository
     {
         $sql =
             'select g.play_order as playOrder, g.name as matchName, g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
+            'g.old_home_elo ohElo, g.new_home_elo nhElo, g.old_away_elo oaElo, g.new_away_elo naElo, ' .
             'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
             'g.home_player_id as hpid, g.away_player_id as apid, ' .
@@ -853,6 +854,9 @@ class GameRepository extends ServiceEntityRepository
             $awayPlayerString = $result['awayPlayerDisplayName'];
         }
 
+        $homeElo = $result['nhElo'] - $result['ohElo'];
+        $awayElo = $result['naElo'] - $result['oaElo'];
+
         $matchData = [
             'matchId' => $matchId,
             'tournamentId' => $result['tournamentId'],
@@ -885,6 +889,12 @@ class GameRepository extends ServiceEntityRepository
             'nextMatchId' => $nextMatchId,
             'nextMatchHomePlayer' => $nextMatchHomePlayer,
             'nextMatchAwayPlayer' => $nextMatchAwayPlayer,
+            'oldHomeElo' => $result['ohElo'],
+            'newHomeElo' => $result['nhElo'],
+            'oldAwayElo' => $result['oaElo'],
+            'newAwayElo' => $result['naElo'],
+            'homeElo' => $homeElo >= 0 ? '+' . $homeElo : $homeElo,
+            'awayElo' => $awayElo >= 0 ? '+' . $awayElo : $awayElo,
         ];
 
 

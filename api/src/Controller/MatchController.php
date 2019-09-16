@@ -116,6 +116,9 @@ class MatchController extends BaseController
             $em->persist($match);
             $em->flush();
 
+            # ELO recalculation
+            $this->recalculateElo();
+
             $data = $gameRepository->loadById($matchId);
 
             $gameRepository->updatePlayoffs($matchId);
