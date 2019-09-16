@@ -20,7 +20,7 @@
             <router-link :to="'/player/' + match.awayPlayerId + '/info'">{{ match.awayPlayerDisplayName }}</router-link>
           </td>
           <td style="text-align: right;">
-            <div><router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link></div>
+            <!--<div><router-link :to="{ name: 'MatchView', params: { id: match.matchId }}"><i class="fas fa-play-circle"></i></router-link></div>-->
           </td>
         </tr>
       </table>
