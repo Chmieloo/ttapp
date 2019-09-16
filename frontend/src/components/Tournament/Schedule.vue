@@ -5,6 +5,9 @@
         <td>
           {{ match.dateOfMatch }}
         </td>
+        <td>
+          {{ match.timeOfMatch }}
+        </td>        
         <td class="padl20 padr20">
           {{ match.groupName }}
         </td>
