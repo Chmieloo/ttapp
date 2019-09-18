@@ -63,13 +63,13 @@ class PlayerRepository extends ServiceEntityRepository
      */
     public function loadPlayerById($playerId)
     {
-        $sql = 'select p.id, p.name, count(g.id) as played, ' .
+        $sql = 'select p.id, p.name, count(g.id) as played, p.profile_pic_url as pic, ' .
                'sum(if(p.id = g.winner_id, 1, 0)) as wins, ' .
                'sum(if(g.winner_id = 0, 1, 0)) as draws, ' .
                'sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses ' .
                'from player p ' .
-               'join game g on p.id in (g.home_player_id, g.away_player_id) ' .
-               'where p.id = :playerId and g.is_finished = 1 ' .
+               'left join game g on p.id in (g.home_player_id, g.away_player_id) ' .
+               'where p.id = :playerId -- and g.is_finished = 1 ' .
                'group by p.id';
 
         $params['playerId'] = $playerId;
@@ -79,13 +79,13 @@ class PlayerRepository extends ServiceEntityRepository
         $stmt-> execute($params);
 
         $player = $stmt->fetch(PDO::FETCH_ASSOC);
-        $player['winPercentage'] = number_format(($player['wins'] / $player['played']) * 100, 0);
+        $player['winPercentage'] = $player['played'] > 0 ? number_format(($player['wins'] / $player['played']) * 100, 0) : 0;
         $player['notWinPercentage'] = 100 - $player['winPercentage'];
 
-        $player['drawPercentage'] = number_format(($player['draws'] / $player['played']) * 100, 0);
+        $player['drawPercentage'] = $player['played'] > 0 ? number_format(($player['draws'] / $player['played']) * 100, 0) : 0;
         $player['notDrawPercentage'] = 100 - $player['drawPercentage'];
 
-        $player['lossPercentage'] = number_format(($player['losses'] / $player['played']) * 100, 0);
+        $player['lossPercentage'] = $player['played'] > 0 ? number_format(($player['losses'] / $player['played']) * 100, 0) : 0;
         $player['notLossPercentage'] = 100 - $player['lossPercentage'];
 
         return $player;

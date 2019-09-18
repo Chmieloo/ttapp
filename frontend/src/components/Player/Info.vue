@@ -6,7 +6,7 @@
         </div>
         <div class="playerCardPic">
             <div class="cutoutPic">
-                <img src="https://upload.wikimedia.org/wikipedia/en/1/17/Batman-BenAffleck.jpg" class="pic" />
+                <img :src=playerPicUrl class="pic" />
             </div>
             <span class="playerName">{{ player.name }}</span>
         </div>
@@ -129,6 +129,7 @@ export default {
   data () {
     return {
       player: null,
+      playerPicUrl: null,
       winPercentage: 0,
       drawPercentage: 0,
       lossPercentage: 0,
@@ -150,6 +151,7 @@ export default {
       this.drawPercentage = player.data.drawPercentage
       this.strokeDashArrayLosses = player.data.lossPercentage + ' ' + player.data.notLossPercentage
       this.lossPercentage = player.data.lossPercentage
+      this.playerPicUrl = player.data.pic
 
       this.results = results.data
       this.schedule = schedule.data
@@ -248,7 +250,7 @@ table.playerData {
 .pic {
     margin: 0 auto;
     width: 150px;
-    height: 150px;
+    margin-top: -20px;
 }
 
 div.cutoutPic {
