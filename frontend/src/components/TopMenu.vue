@@ -15,13 +15,13 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .topMenu {
-    background-color: #3e3e3e;
+    background-color: #105869;
     clear: both;
     height: 50px;
     line-height: 50px;
     padding-left: 15px;
     font-weight: 600;
-    box-shadow: 0px 4px 4px black;
+    box-shadow: 0px 0px 3px black;
 
 }
 
@@ -36,11 +36,11 @@ export default {
 }
 
 a {
-  color: #9e9e9e;
+  color: #fff;
   text-decoration: none;
 }
 
 a:hover {
-    color: white;
+    color: #818181;
 }
 </style>

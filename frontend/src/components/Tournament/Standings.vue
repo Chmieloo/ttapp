@@ -21,7 +21,7 @@
                     </span>
                 </div>
                 <div class="group-body">
-                    <table>
+                    <table class="collapse">
                         <tr class="group-row-header">
                             <th class="txt-left">name</th>
                             <th class="txt-center">played</th>
@@ -187,8 +187,8 @@ export default {
 
 .group-body {
     color: white;
-    background-color: #1a1a1a;
-    padding: 10px 20px;
+    background-color: #0e3c46;
+    padding: 10px 20px 20px;
     table {
         width: 100%;
     }
@@ -200,9 +200,17 @@ export default {
   width: 100%;
 }
 
+.collapse {
+    border-collapse: collapse;
+    tr:last-child {
+        border-bottom: none;
+    }
+}
+
 .player-row {
     :nth-child(2) {
         padding-left: 10px;
     }
+    border-bottom: 1px solid #ffffff1f;
 }
 </style>

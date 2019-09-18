@@ -1,7 +1,7 @@
 <template>
   <div class="mainMatchContainer">
     <table>
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
+      <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
         <td>{{ match.datePlayed }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
           <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
@@ -55,9 +55,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .mainMatchContainer {
-  background: #3e3e3e;
+  background: #0e3c46;
   padding: 20px;
+  box-shadow: 0px 0px 3px black;
   table {
+    border-collapse: collapse;
     width: 100%;
     .totalScore {
       color: white;
@@ -74,13 +76,21 @@ export default {
     a:hover {
       color: white;
     }
+    .row-schedule {
+      margin-left: 20px;
+      padding: 0px 20px;
+      border-top: none;
+      border-bottom: 1px solid #ffffff2b;
+    }
+    :last-child {
+      border-bottom: none;
+    }
   }
 }
 
 .containerLink {
   margin-top: 10px;
   padding: 20px 0px 0px 0px;
-  border-top: 1px solid #6f6f6f;
 }
 
 .winner-color {

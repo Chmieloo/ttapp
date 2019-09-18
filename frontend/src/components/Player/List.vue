@@ -9,14 +9,14 @@
           <th class="txt-left">name</th>
           <th class="txt-center mw-100">elo</th>
           <th class="txt-center mw-100">m.played</th>
-          <th class="txt-center mw-100">m.won</th>
-          <th class="txt-center mw-100">m.%</th>
+          <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>                    
+          <th class="txt-center mw-100">m.win%</th>
         </tr>
         <tr v-for="player in this.players" v-bind:key="player.id" class="row-data">
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-center">{{ player.elo }}</td>
           <td class="txt-center">{{ player.gamesPlayed }}</td>
-          <td class="txt-center">{{ player.wins }}</td>
+          <td class="txt-center">{{ player.wins }} / {{ player.draws }} / {{ player.losses }}</td>
           <td class="txt-center">{{ player.winPercentage }}</td>
         </tr>
       </table>
