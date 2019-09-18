@@ -13,7 +13,7 @@
             {{ match.groupName }}
           </td>
           <td class="playerName txt-right">
-            <router-link :to="'/player/' + match.awayPlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
+            <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
           </td>
           <td class="padl20 padr20" style="text-align: center;">-</td>
           <td class="playerName">
