@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Game;
 use App\Entity\TournamentGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\DBALException;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -405,7 +406,7 @@ class GameRepository extends ServiceEntityRepository
      * @param $id
      * @param $divisionId
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function loadPlayoffsFixturesByTournamentIdAndDivision($id, $divisionId)
     {
@@ -573,6 +574,119 @@ class GameRepository extends ServiceEntityRepository
     /**
      * @param $id
      * @return array
+     * @throws DBALException
+     */
+    public function loadOverdueForToday($id)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.tournament_id = :tournamentid ';
+        $baseSql .= 'and g.is_finished = 0 and DATE(g.date_of_match) < DATE(now()) ';
+        $baseSql .= 'group by g.id ';
+        $baseSql .= 'order by g.date_of_match, g.id asc ';
+
+        $params = [
+            'tournamentid' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),
+                'homeSlackName' => $match['homeSlackName'] ? : $match['homePlayerName'],
+                'awaySlackName' => $match['awaySlackName'] ? : $match['awayPlayerName'],
+            ];
+        }
+
+        return $matchData;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     * @throws DBALException
+     */
+    public function loadScheduleForToday($id)
+    {
+        $matchData = [];
+
+        $baseSql = $this->baseQuery();
+        $baseSql .= 'where g.tournament_id = :tournamentid ';
+        $baseSql .= 'and g.is_finished = 0 and DATE(g.date_of_match) = DATE(CURDATE()) ';
+        $baseSql .= 'group by g.id ';
+        $baseSql .= 'order by g.date_of_match, g.id asc ';
+
+        $params = [
+            'tournamentid' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt-> execute($params);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as $match) {
+            $matchId = $match['id'];
+            $numberOfSets = $match['isFinished'] == 1 ?
+                $match['homeScoreTotal'] + $match['awayScoreTotal'] :
+                $match['currentSet'];
+
+            $setScores = [];
+            for ($i = 1; $i <= $numberOfSets; $i++) {
+                $homeScoreVar = 's' . $i . 'hp';
+                $awayScoreVar = 's' . $i . 'ap';
+                $setScores[] = [
+                    'set' => $i,
+                    'home' => $match[$homeScoreVar],
+                    'away' => $match[$awayScoreVar],
+                ];
+            }
+
+            $matchData[] = [
+                'matchId' => $matchId,
+                'groupName' => $match['groupName'],
+                'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),
+                'homeSlackName' => $match['homeSlackName'] ? : $match['homePlayerName'],
+                'awaySlackName' => $match['awaySlackName'] ? : $match['awayPlayerName'],
+            ];
+        }
+
+        return $matchData;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     * @throws DBALException
      */
     public function getFullScheduleByTournamentId($id)
     {
@@ -1031,7 +1145,7 @@ class GameRepository extends ServiceEntityRepository
      * @param $newHomeElo
      * @param $newAwayElo
      * @return bool
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function updateGameElo($gameId, $oldHomeElo, $oldAwayElo, $newHomeElo, $newAwayElo)
     {

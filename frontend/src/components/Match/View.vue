@@ -272,8 +272,10 @@ export default {
         this.numServes = 2
 
         if (this.match.serverId === this.match.homePlayerId) {
+          console.log('home server')
           this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
         } else {
+          console.log('away server')
           this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
         }
       }

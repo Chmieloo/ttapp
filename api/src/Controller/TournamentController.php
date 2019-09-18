@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Config;
 use App\Entity\Game;
 use App\Entity\Tournament;
+use App\Repository\ConfigRepository;
 use App\Repository\GameRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -142,6 +144,82 @@ class TournamentController extends BaseController
         $data = $gameRepository->loadUpcomingFixturesByTournamentId($tournament->getId(), $numberOfFixtures);
 
         return $this->sendJsonResponse($data);
+    }
+
+    /**
+     * @param $tournamentId
+     * @return Response
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getTodaysFixtures($tournamentId)
+    {
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+
+        # If empty, load current
+        $tournament = $tournamentId ?
+            $tournamentRepository->find($tournamentId) :
+            $tournamentRepository->loadCurrentTournament();
+
+        # Load overdue first
+        $data = $gameRepository->loadOverdueForToday($tournament->getId());
+
+        $message = "Table tennis league overdue matches :clock12:\n";
+        foreach ($data as $match) {
+            $message .= "> *" . $match['groupName'] . "*: " . "(" . $match['dateOfMatch'] . "," . $match['timeOfMatch'] . ") " . $match['homeSlackName'] . " *vs* " . $match['awaySlackName'] . "\n";
+        }
+
+        # Load today's schedule
+        $data = $gameRepository->loadScheduleForToday($tournament->getId());
+
+        $message .= "Table tennis today's matches :table_tennis_paddle_and_ball:\n";
+        foreach ($data as $match) {
+            $message .= "> *" . $match['groupName'] . "*: " . "(" . $match['timeOfMatch'] . ") " . $match['homeSlackName'] . " *vs* " . $match['awaySlackName'] . "\n";
+        }
+
+        $payload = [
+            'text' => $message,
+            'method' => 'post',
+            'contentType' => 'application/json',
+            'muteHttpExceptions' => true,
+            'link_names' => 1,
+            'username' => 'tabletennisbot',
+            'icon_emoji' => ':table_tennis_paddle_and_ball:'
+        ];
+
+        $this->postScheduler($payload);
+
+        return $this->sendJsonResponse([]);
+    }
+
+    /**
+     * @param $data
+     * @return bool|string
+     */
+    private function postScheduler($data)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ConfigRepository $configRepository */
+        $configRepository = $em->getRepository(Config::class);
+        $config = $configRepository->find(Config::CONFIG_TYPE_SLACK_HOOK);
+
+        if ($config) {
+            $data_string = json_encode($data);
+
+            $ch = curl_init($config->getValue());
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
+
+            return curl_exec($ch);
+        }
     }
 
     /**

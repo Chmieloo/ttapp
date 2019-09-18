@@ -75,6 +75,12 @@ tournament_schedule:
   controller: App\Controller\TournamentController:getTournamentSchedule
   requirements:
     tournamentId: '\d+'
+
+tournament_daily_schedule:
+  path: /tournaments/{tournamentId}/fixturestoday
+  controller: App\Controller\TournamentController:getTodaysFixtures
+  requirements:
+    tournamentId: '\d+'
     numberOfFixtures: '\d+'
 
 tournament_matches_fullfeed:
