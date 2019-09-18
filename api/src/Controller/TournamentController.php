@@ -163,33 +163,41 @@ class TournamentController extends BaseController
             $tournamentRepository->find($tournamentId) :
             $tournamentRepository->loadCurrentTournament();
 
-        # Load overdue first
-        $data = $gameRepository->loadOverdueForToday($tournament->getId());
+        $message = '';
 
-        $message = "Table tennis league overdue matches :clock12:\n";
-        foreach ($data as $match) {
-            $message .= "> *" . $match['groupName'] . "*: " . "(" . $match['dateOfMatch'] . "," . $match['timeOfMatch'] . ") " . $match['homeSlackName'] . " *vs* " . $match['awaySlackName'] . "\n";
+        # Load overdue first
+        $data1 = $gameRepository->loadOverdueForToday($tournament->getId());
+
+        if ($data1) {
+            $message .= "Table tennis league overdue matches :clock12:\n";
+            foreach ($data1 as $match) {
+                $message .= "> *" . $match['groupName'] . "*: " . "(" . $match['dateOfMatch'] . "," . $match['timeOfMatch'] . ") " . $match['homeSlackName'] . " *vs* " . $match['awaySlackName'] . "\n";
+            }
         }
 
         # Load today's schedule
-        $data = $gameRepository->loadScheduleForToday($tournament->getId());
+        $data2 = $gameRepository->loadScheduleForToday($tournament->getId());
 
-        $message .= "Table tennis today's matches :table_tennis_paddle_and_ball:\n";
-        foreach ($data as $match) {
-            $message .= "> *" . $match['groupName'] . "*: " . "(" . $match['timeOfMatch'] . ") " . $match['homeSlackName'] . " *vs* " . $match['awaySlackName'] . "\n";
+        if ($data2) {
+            $message .= "Table tennis today's matches :table_tennis_paddle_and_ball:\n";
+            foreach ($data2 as $match) {
+                $message .= "> *" . $match['groupName'] . "*: " . "(" . $match['timeOfMatch'] . ") " . $match['homeSlackName'] . " *vs* " . $match['awaySlackName'] . "\n";
+            }
         }
 
-        $payload = [
-            'text' => $message,
-            'method' => 'post',
-            'contentType' => 'application/json',
-            'muteHttpExceptions' => true,
-            'link_names' => 1,
-            'username' => 'tabletennisbot',
-            'icon_emoji' => ':table_tennis_paddle_and_ball:'
-        ];
+        if ($message) {
+            $payload = [
+                'text' => $message,
+                'method' => 'post',
+                'contentType' => 'application/json',
+                'muteHttpExceptions' => true,
+                'link_names' => 1,
+                'username' => 'tabletennisbot',
+                'icon_emoji' => ':table_tennis_paddle_and_ball:'
+            ];
 
-        $this->postScheduler($payload);
+            $this->postScheduler($payload);
+        }
 
         return $this->sendJsonResponse([]);
     }
