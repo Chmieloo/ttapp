@@ -11,16 +11,19 @@ use Symfony\Component\Serializer\Serializer;
 class BaseController extends AbstractController
 {
     protected $serializer;
+    protected $slackKey;
 
     /**
      * BaseController constructor.
+     * @param $slackKey
      */
-    public function __construct()
+    public function __construct($slackKey)
     {
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
 
         $this->serializer = new Serializer($normalizers, $encoders);
+        $this->slackKey = $slackKey;
     }
 
     /**
