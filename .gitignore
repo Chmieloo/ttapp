@@ -6,3 +6,5 @@ front/false
 
 package-lock.json
 front/package-lock.json
+
+/api/config/services.yaml
