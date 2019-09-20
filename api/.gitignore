@@ -6,5 +6,4 @@
 /public/bundles/
 /var/
 /vendor/
-/config/services.yaml
 ###< symfony/framework-bundle ###
