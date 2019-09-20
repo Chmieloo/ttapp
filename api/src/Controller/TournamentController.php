@@ -8,6 +8,7 @@ use App\Entity\Tournament;
 use App\Repository\ConfigRepository;
 use App\Repository\GameRepository;
 use App\Repository\TournamentRepository;
+use Doctrine\DBAL\DBALException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -149,7 +150,7 @@ class TournamentController extends BaseController
     /**
      * @param $tournamentId
      * @return Response
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getTodaysFixtures($tournamentId)
     {
@@ -210,14 +211,10 @@ class TournamentController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
 
-        /** @var ConfigRepository $configRepository */
-        $configRepository = $em->getRepository(Config::class);
-        $config = $configRepository->find(Config::CONFIG_TYPE_SLACK_HOOK);
-
-        if ($config) {
+        if ($this->slackKey) {
             $data_string = json_encode($data);
 
-            $ch = curl_init($config->getValue());
+            $ch = curl_init($this->slackKey);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -283,7 +280,7 @@ class TournamentController extends BaseController
      * @param $tournamentId
      * @param $groupId
      * @return Response
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      * @internal param $numberOfFixtures
      */
     public function getTournamentPlayoffsDivisionData($tournamentId, $groupId)
