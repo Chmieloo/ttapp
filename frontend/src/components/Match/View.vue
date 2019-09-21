@@ -190,6 +190,21 @@ import Vue from 'vue'
 import VueGamepad from 'vue-gamepad'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
+// import VueSocketIO from 'vue-socket.io'
+import io from 'socket.io-client'
+
+/*
+const SocketInstance = socketio.connect('http://localhost:3000', {
+  query: {
+    token: window.localStorage.getItem('auth')
+  }
+})
+
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: SocketInstance
+}))
+*/
 
 Vue.use(VuejsDialog)
 Vue.use(VueGamepad)
@@ -212,10 +227,14 @@ export default {
       numServes: 2,
       idle: true,
       resultVisible: false,
-      post2Channel: true
+      post2Channel: true,
+      socket: io(window.location.hostname + ':3001')
     }
   },
   mounted () {
+    this.socket.on('MESSAGE', (data) => {
+      console.log(data)
+    })
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
@@ -226,6 +245,11 @@ export default {
     })
   },
   methods: {
+    sendMessage () {
+      this.socket.emit('SEND_MESSAGE', {
+        message: 'some message'
+      })
+    },
     toggleVisibility () {
       this.resultVisible = !this.resultVisible
     },
@@ -371,6 +395,7 @@ export default {
       this.checkServer()
     },
     flipServer () {
+      this.sendMessage()
       this.serverFlipped = !!((this.serverFlipped + 1) % 2)
     },
     setServer () {

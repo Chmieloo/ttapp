@@ -46,9 +46,7 @@ class PlayerController extends BaseController
         $player = $playerRepository->loadPlayerResults($id);
 
         if (!$player) {
-            throw $this->createNotFoundException(
-                'Player not found with id: ' . $id
-            );
+            $player = [];
         }
 
         return $this->sendJsonResponse($player);

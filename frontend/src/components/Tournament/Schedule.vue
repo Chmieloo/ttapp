@@ -47,8 +47,9 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .mainMatchContainer {
-  background: #3e3e3e;
+  background: #0e3c46;
   padding: 20px;
+  box-shadow: 0px 0px 3px black;
   table {
     border-collapse: collapse;
     .padl20 {
@@ -70,10 +71,12 @@ export default {
     }
     .row-schedule {
       margin-left: 20px;
-      background-color: #3e3e3e;
       padding: 0px 20px;
       border-top: none;
       border-bottom: 1px solid #797979;
+    }
+    :last-child {
+      border-bottom: none;
     }
   }
 }

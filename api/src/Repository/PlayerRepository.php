@@ -63,13 +63,15 @@ class PlayerRepository extends ServiceEntityRepository
      */
     public function loadPlayerById($playerId)
     {
-        $sql = 'select p.id, p.name, count(g.id) as played, p.profile_pic_url as pic, ' .
+        $sql = 'select p.id, p.name, count(g.id) as played, p.profile_pic_url as pic, p.tournament_elo as elo, ' .
                'sum(if(p.id = g.winner_id, 1, 0)) as wins, ' .
                'sum(if(g.winner_id = 0, 1, 0)) as draws, ' .
                'sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses ' .
                'from player p ' .
                'left join game g on p.id in (g.home_player_id, g.away_player_id) ' .
-               'where p.id = :playerId -- and g.is_finished = 1 ' .
+               'join tournament t on g.tournament_id = t.id ' .
+               'where p.id = :playerId  ' .
+               'and t.is_official = 1 and g.is_finished = 1 ' .
                'group by p.id';
 
         $params['playerId'] = $playerId;
@@ -77,8 +79,21 @@ class PlayerRepository extends ServiceEntityRepository
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
         $stmt-> execute($params);
-
         $player = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$player) {
+            $player['winPercentage'] = 0;
+            $player['notWinPercentage'] = 100;
+            $player['drawPercentage'] = 0;
+            $player['notDrawPercentage'] = 100;
+            $player['lossPercentage'] = 0;
+            $player['notLossPercentage'] = 100;
+            $player['played'] = 0;
+            $player['wins'] = 0;
+            $player['draws'] = 0;
+            $player['losses'] = 0;
+        }
+
         $player['winPercentage'] = $player['played'] > 0 ? number_format(($player['wins'] / $player['played']) * 100, 0) : 0;
         $player['notWinPercentage'] = 100 - $player['winPercentage'];
 
@@ -87,6 +102,43 @@ class PlayerRepository extends ServiceEntityRepository
 
         $player['lossPercentage'] = $player['played'] > 0 ? number_format(($player['losses'] / $player['played']) * 100, 0) : 0;
         $player['notLossPercentage'] = 100 - $player['lossPercentage'];
+
+        $player['played'] = $player['wins'] + $player['draws'] + $player['losses'];
+
+        # Load elo history and more
+        $sql = 'select if (p.id = g.home_player_id, g.new_home_elo, g.new_away_elo) as elo,
+               g.id, g.home_player_id, g.away_player_id, g.date_of_match, g.winner_id, g.home_score, g.away_score
+        from player p
+        left join game g on p.id in (g.home_player_id, g.away_player_id)
+        join tournament t on g.tournament_id = t.id
+        where p.id = :playerId
+        and g.is_finished = 1
+        and t.is_official = 1
+        order by g.date_played asc, g.id asc';
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute($params);
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $eloHistory[] = ['order', 'ELO history'];
+        $eloHistory[] = [0, 1500];
+        $index = 1;
+        foreach ($data as $row) {
+            $eloHistory[] = [
+                $index,
+                (int) $row['elo']
+            ];
+            $index++;
+        }
+
+        $player['eloHistory'] = $eloHistory;
+        $player['pieData'] = [
+            ['type', 'percentage'],
+            ['wins', (int) $player['wins']],
+            ['draws', (int) $player['draws']],
+            ['losses', (int) $player['losses']],
+        ];
 
         return $player;
     }
@@ -99,13 +151,14 @@ class PlayerRepository extends ServiceEntityRepository
     {
         $sql =
             'select g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
+            'p1.tournament_elo as homeElo, p2.tournament_elo as awayElo, ' .
             'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, ' .
             's1.home_points as s1hp, s1.away_points s1ap, ' .
             's2.home_points as s2hp, s2.away_points s2ap, ' .
             's3.home_points as s3hp, s3.away_points s3ap, ' .
             's4.home_points as s4hp, s4.away_points s4ap, ' .
-            'tg.name as groupName, g.date_of_match as dateOfMatch ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join player p1 on p1.id = g.home_player_id ' .
@@ -174,6 +227,7 @@ class PlayerRepository extends ServiceEntityRepository
                 'matchId' => $matchId,
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => $match['dateOfMatch'],
+                'datePlayed' => $match['datePlayed'],
                 'homePlayerId' => $match['homePlayerId'],
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
@@ -252,6 +306,10 @@ class PlayerRepository extends ServiceEntityRepository
                 'awayScoreTotal' => $match['awayScoreTotal'],
                 'numberOfSets' => $numberOfSets,
                 'scores' => $setScores,
+                'homeElo' => $match['homeElo'],
+                'awayElo' => $match['awayElo'],
+                'awayEloDiff' => (int) ($match['awayElo'] - $match['homeElo']),
+                'homeEloDiff' => (int) ($match['homeElo'] - $match['awayElo']),
             ];
         }
 

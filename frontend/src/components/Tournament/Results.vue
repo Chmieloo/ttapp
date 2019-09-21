@@ -1,14 +1,14 @@
 <template>
   <div class="mainMatchContainer">
     <table>
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data">
+      <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
         <td>{{ match.datePlayed }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
-          {{ match.homePlayerDisplayName }}
+          <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
         </td>
         <td style="width: 30px; text-align: center;">-</td>
         <td v-bind:class="match.winnerId == match.awayPlayerId ? 'winner-color' : ''">
-          {{ match.awayPlayerDisplayName }}
+          <router-link :to="'/player/' + match.awayPlayerId + '/info'">{{ match.awayPlayerDisplayName }}</router-link>
         </td>
         <td>
           <span class="totalScore">
@@ -51,17 +51,35 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .mainMatchContainer {
-  background: #3e3e3e;
+  background: #0e3c46;
   padding: 20px;
+  box-shadow: 0px 0px 3px black;
   table {
+    border-collapse: collapse;
     width: 100%;
     .totalScore {
       color: white;
       font-weight: 600;
       padding-right: 15px;
     }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    a:hover {
+      color: white;
+    }
     .setScores {
       color: #979797;
+    }
+    .row-schedule {
+      margin-left: 20px;
+      padding: 0px 20px;
+      border-top: none;
+      border-bottom: 1px solid #ffffff2b;
+    }
+    :last-child {
+      border-bottom: none;
     }
   }
 }

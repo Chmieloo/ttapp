@@ -1,71 +1,57 @@
 <template>
   <div id="app">
-    <div class="mainContainer">
-        <div class="playerCardHeader">
-            <span class="header-title">player info</span>
+    <div class="mainProfileContainer">
+        <table>
+            <tr>
+                <td>
+                    <div class="pictureContainer">
+                        <table>
+                            <tr>
+                                <td style="padding-top: 20px;">
+                                    <div class="cutoutPic">
+                                        <img :src=playerPicUrl class="pic" />
+                                    </div>
+                                </td>
+                                <td class="padl20">
+                                    <div class="playerInfoName">
+                                        <span class="playerName">{{ player.name }}</span>
+                                    </div>
+                                    <div class="playerInfo">
+                                        <div>
+                                            <div style="float: left;">
+                                                <div>ELO<br />RATING</div>
+                                                <div class="elofont">{{ player.elo }}</div>
+                                            </div>
+                                            <div style="float: left; margin-left: 20px;">
+                                                <div>MATCHES<br />PLAYED</div>
+                                                <div class="elofont">{{ player.played }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td>
+                    <div class="pieContainer">
+                        <GChart type="PieChart" :data="pieChartData" :options="pieChartOptions" class="chartPercentage" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="dataContainer">
+            <GChart type="AreaChart" :data="lineChartData" :options="lineChartOptions" class="chartElo" />
         </div>
-        <div class="playerCardPic">
-            <div class="cutoutPic">
-                <img :src=playerPicUrl class="pic" />
-            </div>
-            <span class="playerName">{{ player.name }}</span>
-        </div>
-        <div class="playerCardInfo">
-            <table class="playerData">
-                <tr>
-                    <td style="width: 25%;">
-                        <div class="innerData">
-                            <div class="lab">MATCHES PLAYED</div>
-                            <div class="bigVal">{{ player.played }}</div>
-                        </div>
-                    </td>
-                    <td style="width: 25%;">
-                        <div class="innerData">
-                            <div class="lab">WINS : {{ player.wins }}</div>
-                            <div class="val">
-                                <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
-                                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
-                                    <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
-                                    <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayWins" stroke-dashoffset="60%"></circle>
-                                    <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ winPercentage }}%</text>
-                                </svg>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="width: 25%;">
-                        <div class="innerData">
-                            <div class="lab">DRAWS : {{ player.draws }}</div>
-                            <div class="val">
-                                <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
-                                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
-                                    <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
-                                    <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayDraws" stroke-dashoffset="60%"></circle>
-                                    <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ drawPercentage }}%</text>
-                                </svg>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="width: 25%;">
-                        <div class="innerData">
-                            <div class="lab">LOSSES : {{ player.losses }}</div>
-                            <div class="val">
-                                <svg width="100%" height="100px" viewBox="0 0 42 42" class="donut">
-                                    <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="#383738"></circle>
-                                    <circle class="donut-ring" cx="21" cy="21" r="20" fill="transparent" stroke="#424242" stroke-width="2"></circle>
-                                    <circle class="donut-segment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#d00000" stroke-width="2" :stroke-dasharray="strokeDashArrayLosses" stroke-dashoffset="60%"></circle>
-                                    <text x="14px" y="23px" style="font-size: 8px;" fill="#fff">{{ lossPercentage }}%</text>
-                                </svg>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <hr style="border: none; border-bottom: 1px solid #666;" />
+        <div class="dataContainer">
             <div style="padding: 10px 0px; font-size: 20px; color: white;">
                 LAST TOURNAMENT MATCHES
             </div>
             <table style="width: 100%;">
                 <tr v-for="result in results" v-bind:key="result.id" class="row-data">
+                    <td>
+                        {{ result.datePlayed }}
+                    </td>
                     <td class="w30pc">
                         <span v-bind:class="result.winnerId == result.homePlayerId ? 'winner-color' : ''">
                             {{ result.homePlayerName }}
@@ -99,13 +85,14 @@
                     </td>
                 </tr>
             </table>
-            <hr style="border: none; border-bottom: 1px solid #666;" />
+        </div>
+        <div class="dataContainer">
             <div style="padding: 10px 0px; font-size: 20px; color: white;">
-                NEXT TOURNAMENT MATCHES
+                UPCOMING TOURNAMENT MATCHES
             </div>
             <table style="width: 100%;">
                 <tr v-for="event in schedule" v-bind:key="event.id" class="row-data">
-                    <td>
+                    <td style="width: 200px;">
                         {{ event.dateOfMatch }}
                     </td>
                     <td v-if="event.homePlayerId == player.id">
@@ -113,6 +100,28 @@
                     </td>
                     <td v-else>
                         {{ event.homePlayerName }}
+                    </td>
+                    <td v-if="event.homePlayerId == player.id">
+                        ELO rating <span style="color: white;">{{ event.awayElo }}</span>
+                    </td>
+                    <td v-else>
+                        ELO rating <span style="color: white;">{{ event.homeElo }}</span>
+                    </td>
+                    <td v-if="event.homePlayerId == player.id">
+                        <span v-if="event.awayEloDiff < 0">
+                            <i class="fas fa-chevron-circle-down"></i> {{ event.awayEloDiff }}
+                        </span>
+                        <span v-else>
+                            <i class="fas fa-chevron-circle-up"></i> {{ event.awayEloDiff }}
+                        </span>
+                    </td>
+                    <td v-else>
+                        <span v-if="event.homeEloDiff < 0">
+                            <i class="fas fa-chevron-circle-down"></i> {{ event.homeEloDiff }}
+                        </span>
+                        <span v-else>
+                            <i class="fas fa-chevron-circle-up"></i> {{ event.homeEloDiff }}
+                        </span>
                     </td>
                 </tr>
             </table>
@@ -123,6 +132,10 @@
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueGoogleCharts from 'vue-google-charts'
+
+Vue.use(VueGoogleCharts)
 
 export default {
   name: 'App',
@@ -135,7 +148,81 @@ export default {
       lossPercentage: 0,
       strokeDashArrayWins: '0 100',
       strokeDashArrayDraws: '0 100',
-      strokeDashArrayLosses: '0 100'
+      strokeDashArrayLosses: '0 100',
+      pieChartData: null,
+      pieChartOptions: {
+        backgroundColor: '#0e3c46',
+        chartArea: {
+          backgroundColor: '#0e3c46',
+          height: '100%'
+        },
+        legend: {
+          alignment: 'center',
+          position: 'right',
+          textStyle: {
+            color: 'white',
+            fontName: 'Nunito',
+            fontSize: 16
+          }
+        },
+        pieSliceTextStyle: {
+          color: 'white',
+          fontName: 'Nunito',
+          fontSize: 16
+        },
+        slices: [{color: '#2dd7ff'}, {color: 'black'}, {color: '#105869'}]
+      },
+      lineChartData: null,
+      lineChartOptions: {
+        vAxis: {
+          baselineColor: '#aaa',
+          textStyle: {
+            color: 'white',
+            fontName: 'Nunito',
+            fontSize: 16
+          },
+          minorGridLines: {
+            count: 3
+          },
+          gridlines: {
+            count: 2,
+            color: '#aaa'
+          }
+        },
+        hAxis: {
+          baselineColor: '#aaa',
+          textStyle: {
+            color: 'white',
+            fontName: 'Nunito',
+            fontSize: 16
+          },
+          minorGridLines: {
+            count: 3
+          },
+          gridlines: {
+            count: 2,
+            color: '#aaa'
+          }
+        },
+        lineWidth: 4,
+        pointSize: 10,
+        pointShape: 'circle',
+        pointsVisible: true,
+        legend: {
+          position: 'top',
+          textStyle: {
+            color: 'white', fontSize: 16
+          }
+        },
+        backgroundColor: '#0e3c46',
+        curveType: 'function',
+        chart: {
+          title: 'Player\'s ELO history'
+        },
+        chartArea: {
+          backgroundColor: '#0e3c46'
+        }
+      }
     }
   },
   mounted () {
@@ -152,9 +239,11 @@ export default {
       this.strokeDashArrayLosses = player.data.lossPercentage + ' ' + player.data.notLossPercentage
       this.lossPercentage = player.data.lossPercentage
       this.playerPicUrl = player.data.pic
-
+      this.lineChartData = player.data.eloHistory
+      this.pieChartData = player.data.pieData
       this.results = results.data
       this.schedule = schedule.data
+      console.log(this.chartData)
     })).catch(error => {
       console.log('Error when getting data for matches ' + error)
     })
@@ -164,6 +253,92 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
+.elofont {
+    font-size: 25pt;
+    color: white;
+}
+
+.chartElo {
+    height: 300px;
+}
+
+.playerInfoName {
+    margin-bottom: 20px;
+}
+
+.playerInfo {
+    color: #a9a9a9;
+    font-size: 18px;
+}
+
+.padl20 {
+    padding-left: 20px;
+}
+
+.mainProfileContainer {
+    margin: 0 auto;
+    width: 1000px;
+}
+
+.container {
+  margin-bottom: 20px;
+  background: #0e3c46;
+  padding: 20px;
+  box-shadow: 0px 0px 3px black;
+}
+
+.pictureContainer {
+  .container;
+  margin-top: 30px;
+  width: 500px;
+  height: 200px;
+  padding-top: 20px;
+}
+
+.dataContainer {
+  .container;
+  margin-top: 20px;
+}
+
+.pieContainer {
+  .container;
+  margin-top: 30px;
+  height: 200px;
+  width: 380px;
+  margin-left: 32px;
+}
+
+.pic {
+    margin: 0 auto;
+    width: 150px;
+    margin-top: -20px;
+}
+
+div.cutoutPic {
+    width: 154px;
+    height: 154px;
+    position:relative;
+    overflow:hidden;
+    margin: 0 auto;
+}
+
+div.cutoutPic:before{
+    content:'';
+    position: absolute;
+    bottom: 0;
+    width: 146px;
+    height: 146px;
+    border-radius: 100%;
+    border: 4px solid white;
+    border-radius: 100%;
+    box-shadow: 0px 200px 0px 300px #0e3c46;
+}
+
+.playerName {
+    font-size: 25px;
+    color: white;
+}
+
 .infoCard {
     border: 1px solid #252525;
     padding: 20px;
@@ -239,37 +414,5 @@ table.playerData {
         background: #383738;
         box-shadow: 0px -1px 5px 0px black;
     }
-}
-
-.playerName {
-    font-size: 40px;
-    text-transform: uppercase;
-    color: white;
-}
-
-.pic {
-    margin: 0 auto;
-    width: 150px;
-    margin-top: -20px;
-}
-
-div.cutoutPic {
-    width: 150px;
-    height: 150px;
-    position:relative;
-    overflow:hidden;
-    margin: 0 auto;
-}
-
-div.cutoutPic:before{
-    content:'';
-    position: absolute;
-    bottom: 0;
-    width: 146px;
-    height: 146px;
-    border-radius: 100%;
-    border: 2px solid white;
-    border-radius: 100%;
-    box-shadow: 0px 200px 0px 300px #2d2c2d;
 }
 </style>
