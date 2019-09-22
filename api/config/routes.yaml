@@ -172,6 +172,13 @@ match_server:
   requirements:
     id: '\d+'
 
+match_broadcast:
+  path: /matches/{id}/broadcast
+  controller: App\Controller\MatchController::broadcast
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 match_add:
   path: /matches/add/official
   controller: App\Controller\MatchController::addMatch

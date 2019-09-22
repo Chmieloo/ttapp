@@ -701,4 +701,62 @@ class MatchController extends BaseController
 
         return $this->sendJsonResponse($playerCache);
     }
+
+    public function broadcast($id)
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $data = $gameRepository->loadById($id);
+
+        if ($data['scores']) {
+            # if we have scores, match was broadcasted
+            return $this->sendJsonResponse([]);
+        }
+
+        $message = '';
+
+        if ($data) {
+            $message .= "Table tennis league official match starting:\n";
+            $message .= "*" . $data['groupName'] . "*: " . $data['homeSlackName'] . " *vs* " . $data['awaySlackName'] . "\n";
+            $message .= " <" . $this->guiUrl . "/#/match/" . $id . "/spectate|Spectate>";
+        }
+
+        if ($message) {
+            $payload = [
+                'text' => $message,
+                'method' => 'post',
+                'contentType' => 'application/json',
+                'muteHttpExceptions' => true,
+                'link_names' => 1,
+                'username' => 'tabletennisbot',
+                'icon_emoji' => ':table_tennis_paddle_and_ball:'
+            ];
+
+            $this->postBroadcast($payload);
+        }
+
+        return $this->sendJsonResponse([]);
+    }
+
+    /**
+     * @param $data
+     * @return bool|string
+     */
+    private function postBroadcast($data)
+    {
+        if ($this->slackKey) {
+            $data_string = json_encode($data);
+
+            $ch = curl_init($this->slackKey);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
+
+            return curl_exec($ch);
+        }
+    }
 }

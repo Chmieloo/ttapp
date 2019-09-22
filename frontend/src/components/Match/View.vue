@@ -110,6 +110,9 @@
             </div>
           </div>
         </div>
+        <div v-if="startMessage" style="color: white; margin-top: 50px; background-color: #10880f; border-radius: 10px; padding: 10px;">
+          {{ startMessage }}
+        </div>
       </div>
       <div class="result-dialog" v-if="resultVisible">
         <table style="margin: 0 auto;">
@@ -166,6 +169,7 @@
       <button v-gamepad:button-b="subPointRight">Press me!</button>
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
+      <button v-gamepad:button-start="startGame">Press me!</button>
     </div>
     <div v-if="!match.isFinished">
       <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
@@ -190,21 +194,7 @@ import Vue from 'vue'
 import VueGamepad from 'vue-gamepad'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
-// import VueSocketIO from 'vue-socket.io'
 import io from 'socket.io-client'
-
-/*
-const SocketInstance = socketio.connect('http://localhost:3000', {
-  query: {
-    token: window.localStorage.getItem('auth')
-  }
-})
-
-Vue.use(new VueSocketIO({
-  debug: true,
-  connection: SocketInstance
-}))
-*/
 
 Vue.use(VuejsDialog)
 Vue.use(VueGamepad)
@@ -228,16 +218,16 @@ export default {
       idle: true,
       resultVisible: false,
       post2Channel: true,
-      socket: io(window.location.hostname + ':3001')
+      socket: io(window.location.hostname + ':3001'),
+      broadcasted: false,
+      startMessage: null
     }
   },
   mounted () {
-    this.socket.on('MESSAGE', (data) => {
-      console.log(data)
-    })
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
+      this.setScores = res.data.scores
       this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
       this.idle = true
@@ -245,9 +235,9 @@ export default {
     })
   },
   methods: {
-    sendMessage () {
+    sendMessage (data) {
       this.socket.emit('SEND_MESSAGE', {
-        message: 'some message'
+        message: data
       })
     },
     toggleVisibility () {
@@ -292,11 +282,15 @@ export default {
     },
     checkServer () {
       var setNumber = this.match.currentSet
+      if (parseInt(this.match.currentSet) === 0) {
+        setNumber = 1
+      }
       if (this.homeScore === 0 && this.awayScore === 0) {
         this.numServes = 2
 
         if (this.match.serverId === this.match.homePlayerId) {
           console.log('home server')
+          console.log(setNumber)
           this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
         } else {
           console.log('away server')
@@ -386,6 +380,7 @@ export default {
             this.idle = true
             this.numServes = 2
             this.checkServer()
+            this.sendMessage(this.getPayload())
           }
         })
       }
@@ -395,7 +390,6 @@ export default {
       this.checkServer()
     },
     flipServer () {
-      this.sendMessage()
       this.serverFlipped = !!((this.serverFlipped + 1) % 2)
     },
     setServer () {
@@ -415,11 +409,31 @@ export default {
         }
       })
     },
+    startGame () {
+      // allow only if we are in the idle state
+      if (this.idle === false) {
+        return false
+      }
+      this.startMessage = null
+      this.broadcasted = true
+
+      // set idle state to 1, as we are sending request to change server
+      this.idle = false
+      axios.get('/api/matches/' + this.$route.params.id + '/broadcast').then((res) => {
+        if (res.data) {
+          this.idle = true
+        }
+      })
+    },
     resetScores () {
       this.homeScore = 0
       this.awayScore = 0
     },
     addPointLeft () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (!this.endSet && this.idle) {
         if (this.flipped) {
           this.awayScore++
@@ -430,9 +444,27 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
+      }
+    },
+    getPayload () {
+      return {
+        'score': {
+          'homeScore': this.homeScore,
+          'awayScore': this.awayScore
+        },
+        'setScores': this.match.scores,
+        'currentSet': this.match.currentSet,
+        'isFinished': this.match.isFinished,
+        'homeScoreTotal': this.match.homeScoreTotal,
+        'awayScoreTotal': this.match.awayScoreTotal
       }
     },
     addPointRight () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (!this.endSet && this.idle) {
         if (this.flipped) {
           this.homeScore++
@@ -443,12 +475,17 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     /**
      * Substract points from player on the left side of the screen
      */
     subPointLeft () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (this.idle) {
         if (this.flipped) {
           if (this.awayScore > 0) {
@@ -463,9 +500,14 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     subPointRight () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (this.idle) {
         if (this.flipped) {
           if (this.homeScore > 0) {
@@ -480,6 +522,7 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     isConnected () {

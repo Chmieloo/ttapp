@@ -209,7 +209,7 @@ class TournamentController extends BaseController
      */
     private function postScheduler($data)
     {
-        $em = $this->getDoctrine()->getManager();
+        $this->getDoctrine()->getManager();
 
         if ($this->slackKey) {
             $data_string = json_encode($data);

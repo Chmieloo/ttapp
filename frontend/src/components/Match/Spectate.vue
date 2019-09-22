@@ -1,162 +1,146 @@
 <template>
   <div class="mainContainer">
-    <div v-bind:class="flipped ? 'container-fr' : 'container-fl'">
-      <div>
+    <div>
+      <span data-v-729845b3="" class="fa-stack fa-2x" style="opacity: 0.5; margin-left: -60px;">
+        <i data-v-729845b3="" class="fas fa-circle fa-stack-2x"></i> 
+        <i data-v-729845b3="" class="fas fa-square fa-stack-2x" style="margin-left: 30px; margin-top: -3px; font-size: 53pt;"></i>
+        <i data-v-729845b3="" class="fas fa-circle fa-stack-2x" style="margin-left: 59px;"></i>
+      </span>
+    </div>
+    <div style="margin-top: -58px; font-size: 10pt; margin-left: -60px;">
+      <span class="fa-stack fa-2x">
+        <i class="fas fa-circle fa-stack-2x" style="color: #03a9f4;"></i>
+        <i class="fas fa-eye fa-stack-1x fa-inverse"></i>
+      </span>
+    </div>
+    <div style="margin-top: -54px; font-size: 10pt; margin-left: 50px; color: white;">
+      <span class="fa-stack fa-2x">
+        {{ spectators }}
+      </span>
+    </div>
+    <div style="margin: 0 auto; width: 80%; clear: both; height: 350px;">
+      <div class="container-fl">
+        <div>
+          <span class="fa-stack fa-2x">
+            <i class="fas fa-walking" style="font-size: 300px; color: #105869; margin-left: -40px;"></i>
+            <i class="fas fa-table-tennis fa-stack-1x fa-inverse" style="margin-top: -200px;margin-left: 120px;font-size: 60px;color: #105869;"></i>
+          </span>
+        </div>
+      </div>
+      <div class="container-fr">
+        <div>
+          <span class="fa-stack fa-2x">
+            <i class="fas fa-walking fa-flip-horizontal" style="font-size: 300px; color: #105869; margin-left: -70px;"></i>
+            <i class="fas fa-table-tennis fa-stack-1x fa-inverse fa-flip-horizontal" style="margin-top: -200px;margin-left: -120px;font-size: 60px;color: #105869;"></i>
+          </span>
+        </div>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+    <div v-if="parseInt(isFinished) == 0" style="margin: 0 auto; width: 80%; clear: both; position: absolute;">
+      <div class="container-fl">
+        <div class="score-left">
+          <span class="fa-stack fa-2x">
+            <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+            <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ homeScore }}</i>
+          </span>
+        </div>
+      </div>
+      <div class="container-fr">
+        <div class="score-right">
+          <span class="fa-stack fa-2x">
+            <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+            <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ awayScore }}</i>
+          </span>
+        </div>
+      </div>      
+      <div style="clear: both;"></div>
+    </div>
+    <div v-else style="margin: 0 auto; width: 80%; clear: both; position: absolute;">
+      <div class="container-fl">
+        <div class="score-left">
+          <span class="fa-stack fa-2x">
+            <i v-if="parseInt(awayScoreTotal) < parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
+            <i v-else-if="parseInt(awayScoreTotal) === parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #7f949a;"></i>
+            <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>  
+            <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ homeScoreTotal }}</i>
+          </span>
+        </div>
+      </div>
+      <div class="container-fr">
+        <div class="score-right">
+          <span class="fa-stack fa-2x">
+            <i v-if="parseInt(awayScoreTotal) > parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
+            <i v-else-if="parseInt(awayScoreTotal) === parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #7f949a;"></i>            
+            <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>          
+            <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ awayScoreTotal }}</i>
+          </span>
+        </div>
+      </div>      
+      <div style="clear: both;"></div>
+    </div>
+    <div v-if="parseInt(isFinished) == 1" style="width: 100%;clear: both;position: absolute;margin-top: -80px;margin-left: -20px;font-size: 20pt;font-weight: 900;color: white;">
+      FINAL MATCH SCORE
+    </div>
+    <div class="versusContainer">
+      <div class="container-fl">
         <span class="header-title">{{ match.homePlayerDisplayName }}</span>
-        <div v-if="match.isFinished == 1">
-          <div v-if="match.winnerId == 0">
-            <div class="rallyScore">
-              {{ match.homeScoreTotal }}
-            </div>
-            <div class="eloInfo">
-              {{ match.homeElo }} ELO 
-            </div>
-            <div class="eloInfo">
-              {{ match.oldHomeElo }} &rarr; {{ match.newHomeElo }}
-            </div>
-          </div>
-          <div v-else-if="match.winnerId == match.homePlayerId">
-            <div class="rallyScoreWinner">
-              {{ match.homeScoreTotal }}
-            </div>
-            <div class="eloInfo">
-              {{ match.homeElo }} ELO 
-            </div>
-            <div class="eloInfo">
-              {{ match.oldHomeElo }} &rarr; {{ match.newHomeElo }}
-            </div>
-          </div>
-          <div v-else>
-            <div class="rallyScore">
-              {{ match.homeScoreTotal }}
-            </div>
-            <div class="eloInfo">
-              {{ match.homeElo }} ELO 
-            </div>
-            <div class="eloInfo">
-              {{ match.oldHomeElo }} &rarr; {{ match.newHomeElo }}
-            </div>
-          </div>
-        </div>
-        <div v-else>
-          <div class="rallyScore">
-            {{ homeScore }}
-          </div>
-        </div>
       </div>
-    </div>
-    <div v-bind:class="flipped ? 'container-fl' : 'container-fr'">
-      <div>
+      <div class="container-fr">
         <span class="header-title">{{ match.awayPlayerDisplayName }}</span>
-        <div v-if="match.isFinished == 1">
-          <div v-if="match.winnerId == 0">
-            <div class="rallyScore">
-              {{ match.awayScoreTotal }}
-            </div>
-            <div class="eloInfo">
-              {{ match.awayElo }} ELO 
-            </div>
-            <div class="eloInfo">
-              {{ match.oldAwayElo }} &rarr; {{ match.newAwayElo }}
-            </div>
-          </div>
-          <div v-else-if="match.winnerId == match.awayPlayerId">
-            <div class="rallyScoreWinner">
-              {{ match.awayScoreTotal }}
-            </div>
-            <div class="eloInfo">
-              {{ match.awayElo }} ELO 
-            </div>
-            <div class="eloInfo">
-              {{ match.oldAwayElo }} &rarr; {{ match.newAwayElo }}
-            </div>
-          </div>
-          <div v-else>
-            <div class="rallyScore">
-              {{ match.awayScoreTotal }}
-            </div>
-            <div class="eloInfo">
-              {{ match.awayElo }} ELO 
-            </div>
-            <div class="eloInfo">
-              {{ match.oldAwayElo }} &rarr; {{ match.newAwayElo }}
-            </div>
-          </div>
-        </div>
-        <div v-else>
-          <div class="rallyScore">
-            {{ awayScore }}
-          </div>
-        </div>
       </div>
-    </div>
-    <div class="container-mid">
-      <div class="midInfoHeader">MATCH MODE</div>
-      <div class="midInfoValue">BO4</div>
-      <div class="midInfoHeader">SET SCORE</div>
-      <div class="midInfoValue">
-        <div class="tableSetScores">
-          <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
-            <div v-for="(score, index) in match.scores" v-bind:key="index" class="rowData">
-              <span v-if="match.currentSet - 1 != index">{{ score.home }}</span>
+      <div class="container-mid">
+        <div class="midInfoHeader">BEST OF 4</div>
+        <div class="midInfoHeader">SET SCORES</div>
+        <div class="midInfoValue">
+          <div class="tableSetScores">
+            <div class="set-container-fl">
+              <div v-for="(score, index) in matchScores" v-bind:key="index" class="rowData">
+                <span v-if="currentSet - 1 != index">
+                  <span class="fa-stack" style="font-size: 30px;">
+                    <i v-if="parseInt(score.home) > parseInt(score.away)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
+                    <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+                    <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ score.home }}</i>
+                  </span>
+                </span>
+              </div>
             </div>
-          </div>
-          <div v-bind:class="flipped ? 'set-container-fl' : 'set-container-fr'">
-            <div v-for="(score, index) in match.scores" v-bind:key="index" class="rowData">
-              <span v-if="match.currentSet - 1 != index">{{ score.away }}</span>
+            <div class="set-container-fr">
+              <div v-for="(score, index) in matchScores" v-bind:key="index" class="rowData">
+                <span v-if="currentSet - 1 != index">
+                  <span class="fa-stack" style="font-size: 30px;">
+                    <i v-if="parseInt(score.away) > parseInt(score.home)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
+                    <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+                    <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ score.away }}</i>
+                  </span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div v-show="endSet" class="endSet" v-gamepad:shoulder-right="finalizeSet">
-        <div>Press [R] to confirm set score.</div>
-        <div><img src="./assets/padr.png" /></div>
-      </div>
+      <div style="clear: both;"></div>
     </div>
     <div style="clear: both;"></div>
-    <div style="display: none;">
-      <button v-gamepad:button-y="addPointLeft">Press me!</button>
-      <button v-gamepad:button-a="addPointRight">Press me!</button>
-      <button v-gamepad:button-x="subPointLeft">Press me!</button>
-      <button v-gamepad:button-b="subPointRight">Press me!</button>
-      <button v-gamepad:shoulder-left="flipSides">Press me!</button>
-      <button v-gamepad:button-select="setServer">Press me!</button>
-    </div>
-    <div v-if="!match.isFinished">
-      <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
-        <span v-if="this.numServes === 2" class="server">
-          <i class="fas fa-table-tennis"></i>
-          <i class="fas fa-table-tennis"></i>
-        </span>
-        <span v-if="this.numServes === 1" class="server">
-          <i class="fas fa-table-tennis"></i>
-        </span>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import Vue from 'vue'
-import VueGamepad from 'vue-gamepad'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import io from 'socket.io-client'
 
 Vue.use(VuejsDialog)
-Vue.use(VueGamepad)
 
 export default {
   components: {
-    VueGamepad,
     VuejsDialog
   },
   data () {
     return {
       match: [],
-      flipped: false,
-      gamepadConnected: 0,
       homeScore: 0,
       awayScore: 0,
       endSet: 0,
@@ -164,57 +148,43 @@ export default {
       serverFlipped: false,
       numServes: 2,
       idle: true,
-      post2Channel: true,
-      socket: io(window.location.hostname + ':3001')
+      socket: io(window.location.hostname + ':3001'),
+      currentSet: 0,
+      isFinished: 0,
+      spectators: 0,
+      homeScoreTotal: 0,
+      awayScoreTotal: 0
     }
   },
   mounted () {
     this.socket.on('MESSAGE', (data) => {
-      console.log(data)
+      if (this.isFinished === 0) {
+        this.homeScore = data.message.score.homeScore
+        this.awayScore = data.message.score.awayScore
+        this.matchScores = data.message.setScores
+        this.currentSet = data.message.currentSet
+        this.isFinished = data.message.isFinished
+        this.homeScoreTotal = data.message.homeScoreTotal
+        this.awayScoreTotal = data.message.awayScoreTotal
+      }
+    })
+    this.socket.on('CONNECTIONS', (data) => {
+      this.spectators = data
     })
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
+      this.currentSet = res.data.currentSet
       this.match = res.data
+      this.isFinished = res.data.isFinished
+      this.matchScores = res.data.scores
       this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
       this.idle = true
-      this.checkServer()
+      this.homeScoreTotal = res.data.homeScoreTotal
+      this.awayScoreTotal = res.data.awayScoreTotal
     })
   },
   methods: {
-    sendMessage () {
-      this.socket.emit('SEND_MESSAGE', {
-        message: 'some message'
-      })
-    },
-    postResults (event) {
-      axios.post('/api/matches/save', {
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded'
-        },
-        matchId: event.target.elements.matchId.value,
-        post2Channel: this.post2Channel,
-        h1: typeof event.target.elements.home_set_1 === 'undefined' ? '' : event.target.elements.home_set_1.value,
-        h2: typeof event.target.elements.home_set_2 === 'undefined' ? '' : event.target.elements.home_set_2.value,
-        h3: typeof event.target.elements.home_set_3 === 'undefined' ? '' : event.target.elements.home_set_3.value,
-        h4: typeof event.target.elements.home_set_4 === 'undefined' ? '' : event.target.elements.home_set_4.value,
-        a1: typeof event.target.elements.away_set_1 === 'undefined' ? '' : event.target.elements.away_set_1.value,
-        a2: typeof event.target.elements.away_set_2 === 'undefined' ? '' : event.target.elements.away_set_2.value,
-        a3: typeof event.target.elements.away_set_3 === 'undefined' ? '' : event.target.elements.away_set_3.value,
-        a4: typeof event.target.elements.away_set_4 === 'undefined' ? '' : event.target.elements.away_set_4.value
-      }).then((res) => {
-        this.errors = []
-        if (res.status === 200) {
-          // self.$router.push({ name: 'MatchView', params: { id: this.match.matchId } })
-          // TODO for now - fix that to use router
-          document.location.href = '/'
-        }
-        return true
-      }).catch(error => {
-        console.log(error)
-        this.errors = []
-      })
-    },
     range: function (min, max) {
       var array = []
       var j = 0
@@ -224,249 +194,40 @@ export default {
       }
       return array
     },
-    checkServer () {
-      var setNumber = this.match.currentSet
-      if (this.homeScore === 0 && this.awayScore === 0) {
-        this.numServes = 2
-
-        if (this.match.serverId === this.match.homePlayerId) {
-          console.log('home server')
-          this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-        } else {
-          console.log('away server')
-          this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-        }
-      }
-      var totalScore = this.homeScore + this.awayScore
-      if (totalScore < 20) {
-        this.numServes = 2 - (totalScore % 2)
-
-        var mod4 = (totalScore % 4)
-        if (mod4 === 1) {
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-          } else {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-          }
-        } else if (mod4 === 2) {
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-          } else {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-          }
-        } else if (mod4 === 3) {
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-          } else {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-          }
-        } else if (mod4 === 0) {
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-          } else {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-          }
-        }
-      } else {
-        this.numServes = 1
-        var mod2 = (totalScore % 2)
-        if (mod2 === 1) {
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-          } else {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-          }
-        } else if (mod2 === 0) {
-          if (this.match.serverId === this.match.homePlayerId) {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
-          } else {
-            this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
-          }
-        }
-      }
-    },
-    // logic to check if set is finished
-    isFinishedSet () {
-      if (this.homeScore >= 11 || this.awayScore >= 11) {
-        if (Math.abs(this.homeScore - this.awayScore) < 2) {
-          return false
-        } else {
-          return this.confirmFinalScore()
-        }
-      } else {
-        return false
-      }
-    },
-    checkFinalScore () {
-      if (this.homeScore >= 11 || this.awayScore >= 11) {
-        if (Math.abs(this.homeScore - this.awayScore) < 2) {
-          this.endSet = 0
-        } else {
-          this.endSet = 1
-        }
-      } else {
-        this.endSet = 0
-      }
-    },
-    finalizeSet () {
-      if (this.endSet && this.idle) {
-        this.idle = false
-        axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
-          if (res.data) {
-            this.endSet = 0
-            this.flipSides()
-            this.resetScores()
-            this.match = res.data
-            this.idle = true
-            this.numServes = 2
-            this.checkServer()
-          }
-        })
-      }
-    },
-    flipSides () {
-      this.flipped = !!((this.flipped + 1) % 2)
-      this.checkServer()
-    },
-    flipServer () {
-      this.sendMessage()
-      this.serverFlipped = !!((this.serverFlipped + 1) % 2)
-    },
-    setServer () {
-      // allow only if we are in the idle state
-      if (this.idle === false) {
-        return false
-      }
-      // set idle state to 1, as we are sending request to change server
-      this.idle = false
-      // change INITIAL server, by default it is home
-      axios.get('/api/matches/' + this.$route.params.id + '/server').then((res) => {
-        if (res.data) {
-          this.flipServer()
-          this.match = res.data
-          this.checkServer()
-          this.idle = true
-        }
-      })
-    },
     resetScores () {
       this.homeScore = 0
       this.awayScore = 0
-    },
-    addPointLeft () {
-      if (!this.endSet && this.idle) {
-        if (this.flipped) {
-          this.awayScore++
-          this.savePoint(0, 1, this.match.matchId)
-        } else {
-          this.homeScore++
-          this.savePoint(1, 0, this.match.matchId)
-        }
-        this.checkFinalScore()
-        this.checkServer()
-      }
-    },
-    addPointRight () {
-      if (!this.endSet && this.idle) {
-        if (this.flipped) {
-          this.homeScore++
-          this.savePoint(1, 0, this.match.matchId)
-        } else {
-          this.awayScore++
-          this.savePoint(0, 1, this.match.matchId)
-        }
-        this.checkFinalScore()
-        this.checkServer()
-      }
-    },
-    /**
-     * Substract points from player on the left side of the screen
-     */
-    subPointLeft () {
-      if (this.idle) {
-        if (this.flipped) {
-          if (this.awayScore > 0) {
-            this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
-            this.delPoint(0, 1, this.match.matchId)
-          }
-        } else {
-          if (this.homeScore > 0) {
-            this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
-            this.delPoint(1, 0, this.match.matchId)
-          }
-        }
-        this.checkFinalScore()
-        this.checkServer()
-      }
-    },
-    subPointRight () {
-      if (this.idle) {
-        if (this.flipped) {
-          if (this.homeScore > 0) {
-            this.homeScore = (this.homeScore - 1) < 0 ? this.homeScore : --this.homeScore
-            this.delPoint(1, 0, this.match.matchId)
-          }
-        } else {
-          if (this.awayScore > 0) {
-            this.awayScore = (this.awayScore - 1) < 0 ? this.awayScore : --this.awayScore
-            this.delPoint(0, 1, this.match.matchId)
-          }
-        }
-        this.checkFinalScore()
-        this.checkServer()
-      }
-    },
-    savePoint (homeScore, awayScore, matchId) {
-      // allow only when idle
-      if (this.idle === false) {
-        return false
-      }
-      // set state
-      this.idle = false
-      axios.post('/api/points/add', {
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded'
-        },
-        home: homeScore,
-        away: awayScore,
-        matchId: matchId
-      }).then((res) => {
-        this.match.currentSet = res.data.currentSet
-        this.idle = true
-      }).catch(error => {
-        this.idle = true
-        console.log('error while adding point: ' + error.response)
-      })
-    },
-    delPoint (homeScore, awayScore, matchId) {
-      // allow only when idle
-      if (this.idle === false) {
-        return false
-      }
-      // set state
-      this.idle = false
-      axios.post('/api/points/del', {
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded'
-        },
-        home: homeScore,
-        away: awayScore,
-        matchId: matchId
-      }).then((res) => {
-        // TODO log
-        this.idle = true
-        // console.log('Point removed')
-      }).catch(error => {
-        // TODO log
-        this.idle = true
-        console.log(error.response)
-      })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.score-left {
+  margin-left: 700px;
+  font-size: 45px;
+  margin-top: -280px;
+}
+
+.score-right {
+  margin-left: -370px;
+  font-size: 45px;
+  margin-top: -280px;
+}
+
+.mainContainer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.versusContainer {
+  background: #0e3c46;
+  margin-top: 50px;
+  padding: 20px;
+  width: 80%;
+  margin: 0 auto;
+}
+
 .eloInfo {
   font-size: 20pt;
 }
@@ -475,10 +236,6 @@ export default {
   border: none;
   font-size: 60px;
   color: #f5f5f5;
-}
-
-.mainContainer {
-  margin-top: 30px;
 }
 
 .infoPanel {
@@ -529,7 +286,7 @@ export default {
   text-align: center;
   .midInfoHeader {
     text-transform: uppercase;
-    font-size: 40px;
+    font-size: 20px;
     font-weight: 600;
   }
   .midInfoValue {
@@ -605,8 +362,12 @@ export default {
 }
 
 .header-title {
-  font-size: 50px;
+  font-size: 40px;
   color: #40c500;
+}
+
+.colWinner {
+  color: #40c500;  
 }
 
 .result-button {
