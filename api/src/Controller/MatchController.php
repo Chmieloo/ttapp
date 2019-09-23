@@ -732,7 +732,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->postBroadcast($payload);
+            $this->postSlackMessage($payload);
         }
 
         return $this->sendJsonResponse([]);
@@ -742,7 +742,7 @@ class MatchController extends BaseController
      * @param $data
      * @return bool|string
      */
-    private function postBroadcast($data)
+    private function postSlackMessage($data)
     {
         if ($this->slackKey) {
             $data_string = json_encode($data);

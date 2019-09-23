@@ -179,6 +179,12 @@ match_broadcast:
   requirements:
     id: '\d+'
 
+# posts facts for last week
+tournament_facts:
+  path: /facts
+  controller: App\Controller\TournamentController:facts
+  methods: [GET]
+
 match_add:
   path: /matches/add/official
   controller: App\Controller\MatchController::addMatch

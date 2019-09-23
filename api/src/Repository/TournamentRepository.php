@@ -188,4 +188,156 @@ class TournamentRepository extends ServiceEntityRepository
 
         return $result;
     }
+
+    public function loadFacts($tournamentId)
+    {
+        $sql = "select p.slack_name as slackName, p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points, count(s.id), 
+                (sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgPoints from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                where g.tournament_id = :tournamentId
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                and g.date_played between subdate(curdate(),dayofweek(curdate())+5)
+                and subdate(curdate(),dayofweek(curdate())-1)
+                group by p.id
+                order by avgPoints desc, p.name asc
+                limit 0, 5";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+
+        foreach ($data as $item) {
+            $result['weekAvgLeaders'][] = [
+                'name' => $item['slackName'],
+                'avgPoints' => number_format($item['avgPoints'], 2),
+            ];
+        }
+
+        # all time
+        $sql = "select p.slack_name as slackName, p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points, count(s.id), 
+                (sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgPoints from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                where g.tournament_id = :tournamentId
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                group by p.id
+                order by avgPoints desc, p.name asc
+                limit 0, 5";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($data as $item) {
+            $result['seasonAvgLeaders'][] = [
+                'name' => $item['slackName'],
+                'avgPoints' => number_format($item['avgPoints'], 2),
+            ];
+        }
+
+        $sql = "select p.slack_name as slackName, p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points
+                from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                where g.tournament_id = :tournamentId
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                and g.date_played between subdate(curdate(),dayofweek(curdate())+5)
+                and subdate(curdate(),dayofweek(curdate())-1)
+                group by p.id
+                order by points desc, p.name asc
+                limit 0, 5";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($data as $item) {
+            $result['weekPointsLeaders'][] = [
+                'name' => $item['slackName'],
+                'points' => $item['points'],
+            ];
+        }
+
+        # all time
+        $sql = "select p.slack_name as slackName, p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points
+                from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                where g.tournament_id = :tournamentId
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                group by p.id
+                order by points desc, p.name asc
+                limit 0, 5";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($data as $item) {
+            $result['seasonPointsLeaders'][] = [
+                'name' => $item['slackName'],
+                'points' => $item['points'],
+            ];
+        }
+
+        # general info
+        $sql = "select g.id, g.home_player_id as homePlayerId, g.away_player_id as awayPlayerId, sum(s.home_points + s.away_points) as matchPoints, count(s.id) as matchSets,
+                if (g.home_score = 0 or g.away_score = 0, 1, 0) as score30,
+                if (g.home_score = 1 or g.away_score = 1, 1, 0) as score31,
+                if (g.home_score = 2 or g.away_score = 2, 1, 0) as score22
+                from game g
+                join scores s on g.id = s.game_id
+                where g.date_played between subdate(curdate(),dayofweek(curdate())+5)
+                and subdate(curdate(),dayofweek(curdate())-1)
+                and tournament_id = :tournamentId
+                group by s.game_id";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $playerCache = [];
+        $pointsTotal = 0;
+        $setsTotal = 0;
+        $score30 = 0;
+        $score31 = 0;
+        $score22 = 0;
+        foreach ($data as $item) {
+            $playerCache[] = $item['homePlayerId'];
+            $playerCache[] = $item['awayPlayerId'];
+            $pointsTotal += $item['matchPoints'];
+            $setsTotal += $item['matchSets'];
+            $score30 += $item['score30'];
+            $score31 += $item['score31'];
+            $score22 += $item['score22'];
+        }
+
+        $playerCache = array_unique($playerCache);
+        $result['generalInfo']['uniquePlayers'] = count($playerCache);
+        $result['generalInfo']['matchesPlayed'] = count($data);
+        $result['generalInfo']['matchPoints'] = $pointsTotal;
+        $result['generalInfo']['matchPointsAvg'] = number_format(($pointsTotal / count($data)), 2);
+        $result['generalInfo']['setPointsAvg'] = number_format(($pointsTotal / $setsTotal), 2);
+        $result['generalInfo']['score30'] = $score30;
+        $result['generalInfo']['score31'] = $score31;
+        $result['generalInfo']['score22'] = $score22;
+
+        return $result;
+    }
 }
