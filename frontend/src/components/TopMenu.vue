@@ -3,6 +3,7 @@
     <div><router-link to="/">ttapp</router-link></div>
     <div><router-link to="/player/list">players</router-link></div>
     <div><router-link to="/tournament/list">tournaments</router-link></div>
+    <div><router-link to="/leaders">leaders</router-link></div>
   </div>
 </template>
 

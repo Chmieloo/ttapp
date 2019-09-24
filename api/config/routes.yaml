@@ -180,9 +180,9 @@ match_broadcast:
     id: '\d+'
 
 # posts facts for last week
-tournament_facts:
-  path: /facts
-  controller: App\Controller\TournamentController:facts
+leaders:
+  path: /leaders
+  controller: App\Controller\TournamentController:leaders
   methods: [GET]
 
 match_add:

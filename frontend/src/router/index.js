@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import VueScrollTo from 'vue-scrollto'
 import IndexPage from '@/components/IndexPage'
 import PlayerList from '@/components/Player/List'
+import Leaders from '@/components/Player/Leaders'
 import PlayerAdd from '@/components/Player/Add'
 import TournamentList from '@/components/Tournament/List'
 import TournamentAdd from '@/components/Tournament/Add'
@@ -30,6 +31,7 @@ export default new Router({
   routes: [
     { path: '/', name: 'IndexPage', component: IndexPage },
     { path: '/player/list', name: 'PlayerList', component: PlayerList },
+    { path: '/leaders', name: 'Leaders', component: Leaders },
     { path: '/player/add', name: 'PlayerAdd', component: PlayerAdd },
     { path: '/tournament/list', name: 'TournamentList', component: TournamentList },
     { path: '/tournament/add', name: 'TournamentAdd', component: TournamentAdd },

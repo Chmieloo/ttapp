@@ -357,13 +357,14 @@ class TournamentController extends BaseController
         }
     }
 
-    public function facts()
+    public function leaders()
     {
         /** @var TournamentRepository $gameRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
         $currentTournament = $tournamentRepository->loadCurrentTournament();
-        $data = $tournamentRepository->loadFacts($currentTournament->getId());
+        $data = $tournamentRepository->loadLeaders($currentTournament->getId());
 
+        /*
         $matchesPlayed = $data['generalInfo']['matchesPlayed'];
         $numPlayers = $data['generalInfo']['uniquePlayers'];
         $matchPoints = $data['generalInfo']['matchPoints'];
@@ -399,19 +400,7 @@ class TournamentController extends BaseController
             $message .= "> " . $leader['points'] . ': ' . $leader['name'] . "\n";
         }
 
-        if ($message) {
-            $payload = [
-                'text' => $message,
-                'method' => 'post',
-                'contentType' => 'application/json',
-                'muteHttpExceptions' => true,
-                'link_names' => 1,
-                'username' => 'tabletennisbot',
-                'icon_emoji' => ':table_tennis_paddle_and_ball:'
-            ];
-
-            $this->postSlackMessage($payload);
-        }
+        */
 
         return $this->sendJsonResponse($data);
     }

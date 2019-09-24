@@ -189,8 +189,76 @@ class TournamentRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function loadFacts($tournamentId)
+    public function loadLeaders($tournamentId)
     {
+        $result = [];
+
+        $sql = "select p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points, count(s.id) as sets,
+                (sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgps
+                from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                join tournament t on g.tournament_id = t.id
+                where t.is_official = 1
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                group by p.id
+                order by points desc, p.name asc
+                limit 0, 5";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result['allTimePointsLeaders'] = $data;
+
+        $sql = "select p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points, count(s.id) as sets,
+                (sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgps
+                from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                join tournament t on g.tournament_id = t.id
+                where t.id = :tournamentId
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                group by p.id
+                order by points desc, p.name asc
+                limit 0, 5";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result['currentTournamentPointsLeaders'] = $data;
+
+        $sql = "select p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points, count(s.id) as sets,
+                (sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgps
+                from scores s
+                join game g on s.game_id = g.id
+                join player p on p.id in (g.home_player_id, g.away_player_id)
+                join tournament t on g.tournament_id = t.id
+                where t.id = :tournamentId
+                and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
+                and g.is_walkover = 0
+                and g.is_finished = 1
+                group by p.id
+                order by points desc, p.name asc
+                limit 0, 5";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result['lastWeekPointsLeaders'] = $data;
+
+        /*
         $sql = "select p.slack_name as slackName, p.name, sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points, count(s.id), 
                 (sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgPoints from scores s
                 join game g on s.game_id = g.id
@@ -337,6 +405,8 @@ class TournamentRepository extends ServiceEntityRepository
         $result['generalInfo']['score30'] = $score30;
         $result['generalInfo']['score31'] = $score31;
         $result['generalInfo']['score22'] = $score22;
+
+        */
 
         return $result;
     }

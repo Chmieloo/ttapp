@@ -289,11 +289,8 @@ export default {
         this.numServes = 2
 
         if (this.match.serverId === this.match.homePlayerId) {
-          console.log('home server')
-          console.log(setNumber)
           this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? this.flipped : !this.flipped
         } else {
-          console.log('away server')
           this.serverFlipped = ((parseInt(setNumber) + 1) % 2 === 0) ? !this.flipped : this.flipped
         }
       }
@@ -457,7 +454,10 @@ export default {
         'currentSet': this.match.currentSet,
         'isFinished': this.match.isFinished,
         'homeScoreTotal': this.match.homeScoreTotal,
-        'awayScoreTotal': this.match.awayScoreTotal
+        'awayScoreTotal': this.match.awayScoreTotal,
+        'startingServer': this.match.serverId,
+        'serverFlipped': this.serverFlipped,
+        'numServes': this.numServes
       }
     },
     addPointRight () {
