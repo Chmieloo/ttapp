@@ -37,8 +37,8 @@
       </div>
       <div style="clear: both;"></div>
     </div>
-    <div v-if="parseInt(isFinished) == 0" style="margin: 0 auto; width: 80%; clear: both; position: absolute;">
-      <div class="container-fl">
+    <div v-if="parseInt(isFinished) == 0" style="margin: 0 auto; width: 100%; clear: both;">
+      <div class="container-score-fl">
         <div class="score-left">
           <span class="fa-stack fa-2x">
             <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
@@ -46,7 +46,7 @@
           </span>
         </div>
       </div>
-      <div class="container-fr">
+      <div class="container-score-fr">
         <div class="score-right">
           <span class="fa-stack fa-2x">
             <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
@@ -56,8 +56,8 @@
       </div>      
       <div style="clear: both;"></div>
     </div>
-    <div v-else style="margin: 0 auto; width: 80%; clear: both; position: absolute;">
-      <div class="container-fl">
+    <div v-else style="margin: 0 auto; width: 100%; clear: both;">
+      <div class="container-score-fl">
         <div class="score-left">
           <span class="fa-stack fa-2x">
             <i v-if="parseInt(awayScoreTotal) < parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
@@ -67,7 +67,7 @@
           </span>
         </div>
       </div>
-      <div class="container-fr">
+      <div class="container-score-fr">
         <div class="score-right">
           <span class="fa-stack fa-2x">
             <i v-if="parseInt(awayScoreTotal) > parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
@@ -204,14 +204,14 @@ export default {
 
 <style lang="less" scoped>
 .score-left {
-  margin-left: 700px;
-  font-size: 45px;
+  text-align: right;
+  font-size: 2.5em;
   margin-top: -280px;
 }
 
 .score-right {
-  margin-left: -370px;
-  font-size: 45px;
+  text-align: left;
+  font-size: 2.5em;
   margin-top: -280px;
 }
 
@@ -263,6 +263,20 @@ export default {
 .container-fr {
   float: right;
   width: 40%;
+  text-align: center;
+  border-left: 1px solid #222;
+}
+
+.container-score-fl {
+  float: left;
+  width: 50%;
+  text-align: center;
+  border-right: 1px solid #222;
+}
+
+.container-score-fr {
+  float: right;
+  width: 50%;
   text-align: center;
   border-left: 1px solid #222;
 }
