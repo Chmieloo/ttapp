@@ -1,10 +1,14 @@
+# -------------
 # PLAYER ROUTES
+# -------------
 
+# Get all players
 players:
   path: /players
   controller: App\Controller\PlayerController::getPlayers
   methods: [GET]
 
+# Get basic player info, used in profile
 player:
   path: /players/{id}
   controller: App\Controller\PlayerController::getPlayerById
@@ -12,6 +16,7 @@ player:
   requirements:
     id: '\d+'
 
+# Get all player's matches
 player_results:
   path: /players/{id}/results
   controller: App\Controller\PlayerController::getPlayerResults
@@ -19,6 +24,7 @@ player_results:
   requirements:
     id: '\d+'
 
+# Get all player's upcoming matches
 player_schedule:
   path: /players/{id}/schedule
   controller: App\Controller\PlayerController::getPlayerSchedule
@@ -26,36 +32,36 @@ player_schedule:
   requirements:
     id: '\d+'
 
+# Add player
 player_add:
   path: /players/add
   controller: App\Controller\PlayerController::addPlayer
   methods: [POST]
 
+# -----------------
 # TOURNAMENT ROUTES
+# -----------------
 
-tournaments:
-  path: /tournaments
-  controller: App\Controller\TournamentController::getTournaments
-  methods: [GET]
-
+# Add a tournament
 tournament_add:
   path: /tournaments/add
   controller: App\Controller\TournamentController::addTournament
   methods: [POST]
 
-tournament:
-  path: /tournaments/{id}
-  controller: App\Controller\TournamentController::getTournamentById
+# Get all official tournaments
+tournaments:
+  path: /tournaments
+  controller: App\Controller\TournamentController::getTournaments
   methods: [GET]
-  requirements:
-    id: '\d+'
 
+# Get standings for tournament (current => id = 0)
 tournament_standings:
   path: /tournaments/{id}/standings
   controller: App\Controller\TournamentController::getStandings
   requirements:
     id: '\d+'
 
+# Get results for tournament (current => id = 0), (all results => numberOfResults = 0)
 tournament_results:
   path: /tournaments/{tournamentId}/results/{numberOfResults}
   controller: App\Controller\TournamentController:getTournamentResults
@@ -63,6 +69,7 @@ tournament_results:
     tournamentId: '\d+'
     numberOfResults: '\d+'
 
+# Get schedule for tournament (current => id = 0), (all fixtures => numberOfFixtures = 0)
 tournament_schedule_overdue:
   path: /tournaments/{tournamentId}/overdue/{numberOfFixtures}
   controller: App\Controller\TournamentController:getTournamentOverdueSchedule
@@ -194,10 +201,6 @@ match_save:
   path: /matches/save
   controller: App\Controller\MatchController::saveMatch
   methods: [POST]
-
-matches_all:
-  path: /matches
-  controller: App\Controller\MatchController:getAllMatches
 
 # POINTS
 

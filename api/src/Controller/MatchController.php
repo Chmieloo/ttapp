@@ -2,19 +2,18 @@
 
 namespace App\Controller;
 
-use App\Entity\Config;
 use App\Entity\Game;
 use App\Entity\GameMode;
 use App\Entity\Player;
 use App\Entity\Scores;
 use App\Entity\Tournament;
 use App\Entity\TournamentGroup;
-use App\Repository\ConfigRepository;
 use App\Repository\GameRepository;
 use App\Repository\ScoresRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Client;
 
 class MatchController extends BaseController
@@ -37,6 +36,10 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($data);
     }
 
+    /**
+     * @param $id
+     * @return Response
+     */
     public function setServer($id)
     {
         /** @var GameRepository $gameRepository */
@@ -55,7 +58,7 @@ class MatchController extends BaseController
 
     /**
      * @param $matchId
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @throws \Exception
      */
     public function finishSet($matchId)
@@ -173,7 +176,7 @@ class MatchController extends BaseController
 
     /**
      * @param $matchId
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @throws \Exception
      */
     public function startMessage($matchId)
@@ -351,16 +354,10 @@ class MatchController extends BaseController
 
     public function post2Slack($data)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var ConfigRepository $configRepository */
-        $configRepository = $em->getRepository(Config::class);
-        $config = $configRepository->find(Config::CONFIG_TYPE_SLACK_HOOK);
-
-        if ($config) {
+        if ($this->slackKey) {
             $data_string = json_encode($data);
 
-            $ch = curl_init($config->getValue());
+            $ch = curl_init($this->slackKey);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Config;
 use App\Entity\Game;
 use App\Entity\Tournament;
-use App\Repository\ConfigRepository;
 use App\Repository\GameRepository;
 use App\Repository\TournamentRepository;
 use Doctrine\DBAL\DBALException;

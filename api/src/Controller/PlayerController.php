@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Player;
 use App\Repository\PlayerRepository;
+use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,7 @@ class PlayerController extends BaseController
     /**
      * @param $id
      * @return Response
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getPlayerById($id)
     {
@@ -37,7 +38,7 @@ class PlayerController extends BaseController
     /**
      * @param $id
      * @return Response
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function getPlayerResults($id)
     {
