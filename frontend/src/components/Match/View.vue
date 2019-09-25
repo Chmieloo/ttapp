@@ -91,8 +91,11 @@
       </div>
     </div>
     <div class="container-mid">
-      <div style="margin-bottom: 20px;" v-if="!match.isFinished">
-        <a class="result-button" @click="toggleVisibility()">ENTER RESULT</a>
+      <div @click="toggleVisibility()" style="color: white; border-radius: 10px; padding: 10px; font-size: 20px; margin-bottom: 10px; background-color: #4a4a4a;" v-if="!match.isFinished">
+        <span>ENTER RESULT</span>
+      </div>
+      <div v-if="startMessage" style="color: white; border-radius: 10px; padding: 10px; font-size: 20px; margin-bottom: 10px; background-color: #10880f;">
+        {{ startMessage }}
       </div>
       <div class="midInfoHeader">MATCH MODE</div>
       <div class="midInfoValue">BO4</div>
@@ -109,9 +112,6 @@
               <span v-if="match.currentSet - 1 != index">{{ score.away }}</span>
             </div>
           </div>
-        </div>
-        <div v-if="startMessage" style="color: white; margin-top: 50px; background-color: #10880f; border-radius: 10px; padding: 10px;">
-          {{ startMessage }}
         </div>
       </div>
       <div class="result-dialog" v-if="resultVisible">
@@ -140,16 +140,17 @@
                     </div>
                   </span>
                 </div>
-                <div v-else-if="match.scores.length < match.maxSets" class="span-score">
-                  <span v-for="i in range(match.maxSets - (match.maxSets - match.scores.length) +  1, match.maxSets)" v-bind:key="i" class="span-score">
+                <div v-else-if="match.scores.length < match.maxSets">
+                  <div v-for="i in range(match.maxSets - (match.maxSets - match.scores.length) +  1, match.maxSets)" v-bind:key="i" class="span-score">
                     <div>
                       <input type="text" :name="'home_set_' + i" value="" />
                       <input type="text" :name="'away_set_' + i" value="" />
                     </div>
-                  </span>
+                  </div>
                 </div>
                 <div>
-                  <input type="submit" value="save" class="submit-button" />
+                  <input type="submit" value="save" class="submit-button" style="background-color: #10880f;" />
+                  <input type="button" value="cancel" class="submit-button"  @click="toggleVisibility()" />
                 </div>
               </form>
             </td>
@@ -411,7 +412,10 @@ export default {
       if (this.idle === false) {
         return false
       }
-      this.startMessage = null
+      if (this.broadcasted === true) {
+        return false
+      }
+      this.startMessage = 'GAME STARTED'
       this.broadcasted = true
 
       // set idle state to 1, as we are sending request to change server
@@ -699,11 +703,13 @@ export default {
   background: #909090;
   color: white;
   font-weight: 600;
+  width: 100px;
+  text-align: center;
 }
 
 .span-score {
   min-width: 100px;
-  margin-right: 30px;
+  margin-bottom: 20px;
   input {
     max-width: 30px;
     padding: 10px 10px;
