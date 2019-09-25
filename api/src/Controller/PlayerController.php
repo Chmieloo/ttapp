@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Player;
 use App\Repository\PlayerRepository;
 use Doctrine\DBAL\DBALException;
+use OpenApi\Annotations\OpenApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
+use OpenApi\Annotations as OA;
 
 class PlayerController extends BaseController
 {
@@ -64,8 +66,21 @@ class PlayerController extends BaseController
     }
 
     /**
-     * List of all players
+     * @OA\Get(
+     *     path="/players",
+     *     summary="Lists all players",
+     *     tags={"player"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Could Not Find Resource"
+     *     )
+     * )
      *
+     * @param $id
      * @return Response
      */
     public function getPlayers()

@@ -11,7 +11,7 @@ use App\Entity\TournamentGroup;
 use App\Repository\GameRepository;
 use App\Repository\ScoresRepository;
 use App\Repository\TournamentRepository;
-use OpenApi\Annotations\OpenApi as OA;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,9 +27,28 @@ class MatchController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/matches/example",
-     *     @OA\Response(response="200", description="An example resource")
+     *     path="/matches/{id}",
+     *     summary="Displays info about specific match",
+     *     tags={"match"},
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=false,
+     *          description="unique match id",
+     *          @OA\Schema(
+     *              type="integer"
+     *          ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Could Not Find Resource"
+     *     )
      * )
+     *
      * @param $id
      * @return Response
      */
