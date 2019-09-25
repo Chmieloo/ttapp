@@ -11,16 +11,28 @@ use App\Entity\TournamentGroup;
 use App\Repository\GameRepository;
 use App\Repository\ScoresRepository;
 use App\Repository\TournamentRepository;
+use OpenApi\Annotations\OpenApi as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Client;
 
+/**
+ * @OA\Info(title="TTAPP API", version="0.1")
+ */
 class MatchController extends BaseController
 {
     const MINIMAL_END_SCORE = 11;
     const END_SCORE_DIFFERENCE = 2;
 
+    /**
+     * @OA\Get(
+     *     path="/matches/example",
+     *     @OA\Response(response="200", description="An example resource")
+     * )
+     * @param $id
+     * @return Response
+     */
     public function getMatch($id)
     {
         /** @var GameRepository $gameRepository */
