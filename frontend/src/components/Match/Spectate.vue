@@ -79,8 +79,13 @@
       </div>      
       <div style="clear: both;"></div>
     </div>
-    <div v-if="parseInt(isFinished) == 1" style="width: 100%;clear: both;position: absolute;margin-top: -80px;margin-left: -20px;font-size: 20pt;font-weight: 900;color: white;">
+    <div v-if="parseInt(isFinished) == 1" style="width: 100%;clear: both;position: absolute;margin-top: -325px;margin-left: -20px;font-size: 20pt;font-weight: 900;color: white;">
       FINAL MATCH SCORE
+    </div>
+    <div style="width: 100%;clear: both;position: absolute;margin-top: -80px;margin-left: -20px;font-size: 20pt;font-weight: 900;color: white;">
+      <div style="background: rgb(16, 88, 105); padding: 10px; box-shadow: black 0px 0px 3px; width: 400px; margin: 0 auto; border-radius: 10px;">
+        {{ match.groupName }}
+      </div>
     </div>
     <div class="versusContainer">
       <div class="container-fl">
