@@ -1,8 +1,15 @@
 <template>
   <div class="mainContainer">
-    <span class="header-title">
-      MATCH SUMMARY
-    </span>
+    <div>
+      <span class="header-title">
+        MATCH SUMMARY
+      </span>
+    </div>
+    <div>
+      <span class="header-title-players">
+        {{ homeName }} vs {{ awayName }}
+      </span>
+    </div>
     <div v-for="(setData, index) in setsData" v-bind:key="index">
       <div class="setContainer">
         <table style="border-collapse: collapse;">
@@ -25,7 +32,7 @@
           </tr>
           <tr style="height: 40px; line-height: 40px;">
             <td class="playerName">
-              <span v-if="setData.scores.homePoints > setData.scores.awayPoints" class="winnerColor">
+              <span v-if="parseInt(setData.scores.homePoints) > parseInt(setData.scores.awayPoints)" class="winnerColor">
                 {{ homeName }}
               </span>
               <span v-else>
@@ -43,7 +50,7 @@
           </tr>
           <tr style="height: 50px; line-height: 50px;">
             <td class="playerName">
-              <span v-if="setData.scores.awayPoints > setData.scores.homePoints" class="winnerColor">
+              <span v-if="parseInt(setData.scores.homePoints) < parseInt(setData.scores.awayPoints)" class="winnerColor">
                 {{ awayName }}
               </span>
               <span v-else>
@@ -78,6 +85,9 @@
           </tr>
         </table>
         <div class="summaryFacts">
+          <div>Set duration: {{ setData.scores.durationMinutes }} minutes {{ setData.scores.durationSeconds }} seconds</div>
+          <div>Own serve points: {{ homeName }} ({{ setData.scores.homeServePoints }}), {{ awayName }} ({{ setData.scores.awayServePoints }})</div>
+          <div>Longest points streak: {{ homeName }} ({{ setData.scores.homeStreak }}), {{ awayName }} ({{ setData.scores.awayStreak }})</div>
         </div>
       </div>
     </div>
@@ -153,9 +163,11 @@ table {
 }
 
 .summaryFacts {
-  margin-top: 10px;
+  margin-top: 20px;
   background-color: #105869;
   padding: 10px;
+  text-align: left;
+  color: white;
 }
 
 .point {
@@ -288,6 +300,11 @@ table {
 .header-title {
   font-size: 40px;
   color: #40c500;
+}
+
+.header-title-players {
+  font-size: 20px;
+  color: white;
 }
 
 .colWinner {

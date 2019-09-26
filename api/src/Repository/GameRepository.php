@@ -134,7 +134,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -168,8 +168,8 @@ class GameRepository extends ServiceEntityRepository
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
                 'awayPlayerName' => $match['awayPlayerName'],
-                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
-                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ?: $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ?: $match['awayPlayerName'],
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
@@ -234,8 +234,8 @@ class GameRepository extends ServiceEntityRepository
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
                 'awayPlayerName' => $match['awayPlayerName'],
-                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
-                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ?: $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ?: $match['awayPlayerName'],
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
@@ -265,7 +265,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -338,7 +338,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -395,8 +395,8 @@ class GameRepository extends ServiceEntityRepository
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
                 'homePlayerId' => $match['hpid'],
                 'awayPlayerId' => $match['apid'],
-                'homePlayerDisplayName' => $homePlayerString ? : 'TBD',
-                'awayPlayerDisplayName' => $awayPlayerString ? : 'TBD',
+                'homePlayerDisplayName' => $homePlayerString ?: 'TBD',
+                'awayPlayerDisplayName' => $awayPlayerString ?: 'TBD',
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
@@ -439,7 +439,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -494,12 +494,12 @@ class GameRepository extends ServiceEntityRepository
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
                 'homePlayerId' => $match['hpid'],
                 'awayPlayerId' => $match['apid'],
-                'homePlayerDisplayName' => $homePlayerString ? : 'TBD',
-                'awayPlayerDisplayName' => $awayPlayerString ? : 'TBD',
+                'homePlayerDisplayName' => $homePlayerString ?: 'TBD',
+                'awayPlayerDisplayName' => $awayPlayerString ?: 'TBD',
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
-                'isWalkover' => (int) $match['isWalkover'],
+                'isWalkover' => (int)$match['isWalkover'],
             ];
         }
 
@@ -527,7 +527,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -562,8 +562,8 @@ class GameRepository extends ServiceEntityRepository
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
                 'awayPlayerName' => $match['awayPlayerName'],
-                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ? : $match['homePlayerName'],
-                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ? : $match['awayPlayerName'],
+                'homePlayerDisplayName' => $match['homePlayerDisplayName'] ?: $match['homePlayerName'],
+                'awayPlayerDisplayName' => $match['awayPlayerDisplayName'] ?: $match['awayPlayerName'],
                 'winnerId' => $match['winnerId'] ?: 0,
                 'homeScoreTotal' => $match['homeScoreTotal'],
                 'awayScoreTotal' => $match['awayScoreTotal'],
@@ -596,7 +596,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -624,8 +624,8 @@ class GameRepository extends ServiceEntityRepository
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
                 'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),
-                'homeSlackName' => $match['homeSlackName'] ? : $match['homePlayerName'],
-                'awaySlackName' => $match['awaySlackName'] ? : $match['awayPlayerName'],
+                'homeSlackName' => $match['homeSlackName'] ?: $match['homePlayerName'],
+                'awaySlackName' => $match['awaySlackName'] ?: $match['awayPlayerName'],
             ];
         }
 
@@ -653,7 +653,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -679,8 +679,8 @@ class GameRepository extends ServiceEntityRepository
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
                 'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),
-                'homeSlackName' => $match['homeSlackName'] ? : $match['homePlayerName'],
-                'awaySlackName' => $match['awaySlackName'] ? : $match['awayPlayerName'],
+                'homeSlackName' => $match['homeSlackName'] ?: $match['homePlayerName'],
+                'awaySlackName' => $match['awaySlackName'] ?: $match['awayPlayerName'],
             ];
         }
 
@@ -706,7 +706,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -768,7 +768,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -865,7 +865,7 @@ class GameRepository extends ServiceEntityRepository
             order by g.tournament_id, g.date_played, g.date_of_match, g.id asc";
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute();
+        $stmt->execute();
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -890,7 +890,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -993,7 +993,7 @@ class GameRepository extends ServiceEntityRepository
             'homePlayerDisplayName' => $homePlayerString ?? $result['homePlayerDisplayName'] ?? $result['homePlayerName'],
             'awayPlayerDisplayName' => $awayPlayerString ?? $result['awayPlayerDisplayName'] ?? $result['awayPlayerName'],
             'winnerId' => $result['winnerId'] ?: 0,
-            'isFinished' => (int) $result['isFinished'] ?: 0,
+            'isFinished' => (int)$result['isFinished'] ?: 0,
             'homeScoreTotal' => $result['homeScoreTotal'],
             'awayScoreTotal' => $result['awayScoreTotal'],
             'numberOfSets' => $numberOfSets,
@@ -1039,7 +1039,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $match = $stmt->fetch(PDO::FETCH_ASSOC);
         $homePlayerString = '';
@@ -1106,7 +1106,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         return true;
     }
@@ -1116,7 +1116,7 @@ class GameRepository extends ServiceEntityRepository
         $query = 'select home_player_id, away_player_id, server_id from game g where g.id = :matchId';
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt-> execute([
+        $stmt->execute([
             'matchId' => $matchId
         ]);
 
@@ -1132,7 +1132,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt-> execute([
+        $stmt->execute([
             'matchId' => $matchId,
             'serverId' => $newServer
         ]);
@@ -1171,7 +1171,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         return true;
     }
@@ -1190,7 +1190,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         return true;
     }
@@ -1198,6 +1198,7 @@ class GameRepository extends ServiceEntityRepository
     public function loadTimelineById($id)
     {
         $sql = "select g.server_id as serverId, g.home_player_id as homePlayerId, g.away_player_id as awayPlayerId, 
+                unix_timestamp(p.time) as timestamp, 
                 p1.name homeName, p2.name as awayName, s.set_number as setNumber, s.home_points as homePoints, s.away_points as awayPoints, 
                 p.is_home_point as isHomePoint, p.is_away_point as isAwayPoint 
                 from points p
@@ -1214,7 +1215,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute($params);
+        $stmt->execute($params);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -1223,6 +1224,11 @@ class GameRepository extends ServiceEntityRepository
         $homePointsScored = 0;
         $awayPointsScored = 0;
         $currentServer = null;
+        $homeOwnServePoints = 0;
+        $awayOwnServePoints = 0;
+        $homeStreak = '';
+        $awayStreak = '';
+        $lastPoint = null;
 
         $homeName = '';
         $awayName = '';
@@ -1235,6 +1241,12 @@ class GameRepository extends ServiceEntityRepository
                 $currentSet = $setNumber;
                 $homePointsScored = 0;
                 $awayPointsScored = 0;
+
+                $homeOwnServePoints = 0;
+                $awayOwnServePoints = 0;
+
+                $homeStreak = '';
+                $awayStreak = '';
             }
 
             $homePlayerId = $item['homePlayerId'];
@@ -1247,6 +1259,9 @@ class GameRepository extends ServiceEntityRepository
             $isAwayPoint = $item['isAwayPoint'];
             $serverId = $item['serverId'];
             $otherServerId = ($serverId == $homePlayerId) ? $awayPlayerId : $homePlayerId;
+
+            $homeStreak .= $isHomePoint;
+            $awayStreak .= $isAwayPoint;
 
             $homePointsScored += $isHomePoint;
             $awayPointsScored += $isAwayPoint;
@@ -1266,22 +1281,47 @@ class GameRepository extends ServiceEntityRepository
                 $currentServer = $servers[$currentServerIndex];
             }
 
+            if ($currentServer == $homePlayerId && $isHomePoint) {
+                $homeOwnServePoints++;
+            }
+
+            if ($currentServer == $awayPlayerId && $isAwayPoint) {
+                $awayOwnServePoints++;
+            }
+
             $setsData[$currentSet]['events'][] = [
-                'gameStartingServerId' => (int) $serverId,
-                'currentSetStartingServer' => (int) $setStartingServer,
-                'currentServer' => (int) $currentServer,
-                'isHomePoint' => (int) $isHomePoint,
-                'isAwayPoint' => (int) $isAwayPoint,
+                'gameStartingServerId' => (int)$serverId,
+                'currentSetStartingServer' => (int)$setStartingServer,
+                'currentServer' => (int)$currentServer,
+                'isHomePoint' => (int)$isHomePoint,
+                'isAwayPoint' => (int)$isAwayPoint,
                 'homePointsScored' => $homePointsScored,
                 'awayPointsScored' => $awayPointsScored,
-                'homePlayerId' => $homePlayerId,
-                'awayPlayerId' => $awayPlayerId,
+                'homePlayerId' => (int)$homePlayerId,
+                'awayPlayerId' => (int)$awayPlayerId,
+                'timestamp' => $item['timestamp'],
             ];
 
             $setsData[$currentSet]['scores'] = [
                 'homePoints' => $homePoints,
                 'awayPoints' => $awayPoints,
+                'homeServePoints' => $homeOwnServePoints,
+                'awayServePoints' => $awayOwnServePoints,
+                'homeStreak' => $homeStreak,
+                'awayStreak' => $awayStreak,
             ];
+        }
+
+        foreach ($setsData as &$setData) {
+            $events = $setData['events'];
+            $firstEventTimestamp = current($events)['timestamp'];
+            $lastEventTimestamp = end($events)['timestamp'];
+
+            $duration = $lastEventTimestamp - $firstEventTimestamp;
+            $setData['scores']['durationMinutes'] = (int)($duration / 60);
+            $setData['scores']['durationSeconds'] = ($duration % 60);
+            $setData['scores']['homeStreak'] = $this->getLongestSequence($setData['scores']['homeStreak'], '1');
+            $setData['scores']['awayStreak'] = $this->getLongestSequence($setData['scores']['awayStreak'], '1');
         }
 
         return [
@@ -1289,5 +1329,19 @@ class GameRepository extends ServiceEntityRepository
             'homeName' => $homeName,
             'awayName' => $awayName,
         ];
+    }
+
+    private function getLongestSequence($str, $c)
+    {
+        $len = strlen($str);
+        $maximum = 0;
+        $count = 0;
+        for ($i = 0; $i < $len; $i++) {
+            if (substr($str, $i, 1) == $c) {
+                $count++;
+                if ($count > $maximum) $maximum = $count;
+            } else $count = 0;
+        }
+        return $maximum;
     }
 }
