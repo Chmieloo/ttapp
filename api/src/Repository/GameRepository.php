@@ -90,6 +90,7 @@ class GameRepository extends ServiceEntityRepository
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
             'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints, ' .
+            'if(count(p2s.id) > 0, 1, 0) as pts, ' .
             'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
             'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName ' .
             'from game g ' .
@@ -105,7 +106,9 @@ class GameRepository extends ServiceEntityRepository
             'left join scores s6 on s6.game_id = g.id and s6.set_number = 6 ' .
             'left join scores s7 on s7.game_id = g.id and s7.set_number = 7 ' .
             'left join scores ss on ss.game_id = g.id and g.current_set = ss.set_number ' .
-            'left join points pp on pp.score_id = ss.id ';
+            'left join points pp on pp.score_id = ss.id ' .
+            'left join scores s2p on s2p.game_id = g.id ' .
+            'left join points p2s on p2s.score_id = s2p.id ';
 
         return $sql;
     }
@@ -238,6 +241,7 @@ class GameRepository extends ServiceEntityRepository
                 'awayScoreTotal' => $match['awayScoreTotal'],
                 'numberOfSets' => $numberOfSets,
                 'scores' => $setScores,
+                'pts' => $match['pts'],
             ];
         }
 
@@ -1189,5 +1193,101 @@ class GameRepository extends ServiceEntityRepository
         $stmt-> execute($params);
 
         return true;
+    }
+
+    public function loadTimelineById($id)
+    {
+        $sql = "select g.server_id as serverId, g.home_player_id as homePlayerId, g.away_player_id as awayPlayerId, 
+                p1.name homeName, p2.name as awayName, s.set_number as setNumber, s.home_points as homePoints, s.away_points as awayPoints, 
+                p.is_home_point as isHomePoint, p.is_away_point as isAwayPoint 
+                from points p
+                join scores s on p.score_id = s.id
+                join game g on s.game_id = g.id
+                join player p1 on g.home_player_id = p1.id
+                join player p2 on g.away_player_id = p2.id
+                where g.id = :matchId
+                order by p.id";
+
+        $params = [
+            'matchId' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute($params);
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $setsData = [];
+        $currentSet = 1;
+        $homePointsScored = 0;
+        $awayPointsScored = 0;
+        $currentServer = null;
+
+        $homeName = '';
+        $awayName = '';
+
+        foreach ($data as $item) {
+            $setNumber = $item['setNumber'];
+
+            if ($setNumber != $currentSet) {
+                # we moved to new set
+                $currentSet = $setNumber;
+                $homePointsScored = 0;
+                $awayPointsScored = 0;
+            }
+
+            $homePlayerId = $item['homePlayerId'];
+            $awayPlayerId = $item['awayPlayerId'];
+            $homeName = $item['homeName'];
+            $awayName = $item['awayName'];
+            $homePoints = $item['homePoints'];
+            $awayPoints = $item['awayPoints'];
+            $isHomePoint = $item['isHomePoint'];
+            $isAwayPoint = $item['isAwayPoint'];
+            $serverId = $item['serverId'];
+            $otherServerId = ($serverId == $homePlayerId) ? $awayPlayerId : $homePlayerId;
+
+            $homePointsScored += $isHomePoint;
+            $awayPointsScored += $isAwayPoint;
+
+            $servers = [$serverId, $otherServerId];
+
+            $pointsScored = $homePointsScored + $awayPointsScored;
+
+            # check who starts serving in current set
+            if ($pointsScored <= 20) {
+                $currentServerIndex = (ceil($pointsScored / 2) + ($setNumber % 2)) % 2;
+                $setStartingServer = $servers[($currentSet + 1) % 2];
+                $currentServer = $servers[$currentServerIndex];
+            } else {
+                $currentServerIndex = ($pointsScored + ($setNumber % 2)) % 2;
+                $setStartingServer = $servers[($currentSet + 1) % 2];
+                $currentServer = $servers[$currentServerIndex];
+            }
+
+            $setsData[$currentSet]['events'][] = [
+                'gameStartingServerId' => (int) $serverId,
+                'currentSetStartingServer' => (int) $setStartingServer,
+                'currentServer' => (int) $currentServer,
+                'isHomePoint' => (int) $isHomePoint,
+                'isAwayPoint' => (int) $isAwayPoint,
+                'homePointsScored' => $homePointsScored,
+                'awayPointsScored' => $awayPointsScored,
+                'homePlayerId' => $homePlayerId,
+                'awayPlayerId' => $awayPlayerId,
+            ];
+
+            $setsData[$currentSet]['scores'] = [
+                'homePoints' => $homePoints,
+                'awayPoints' => $awayPoints,
+            ];
+        }
+
+        return [
+            'setsData' => $setsData,
+            'homeName' => $homeName,
+            'awayName' => $awayName,
+        ];
     }
 }

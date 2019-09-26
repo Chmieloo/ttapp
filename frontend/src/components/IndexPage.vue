@@ -1,6 +1,6 @@
 <template>
   <div class="mainContainer">
-    <div class="halfContainer">
+    <div class="halfContainerSmaller">
       <span class="header-title">
         <i class="fas fa-clock marr20"></i>
         OVERDUE MATCHES
@@ -16,7 +16,7 @@
         <MatchSchedule />
       </div>
     </div>
-    <div class="halfContainer">
+    <div class="halfContainerBigger">
       <span class="header-title">
         <i class="fas fa-trophy marr20"></i>
         LAST 20 TOURNAMENT RESULTS
@@ -54,6 +54,18 @@ export default {
 .halfContainer {
   float: left;
   width: 50%;
+  margin-top: 40px;
+}
+
+.halfContainerSmaller {
+  float: left;
+  width: 45%;
+  margin-top: 40px;
+}
+
+.halfContainerBigger {
+  float: left;
+  width: 55%;
   margin-top: 40px;
 }
 

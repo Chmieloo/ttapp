@@ -172,6 +172,13 @@ match:
   requirements:
     id: '\d+'
 
+match_timeline:
+  path: /matches/{id}/timeline
+  controller: App\Controller\MatchController::getMatchTimeline
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 match_server:
   path: /matches/{id}/server
   controller: App\Controller\MatchController::setServer
