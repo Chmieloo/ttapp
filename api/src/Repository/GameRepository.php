@@ -70,6 +70,50 @@ class GameRepository extends ServiceEntityRepository
      * Base sql string
      * @return string
      */
+    public function baseListQuery()
+    {
+        $sql =
+            'select g.play_order as playOrder, g.name as matchName, g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
+            'g.old_home_elo ohElo, g.new_home_elo nhElo, g.old_away_elo oaElo, g.new_away_elo naElo, ' .
+            'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
+            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
+            'g.home_player_id as hpid, g.away_player_id as apid, ' .
+            's1.home_points as s1hp, s1.away_points s1ap, ' .
+            's2.home_points as s2hp, s2.away_points s2ap, ' .
+            's3.home_points as s3hp, s3.away_points s3ap, ' .
+            's4.home_points as s4hp, s4.away_points s4ap, ' .
+            's5.home_points as s5hp, s5.away_points s5ap, ' .
+            's6.home_points as s6hp, s6.away_points s6ap, ' .
+            's7.home_points as s7hp, s7.away_points s7ap, ' .
+            'g.tournament_id as tournamentId, ' .
+            'g.server_id as serverId, current_set as currentSet, ' .
+            'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
+            'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
+            'if(count(ppp.id) > 0, 1, 0) as pts, ' .
+            'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
+            'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName ' .
+            'from game g ' .
+            'join game_mode gm on gm.id = g.game_mode_id ' .
+            'left join player p1 on p1.id = g.home_player_id ' .
+            'left join player p2 on p2.id = g.away_player_id ' .
+            'left join tournament_group tg on tg.id = g.tournament_group_id ' .
+            'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
+            'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
+            'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
+            'left join scores s4 on s4.game_id = g.id and s4.set_number = 4 ' .
+            'left join scores s5 on s5.game_id = g.id and s5.set_number = 5 ' .
+            'left join scores s6 on s6.game_id = g.id and s6.set_number = 6 ' .
+            'left join scores s7 on s7.game_id = g.id and s7.set_number = 7 ' .
+            'left join scores sss on sss.game_id = g.id ' .
+            'left join points ppp on ppp.score_id = sss.id ';
+
+        return $sql;
+    }
+
+    /**
+     * Base sql string
+     * @return string
+     */
     public function baseQuery()
     {
         $sql =
@@ -181,14 +225,15 @@ class GameRepository extends ServiceEntityRepository
 
     /**
      * @param $id
-     * @param int $limit
+     * @param null $limit
      * @return array
+     * @throws DBALException
      */
     public function loadLastResultsByTournamentId($id, $limit = null)
     {
         $matchData = [];
 
-        $baseSql = $this->baseQuery();
+        $baseSql = $this->baseListQuery();
         $baseSql .= 'where g.tournament_id = :tournamentId ';
         $baseSql .= 'and g.is_finished = 1 ';
         $baseSql .= 'group by g.id ';
@@ -239,7 +284,7 @@ class GameRepository extends ServiceEntityRepository
                 'awayScoreTotal' => $match['awayScoreTotal'],
                 'numberOfSets' => $numberOfSets,
                 'scores' => $setScores,
-                'pts' => $match['pts'],
+                'pts' => (int) $match['pts'],
             ];
         }
 
@@ -870,6 +915,25 @@ class GameRepository extends ServiceEntityRepository
         return $result;
     }
 
+    private function hasManualScoring($id)
+    {
+        $baseSql = "select count(p.id) as pts
+                    from points p
+                    join scores s on p.score_id = s.id
+                    join game g on s.game_id = g.id
+                    where g.id = :gameId";
+
+        $params = [
+            'gameId' => $id,
+        ];
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt->execute($params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['pts'] ? 1 : 0;
+    }
     /**
      * @param $id
      * @return array
@@ -892,6 +956,9 @@ class GameRepository extends ServiceEntityRepository
         $stmt->execute($params);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        # check scored points
+        $result['pts'] = $this->hasManualScoring($id);
 
         $prettyScore =
             $result['homeScoreTotal'] . ' - ' . $result['awayScoreTotal'] . ' (';
