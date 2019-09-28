@@ -141,7 +141,9 @@ class MatchController extends BaseController
 
             $gameRepository->updatePlayoffs($matchId);
 
-            $message = $data['homeSlackName'] . ' - ' . $data['awaySlackName'] . ' ' . $data['prettyScore'];
+            $message = "> :trophy: Match finished\n";
+            $message .= "> *" . $match->getTournamentGroup()->getName() . "*\n";
+            $message .= "> " . $data['homeSlackName'] . ' - ' . $data['awaySlackName'] . ' ' . $data['prettyScore'];
             $payload = [
                 'text' => $message,
                 'method' => 'post',
@@ -496,7 +498,9 @@ class MatchController extends BaseController
 
         if ($data['post2Channel'] && true === $data['post2Channel']) {
             $textSetsScore = join(', ', $textSetsScore);
-            $message =
+            $message = "> :trophy: Match finished\n";
+            $message .= "> *" . $match->getTournamentGroup()->getName() . "*\n";
+            $message .= "> " .
                 $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
                 ' ' .
                 $match->getHomeScore() . ' - ' . $match->getAwayScore() .
@@ -728,9 +732,9 @@ class MatchController extends BaseController
         $message = '';
 
         if ($data) {
-            $message .= "Table tennis league official match starting:\n";
-            $message .= "*" . $data['groupName'] . "*: " . $data['homeSlackName'] . " *vs* " . $data['awaySlackName'] . "\n";
-            $message .= " <" . $this->guiUrl . "/#/match/" . $id . "/spectate|Spectate>";
+            $message .= "> :table_tennis_paddle_and_ball: Official match starting\n";
+            $message .= "> *" . $data['groupName'] . "*: " . $data['homeSlackName'] . " *vs* " . $data['awaySlackName'] . "\n";
+            $message .= "> <" . $this->guiUrl . "/#/match/" . $id . "/spectate|Spectate>";
         }
 
         if ($message) {

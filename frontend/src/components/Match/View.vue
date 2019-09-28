@@ -127,14 +127,14 @@
                   <span>{{ match.awayPlayerName }}</span>
                 </div>
                 <div v-for="score in match.scores" v-bind:key="score.set" class="span-score">
-                  <div>
+                  <div style="margin-bottom: 20px;">
                     <input type="text" :name="'home_set_' + score.set" :value=score.home />
                     <input type="text" :name="'away_set_' + score.set" :value=score.away />
                   </div>
                 </div>
                 <div v-if="match.scores.length == 0">
                   <span v-for="i in range(1, match.maxSets)" v-bind:key="i" class="span-score">
-                    <div>
+                    <div style="margin-bottom: 20px;">
                       <input type="text" :name="'home_set_' + i" value="" />
                       <input type="text" :name="'away_set_' + i" value="" />
                     </div>
@@ -142,7 +142,7 @@
                 </div>
                 <div v-else-if="match.scores.length < match.maxSets">
                   <div v-for="i in range(match.maxSets - (match.maxSets - match.scores.length) +  1, match.maxSets)" v-bind:key="i" class="span-score">
-                    <div>
+                    <div style="margin-bottom: 20px;">
                       <input type="text" :name="'home_set_' + i" value="" />
                       <input type="text" :name="'away_set_' + i" value="" />
                     </div>
@@ -425,6 +425,7 @@ export default {
           this.idle = true
         }
       })
+      this.sendMessage(this.getPayload())
     },
     resetScores () {
       this.homeScore = 0
