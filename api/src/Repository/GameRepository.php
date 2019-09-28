@@ -1429,12 +1429,12 @@ class GameRepository extends ServiceEntityRepository
             $lastEventTimestamp = end($events)['timestamp'];
 
             $duration = $lastEventTimestamp - $firstEventTimestamp;
-            $setData['setSummary']['durationMinutes'] = (int)($duration / 60);
-            $setData['setSummary']['durationSeconds'] = ($duration % 60);
+            $setData['setSummary']['durationMinutes'] = sprintf("%02d", (int)($duration / 60));
+            $setData['setSummary']['durationSeconds'] = sprintf("%02d", ($duration % 60));
             $setData['setSummary']['homeStreak'] = $this->getLongestSequence($setData['setSummary']['homeStreak'], '1');
             $setData['setSummary']['awayStreak'] = $this->getLongestSequence($setData['setSummary']['awayStreak'], '1');
-            $setData['setSummary']['homeServePointsPerc'] = number_format(($setData['setSummary']['homeServePoints'] / ($setData['setSummary']['homeServes']) * 100), 2);
-            $setData['setSummary']['awayServePointsPerc'] = number_format(($setData['setSummary']['awayServePoints'] / ($setData['setSummary']['awayServes']) * 100), 2);
+            $setData['setSummary']['homeServePointsPerc'] = !($setData['setSummary']['homeServes']) ? 0 : number_format(($setData['setSummary']['homeServePoints'] / ($setData['setSummary']['homeServes']) * 100), 2);
+            $setData['setSummary']['awayServePointsPerc'] = !($setData['setSummary']['awayServes']) ? 0 : number_format(($setData['setSummary']['awayServePoints'] / ($setData['setSummary']['awayServes']) * 100), 2);
 
             $homeTotalPoints += $setData['setSummary']['homePoints'];
             $awayTotalPoints += $setData['setSummary']['awayPoints'];
