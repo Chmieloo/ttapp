@@ -141,9 +141,11 @@ class MatchController extends BaseController
 
             $gameRepository->updatePlayoffs($matchId);
 
-            $message = "> :trophy: Match finished\n";
-            $message .= "> *" . $match->getTournamentGroup()->getName() . "*\n";
-            $message .= "> " . $data['homeSlackName'] . ' - ' . $data['awaySlackName'] . ' ' . $data['prettyScore'];
+            $message = "> *" . $match->getTournamentGroup()->getName() . "* match finished\n";
+            $message .= "> " . $data['homeSlackName'] . ' - ' . $data['awaySlackName'] . ' ' . $data['prettyScore'] . "\n";
+            if ($data['pts']) {
+                $message .= "> <" . $this->guiUrl . "/#/match/" . $matchId . "/summary|Summary>";
+            }
             $payload = [
                 'text' => $message,
                 'method' => 'post',
@@ -498,8 +500,7 @@ class MatchController extends BaseController
 
         if ($data['post2Channel'] && true === $data['post2Channel']) {
             $textSetsScore = join(', ', $textSetsScore);
-            $message = "> :trophy: Match finished\n";
-            $message .= "> *" . $match->getTournamentGroup()->getName() . "*\n";
+            $message = "> *" . $match->getTournamentGroup()->getName() . "* match finished\n";
             $message .= "> " .
                 $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
                 ' ' .

@@ -90,7 +90,7 @@ class GameRepository extends ServiceEntityRepository
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
             'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints, ' .
-            'if(count(p2s.id) > 0, 1, 0) as pts, ' .
+            'if(count(pp.id) > 0, 1, 0) as pts, ' .
             'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
             'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName ' .
             'from game g ' .
@@ -106,9 +106,7 @@ class GameRepository extends ServiceEntityRepository
             'left join scores s6 on s6.game_id = g.id and s6.set_number = 6 ' .
             'left join scores s7 on s7.game_id = g.id and s7.set_number = 7 ' .
             'left join scores ss on ss.game_id = g.id and g.current_set = ss.set_number ' .
-            'left join points pp on pp.score_id = ss.id ' .
-            'left join scores s2p on s2p.game_id = g.id ' .
-            'left join points p2s on p2s.score_id = s2p.id ';
+            'left join points pp on pp.score_id = ss.id ';
 
         return $sql;
     }
@@ -875,6 +873,7 @@ class GameRepository extends ServiceEntityRepository
     /**
      * @param $id
      * @return array
+     * @throws DBALException
      */
     public function loadById($id)
     {
@@ -1013,8 +1012,8 @@ class GameRepository extends ServiceEntityRepository
             'newAwayElo' => $result['naElo'],
             'homeElo' => $homeElo >= 0 ? '+' . $homeElo : $homeElo,
             'awayElo' => $awayElo >= 0 ? '+' . $awayElo : $awayElo,
+            'pts' => $result['pts'],
         ];
-
 
         return $matchData;
     }
