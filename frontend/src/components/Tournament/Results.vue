@@ -19,12 +19,14 @@
           </span>
           <span v-else class="setScores">
             (
-            <span v-for="score in match.scores" v-bind:key="score.set" class="score">
-              {{ score.home }} - {{ score.away }}
-            </span>
-            )
+              <span v-for="score in match.scores" v-bind:key="score.set" class="score">{{ score.home }} - {{ score.away }}</span>
+              )
           </span>
         </td>
+        <td v-if="parseInt(match.pts) > 0" style="color: #fff;">
+          <router-link :to="'/match/' + match.matchId + '/summary'"><i class="fas fa-eye"></i></router-link>
+        </td>
+        <td v-else></td>
       </tr>
     </table>
   </div>

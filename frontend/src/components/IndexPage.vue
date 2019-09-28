@@ -76,6 +76,7 @@ export default {
 
 .mainContainer {
   padding: 0px 20px 0px 20px;
+  width: 100%;
 }
 
 .header-title {

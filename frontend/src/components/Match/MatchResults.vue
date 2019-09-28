@@ -25,8 +25,8 @@
             )
           </span>
         </td>
-        <td v-if="parseInt(match.pts) > 0" style="color: white;">
-          <router-link :to="'/match/' + match.matchId + '/summary'"><i class="fas fa-gamepad"></i></router-link>
+        <td v-if="parseInt(match.pts) > 0" style="color: #fff;">
+          <router-link :to="'/match/' + match.matchId + '/summary'"><i class="fas fa-eye"></i></router-link>
         </td>
         <td v-else></td>
       </tr>

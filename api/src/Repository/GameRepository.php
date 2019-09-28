@@ -557,7 +557,7 @@ class GameRepository extends ServiceEntityRepository
                 'matchId' => $matchId,
                 'groupName' => $match['groupName'],
                 'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),
-                'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
+                'dateOfMatch' => date("M j", strtotime($match['dateOfMatch'])),
                 'homePlayerId' => $match['homePlayerId'],
                 'awayPlayerId' => $match['awayPlayerId'],
                 'homePlayerName' => $match['homePlayerName'],
@@ -1197,13 +1197,15 @@ class GameRepository extends ServiceEntityRepository
 
     public function loadTimelineById($id)
     {
-        $sql = "select g.server_id as serverId, g.home_player_id as homePlayerId, g.away_player_id as awayPlayerId, 
+        $sql = "select g.server_id as serverId, g.home_player_id as homePlayerId, g.away_player_id as awayPlayerId, g.home_score as homeTotalScore, g.away_score as awayTotalScore,
                 unix_timestamp(p.time) as timestamp, 
                 p1.name homeName, p2.name as awayName, s.set_number as setNumber, s.home_points as homePoints, s.away_points as awayPoints, 
-                p.is_home_point as isHomePoint, p.is_away_point as isAwayPoint 
+                p.is_home_point as isHomePoint, p.is_away_point as isAwayPoint, tg.name as groupName, t.name as tournamentName
                 from points p
                 join scores s on p.score_id = s.id
                 join game g on s.game_id = g.id
+                join tournament_group tg on g.tournament_group_id = tg.id
+                join tournament t on g.tournament_id = t.id
                 join player p1 on g.home_player_id = p1.id
                 join player p2 on g.away_player_id = p2.id
                 where g.id = :matchId
@@ -1224,17 +1226,31 @@ class GameRepository extends ServiceEntityRepository
         $homePointsScored = 0;
         $awayPointsScored = 0;
         $currentServer = null;
-        $homeOwnServePoints = 0;
-        $awayOwnServePoints = 0;
         $homeStreak = '';
         $awayStreak = '';
         $lastPoint = null;
 
         $homeName = '';
         $awayName = '';
+        $groupName = '';
+        $tournamentName = '';
+
+        $homeTotalScore = 0;
+        $awayTotalScore = 0;
+
+        $homeTotalPoints = 0;
+        $awayTotalPoints = 0;
+
+        $homeServes = $homeServesTotal = $homeOwnServePoints = $homeOwnServePointsTotal = 0;
+        $awayServes = $awayServesTotal = $awayOwnServePoints = $awayOwnServePointsTotal = 0;
+
+        $previousRallySeconds = 0;
 
         foreach ($data as $item) {
             $setNumber = $item['setNumber'];
+
+            $homeTotalScore = $item['homeTotalScore'];
+            $awayTotalScore = $item['awayTotalScore'];
 
             if ($setNumber != $currentSet) {
                 # we moved to new set
@@ -1245,6 +1261,9 @@ class GameRepository extends ServiceEntityRepository
                 $homeOwnServePoints = 0;
                 $awayOwnServePoints = 0;
 
+                $homeServes = 0;
+                $awayServes = 0;
+
                 $homeStreak = '';
                 $awayStreak = '';
             }
@@ -1253,8 +1272,12 @@ class GameRepository extends ServiceEntityRepository
             $awayPlayerId = $item['awayPlayerId'];
             $homeName = $item['homeName'];
             $awayName = $item['awayName'];
+            $groupName = $item['groupName'];
+            $tournamentName = $item['tournamentName'];
+
             $homePoints = $item['homePoints'];
             $awayPoints = $item['awayPoints'];
+
             $isHomePoint = $item['isHomePoint'];
             $isAwayPoint = $item['isAwayPoint'];
             $serverId = $item['serverId'];
@@ -1281,12 +1304,31 @@ class GameRepository extends ServiceEntityRepository
                 $currentServer = $servers[$currentServerIndex];
             }
 
-            if ($currentServer == $homePlayerId && $isHomePoint) {
-                $homeOwnServePoints++;
+            if ($currentServer == $homePlayerId) {
+                $homeServesTotal++;
+                $homeServes++;
+                if ($isHomePoint) {
+                    $homeOwnServePointsTotal++;
+                    $homeOwnServePoints++;
+                }
             }
 
-            if ($currentServer == $awayPlayerId && $isAwayPoint) {
-                $awayOwnServePoints++;
+            if ($currentServer == $awayPlayerId) {
+                $awayServesTotal++;
+                $awayServes++;
+                if ($isAwayPoint) {
+                    $awayOwnServePointsTotal++;
+                    $awayOwnServePoints++;
+                }
+            }
+
+            # Calculate length of rally in seconds
+            if ($previousRallySeconds == 0) {
+                $rallySeconds = 0;
+                $previousRallySeconds = $item['timestamp'];
+            } else {
+                $rallySeconds = $item['timestamp'] - $previousRallySeconds;
+                $previousRallySeconds = $item['timestamp'];
             }
 
             $setsData[$currentSet]['events'][] = [
@@ -1300,11 +1342,14 @@ class GameRepository extends ServiceEntityRepository
                 'homePlayerId' => (int)$homePlayerId,
                 'awayPlayerId' => (int)$awayPlayerId,
                 'timestamp' => $item['timestamp'],
+                'rallySeconds' => $rallySeconds,
             ];
 
-            $setsData[$currentSet]['scores'] = [
-                'homePoints' => $homePoints,
-                'awayPoints' => $awayPoints,
+            $setsData[$currentSet]['setSummary'] = [
+                'homePoints' => (int) $homePoints,
+                'awayPoints' => (int) $awayPoints,
+                'homeServes' => (int) $homeServes,
+                'awayServes' => (int) $awayServes,
                 'homeServePoints' => $homeOwnServePoints,
                 'awayServePoints' => $awayOwnServePoints,
                 'homeStreak' => $homeStreak,
@@ -1318,16 +1363,37 @@ class GameRepository extends ServiceEntityRepository
             $lastEventTimestamp = end($events)['timestamp'];
 
             $duration = $lastEventTimestamp - $firstEventTimestamp;
-            $setData['scores']['durationMinutes'] = (int)($duration / 60);
-            $setData['scores']['durationSeconds'] = ($duration % 60);
-            $setData['scores']['homeStreak'] = $this->getLongestSequence($setData['scores']['homeStreak'], '1');
-            $setData['scores']['awayStreak'] = $this->getLongestSequence($setData['scores']['awayStreak'], '1');
+            $setData['setSummary']['durationMinutes'] = (int)($duration / 60);
+            $setData['setSummary']['durationSeconds'] = ($duration % 60);
+            $setData['setSummary']['homeStreak'] = $this->getLongestSequence($setData['setSummary']['homeStreak'], '1');
+            $setData['setSummary']['awayStreak'] = $this->getLongestSequence($setData['setSummary']['awayStreak'], '1');
+            $setData['setSummary']['homeServePointsPerc'] = number_format(($setData['setSummary']['homeServePoints'] / ($setData['setSummary']['homeServes']) * 100), 2);
+            $setData['setSummary']['awayServePointsPerc'] = number_format(($setData['setSummary']['awayServePoints'] / ($setData['setSummary']['awayServes']) * 100), 2);
+
+            $homeTotalPoints += $setData['setSummary']['homePoints'];
+            $awayTotalPoints += $setData['setSummary']['awayPoints'];
         }
 
         return [
+            'matchData' => [
+                'homeName' => $homeName,
+                'awayName' => $awayName,
+                'groupName' => $groupName,
+                'tournamentName' => $tournamentName,
+                'homeTotalScore' => $homeTotalScore,
+                'awayTotalScore' => $awayTotalScore,
+                'homeTotalPoints' => $homeTotalPoints,
+                'awayTotalPoints' => $awayTotalPoints,
+                'homePointsPerc' => number_format(($homeTotalPoints / ($homeTotalPoints + $awayTotalPoints) * 100), 2),
+                'awayPointsPerc' => number_format(($awayTotalPoints / ($homeTotalPoints + $awayTotalPoints) * 100), 2),
+                'homeServesTotal' => $homeServesTotal,
+                'awayServesTotal' => $awayServesTotal,
+                'homeOwnServePointsTotal' => $homeOwnServePointsTotal,
+                'awayOwnServePointsTotal' => $awayOwnServePointsTotal,
+                'homeServePointsPerc' => number_format(($homeOwnServePointsTotal / ($homeServesTotal) * 100), 2),
+                'awayServePointsPerc' => number_format(($awayOwnServePointsTotal / ($awayServesTotal) * 100), 2),
+            ],
             'setsData' => $setsData,
-            'homeName' => $homeName,
-            'awayName' => $awayName,
         ];
     }
 

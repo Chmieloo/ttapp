@@ -1,12 +1,12 @@
 <template>
   <div class="mainContainer">
-    <div class="halfContainer">
+    <div class="halfContainerSmaller">
       <span class="header-title">FULL TOURNAMENT SCHEDULE</span>
       <div class="inContainer90">
         <FullMatchSchedule />
       </div>
     </div>
-    <div class="halfContainer">
+    <div class="halfContainerBigger">
       <span class="header-title">FULL TOURNAMENT RESULTS</span>
       <div class="inContainer90">
         <FullMatchResults />
@@ -36,9 +36,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.halfContainer {
+.halfContainerSmaller {
   float: left;
-  width: 50%;
+  width: 47%;
+  margin-top: 40px;
+}
+
+.halfContainerBigger {
+  float: left;
+  width: 53%;
   margin-top: 40px;
 }
 
@@ -49,6 +55,7 @@ export default {
 
 .mainContainer {
   padding: 0px 20px 0px 20px;
+  width: 100%;
 }
 
 .header-title {
