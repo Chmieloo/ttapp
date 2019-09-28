@@ -28,6 +28,7 @@ class PlayerRepository extends ServiceEntityRepository
                 sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses 
                 from player p
                 left join game g on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1
+                join tournament t on t.id = g.tournament_id and t.is_official = 1
                 -- where g.is_finished = 1
                 group by p.id
                 order by p.name';
@@ -39,9 +40,10 @@ class PlayerRepository extends ServiceEntityRepository
         $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($players as &$player) {
-            $gamesPlayed = $player['gamesPlayed'] ? :1;
+            $gamesPlayed = (int) $player['gamesPlayed'] ? : 1;
+            $player['gamesPlayed'] = $gamesPlayed;
             $player['elo'] = (int) $player['elo'];
-            $player['winPercentage'] = number_format($player['wins'] / $gamesPlayed * 100, 2);
+            $player['winPercentage'] = (float) number_format($player['wins'] / $gamesPlayed * 100, 2);
         }
         
         return $players;

@@ -6,18 +6,18 @@
       <span class="header-title">Player list</span>
       <table class="table-player-list">
         <tr class="row-header">
-          <th class="txt-left">name</th>
-          <th class="txt-center mw-100">elo</th>
-          <th class="txt-center mw-100">m.played</th>
+          <th class="txt-left"><a @click="nameSort()">name</a></th>
+          <th class="txt-center mw-100"><a @click="eloSort()">elo</a></th>
+          <th class="txt-center mw-100"><a @click="gameSort()">m.played</a></th>
           <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>                    
-          <th class="txt-center mw-100">m.win%</th>
+          <th class="txt-center mw-100"><a @click="winSort()">m.win%</a></th>
         </tr>
         <tr v-for="player in this.players" v-bind:key="player.id" class="row-data">
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-center">{{ player.elo }}</td>
           <td class="txt-center">{{ player.gamesPlayed }}</td>
           <td class="txt-center">{{ player.wins }} / {{ player.draws }} / {{ player.losses }}</td>
-          <td class="txt-center">{{ player.winPercentage }}</td>
+          <td class="txt-center">{{ player.winPercentage.toFixed(2) }}</td>
         </tr>
       </table>
     </div>
@@ -26,19 +26,59 @@
 
 <script>
 import axios from 'axios'
+import _ from 'lodash'
 
 export default {
   name: 'App',
   data () {
     return {
       players: null,
-      orderedPlayers: []
+      eloOrder: 'asc',
+      nameOrder: 'desc',
+      gamesPlayedOrder: 'asc',
+      winOrder: 'asc'
     }
   },
   mounted () {
     axios.get('/api/players').then((res) => {
       this.players = res.data
+      this.nameSort()
     })
+  },
+  methods: {
+    eloSort () {
+      if (this.eloOrder === 'desc') {
+        this.eloOrder = 'asc'
+      } else {
+        this.eloOrder = 'desc'
+      }
+      this.players = _.orderBy(this.players, 'elo', this.eloOrder)
+    },
+    nameSort () {
+      if (this.nameOrder === 'desc') {
+        this.nameOrder = 'asc'
+      } else {
+        this.nameOrder = 'desc'
+      }
+      this.players = _.orderBy(this.players, 'name', this.nameOrder)
+    },
+    gameSort () {
+      console.log(this.players)
+      if (this.gamesPlayedOrder === 'desc') {
+        this.gamesPlayedOrder = 'asc'
+      } else {
+        this.gamesPlayedOrder = 'desc'
+      }
+      this.players = _.orderBy(this.players, 'gamesPlayed', this.gamesPlayedOrder)
+    },
+    winSort () {
+      if (this.winOrder === 'desc') {
+        this.winOrder = 'asc'
+      } else {
+        this.winOrder = 'desc'
+      }
+      this.players = _.orderBy(this.players, 'winPercentage', this.winOrder)
+    }
   }
 }
 </script>
