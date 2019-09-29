@@ -4,6 +4,9 @@
     <div><router-link to="/player/list">players</router-link></div>
     <div><router-link to="/tournament/list">tournaments</router-link></div>
     <div><router-link to="/leaders">leaders</router-link></div>
+    <div class="version">
+      <div><router-link to="/updates">updates</router-link></div>
+    </div>
   </div>
 </template>
 
@@ -23,13 +26,18 @@ export default {
     padding-left: 15px;
     font-weight: 600;
     box-shadow: 0px 0px 3px black;
-
+    width: 100%;
 }
 
 .topMenu div {
     float: left;
     margin-right: 40px;
-      text-transform: uppercase
+    text-transform: uppercase;
+}
+
+.topMenu div:last-child {
+  float: right;
+  margin-right: 20px;
 }
 
 .topMenu div:first-child a {

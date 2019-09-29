@@ -218,6 +218,29 @@ class TournamentRepository extends ServiceEntityRepository
             return $qb;
     }
 
+    public function baseQueryAvgAdvantage()
+    {
+        $query = $this->connection->createQueryBuilder()
+            ->select(
+                "avg(if(p.id = g.home_player_id, s.home_points - s.away_points, s.away_points - s.home_points)) as avgDiff",
+                "p.id",
+                "p.name"
+            )
+            ->from("player", "p")
+            ->join("p", "game", "g", "p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and g.is_walkover = 0")
+            ->join("g", "scores", "s", "g.id = s.game_id")
+            ->join("g", "tournament", "t", "g.tournament_id = t.id and t.is_official = 1")
+            ->groupBy("p.id")
+            ->orderBy("1", "desc")
+            ->setMaxResults(5);
+
+        return $query;
+    }
+
+    /**
+     * @param $tournamentId
+     * @return array
+     */
     public function loadLeaders($tournamentId)
     {
         $result = [];
@@ -241,7 +264,86 @@ class TournamentRepository extends ServiceEntityRepository
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['lastWeekPointsLeaders'] = $data;
-        
+
+        $data = $this->baseQueryAvgAdvantage()
+            ->execute()
+            ->fetchAll(PDO::FETCH_ASSOC);
+        $result['avgDiffAllTime'] = $data;
+
+        $data = $this->baseQueryAvgAdvantage()
+            ->andWhere("t.id = :tournamentId")
+            ->setParameter("tournamentId", $tournamentId)
+            ->execute()
+            ->fetchAll(PDO::FETCH_ASSOC);
+        $result['avgDiffCurrentTournament'] = $data;
+
+        $data = $this->baseQueryAvgAdvantage()
+            ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
+            ->andWhere("t.id = :tournamentId")
+            ->setParameter("tournamentId", $tournamentId)
+            ->execute()
+            ->fetchAll(PDO::FETCH_ASSOC);
+        $result['avgDiffLastWeek'] = $data;
+
+        $sql = "select p.name, p.tournament_elo as elo
+                from player p
+                order by tournament_elo desc
+                limit 0,5";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result['eloLeaders'] = $data;
+
+        $sql = "select * from (
+                  select p.id,
+                         p.name,
+                         sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
+                                (g.new_away_elo - g.old_away_elo))) as elodiff,
+                                p.tournament_elo as telo
+                  from game g
+                           join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
+                                            g.is_walkover = 0
+                  where g.tournament_id = :tournamentId
+                  group by p.id
+                  order by g.date_played asc
+                ) x
+                order by x.elodiff desc
+                limit 0,5";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result['eloLeadersTournament'] = $data;
+
+        $sql = "select * from (
+                  select p.id,
+                         p.name,
+                         sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
+                                (g.new_away_elo - g.old_away_elo))) as elodiff,
+                                p.tournament_elo as telo
+                  from game g
+                           join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
+                                            g.is_walkover = 0
+                  where g.tournament_id = :tournamentId
+                  and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
+                  group by p.id
+                  order by g.date_played asc
+                ) x
+                order by x.elodiff desc
+                limit 0,5";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([
+            'tournamentId' => $tournamentId
+        ]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result['eloLeadersLastWeek'] = $data;
+
         return $result;
     }
 }

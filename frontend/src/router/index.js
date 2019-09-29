@@ -16,6 +16,7 @@ import MatchPlayoffView from '@/components/Match/PlayoffView'
 import MatchSpectate from '@/components/Match/Spectate'
 import MatchSummary from '@/components/Match/Summary'
 import MatchNew from '@/components/Match/New'
+import Updates from '@/components/Updates'
 import TournamentResultsEdit from '@/components/Tournament/ResultsEdit'
 import PlayerInfo from '@/components/Player/Info'
 // Quick Play
@@ -31,6 +32,7 @@ Vue.use(VueScrollTo)
 export default new Router({
   routes: [
     { path: '/', name: 'IndexPage', component: IndexPage },
+    { path: '/updates', name: 'Updates', component: Updates },
     { path: '/player/list', name: 'PlayerList', component: PlayerList },
     { path: '/leaders', name: 'Leaders', component: Leaders },
     { path: '/player/add', name: 'PlayerAdd', component: PlayerAdd },
