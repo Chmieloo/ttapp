@@ -39,7 +39,7 @@ export default {
     }
   },
   mounted () {
-    axios.get('/api/tournaments/0/overdue/10').then((res) => {
+    axios.get('/api/tournaments/0/overdue/0').then((res) => {
       this.matches = res.data
     })
   }
