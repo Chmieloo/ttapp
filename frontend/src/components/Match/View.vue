@@ -609,7 +609,7 @@ export default {
   color: #fff;
   font-size: 30px;
   position: absolute;
-  top: 0px;
+  top: 50px;
   right: 10px;
   line-height: 50px;
 }

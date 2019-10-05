@@ -4,20 +4,46 @@
     <div><router-link to="/player/list">players</router-link></div>
     <div><router-link to="/tournament/list">tournaments</router-link></div>
     <div><router-link to="/leaders">leaders</router-link></div>
-    <div class="version">
+    <div>
+      <div class="dropdown-office"><span @click="toggleDropdown()">OFFICE</span></div>
+      <div class="dropdown" v-if="dropdown">
+        <div class="dropdown-item" @click="setOfficeIdCookie(1)">TRONDHEIM</div>
+        <div class="dropdown-item" @click="setOfficeIdCookie(2)">OSLO</div>
+      </div>
+    </div>
+    <div style="float: right;">
       <div><router-link to="/updates">updates</router-link></div>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import VueCookie from 'vue-cookie'
+
+Vue.use(VueCookie)
+
 export default {
-  name: 'TopMenu'
+  name: 'TopMenu',
+  data () {
+    return {
+      dropdown: false
+    }
+  },
+  methods: {
+    setOfficeIdCookie (officeId) {
+      this.$cookie.set('officeId', officeId, 365)
+      this.$router.go(0)
+    },
+    toggleDropdown () {
+      this.dropdown = !this.dropdown
+    }
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
 .topMenu {
     background-color: #105869;
     clear: both;
@@ -27,17 +53,39 @@ export default {
     font-weight: 600;
     box-shadow: 0px 0px 3px black;
     width: 100%;
+    .dropdown {
+      position: absolute;
+      margin-top: 50px;
+      width: 250px;
+      background-color: #003e4c;
+      box-shadow: 0px 1px 1px 0px black;
+      margin-left: -20px;
+      div {
+        float: none;
+        margin: 0px !important;
+        padding: 10px 20px;
+      }
+    }
+}
+
+.dropdown-item {
+  cursor: pointer;
+  color: #fff;
+}
+
+.dropdown-item:hover {
+  background-color: #105869;
+}
+
+.dropdown-office {
+  color: white;
+  cursor: pointer;
 }
 
 .topMenu div {
     float: left;
     margin-right: 40px;
     text-transform: uppercase;
-}
-
-.topMenu div:last-child {
-  float: right;
-  margin-right: 20px;
 }
 
 .topMenu div:first-child a {

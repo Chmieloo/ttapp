@@ -7,11 +7,27 @@
 
 <script>
 import TopMenu from './components/TopMenu.vue'
+import Vue from 'vue'
+import VueCookie from 'vue-cookie'
+
+Vue.use(VueCookie)
 
 export default {
   name: 'App',
   components: {
     TopMenu
+  },
+  mounted () {
+    this.checkCookie()
+  },
+  methods: {
+    checkCookie () {
+      var officeId = this.$cookie.get('officeId')
+      if (officeId !== '') {
+      } else {
+        this.$cookie.set('officeId', 1, 365)
+      }
+    }
   }
 }
 </script>
