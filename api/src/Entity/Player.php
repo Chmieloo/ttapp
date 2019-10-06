@@ -58,6 +58,11 @@ class Player
      */
     private $slackName;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="players")
+     */
+    private $office;
+
     public function __construct()
     {
         $this->home_games = new ArrayCollection();
@@ -199,6 +204,18 @@ class Player
     public function setSlackName(string $slackName): self
     {
         $this->slackName = $slackName;
+
+        return $this;
+    }
+
+    public function getOffice(): ?Office
+    {
+        return $this->office;
+    }
+
+    public function setOffice(?Office $office): self
+    {
+        $this->office = $office;
 
         return $this;
     }
