@@ -88,7 +88,7 @@ class TournamentController extends BaseController
         # If empty, load current
         $tournament = $tournamentId ?
             $tournamentRepository->find($tournamentId) :
-            $tournamentRepository->loadCurrentTournament();
+            $tournamentRepository->loadCurrentTournaments();
 
         $data = $gameRepository->loadLastResultsByTournamentId($tournament->getId(), $numberOfResults);
 
@@ -105,6 +105,7 @@ class TournamentController extends BaseController
      * @param $tournamentId
      * @param $numberOfFixtures
      * @return Response
+     * @throws DBALException
      */
     public function getTournamentOverdueSchedule($tournamentId, $numberOfFixtures)
     {
@@ -114,11 +115,16 @@ class TournamentController extends BaseController
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
 
         # If empty, load current
-        $tournament = $tournamentId ?
+        $tournaments = $tournamentId ?
             $tournamentRepository->find($tournamentId) :
-            $tournamentRepository->loadCurrentTournament();
+            $tournamentRepository->loadCurrentTournaments();
 
-        $data = $gameRepository->loadOverdueFixturesByTournamentId($tournament->getId(), $numberOfFixtures);
+        $ids = [];
+        foreach ($tournaments as $tournament) {
+            $ids[] = $tournament->getId();
+        }
+
+        $data = $gameRepository->loadOverdueFixturesByTournamentIds($ids, $numberOfFixtures);
 
         return $this->sendJsonResponse($data);
     }
@@ -127,6 +133,7 @@ class TournamentController extends BaseController
      * @param $tournamentId
      * @param $numberOfFixtures
      * @return Response
+     * @throws DBALException
      */
     public function getTournamentSchedule($tournamentId, $numberOfFixtures)
     {
@@ -136,11 +143,16 @@ class TournamentController extends BaseController
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
 
         # If empty, load current
-        $tournament = $tournamentId ?
+        $tournaments = $tournamentId ?
             $tournamentRepository->find($tournamentId) :
-            $tournamentRepository->loadCurrentTournament();
+            $tournamentRepository->loadCurrentTournaments();
 
-        $data = $gameRepository->loadUpcomingFixturesByTournamentId($tournament->getId(), $numberOfFixtures);
+        $ids = [];
+        foreach ($tournaments as $tournament) {
+            $ids[] = $tournament->getId();
+        }
+
+        $data = $gameRepository->loadUpcomingFixturesByTournamentIds($ids, $numberOfFixtures);
 
         return $this->sendJsonResponse($data);
     }
@@ -160,7 +172,7 @@ class TournamentController extends BaseController
         # If empty, load current
         $tournament = $tournamentId ?
             $tournamentRepository->find($tournamentId) :
-            $tournamentRepository->loadCurrentTournament();
+            $tournamentRepository->loadCurrentTournaments();
 
         $message = '';
 
@@ -239,7 +251,7 @@ class TournamentController extends BaseController
         # If empty, load current
         $tournament = $tournamentId ?
             $tournamentRepository->find($tournamentId) :
-            $tournamentRepository->loadCurrentTournament();
+            $tournamentRepository->loadCurrentTournaments();
 
         $data = $gameRepository->loadByTournamentId($tournament->getId());
 
@@ -359,46 +371,8 @@ class TournamentController extends BaseController
     {
         /** @var TournamentRepository $gameRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        $currentTournament = $tournamentRepository->loadCurrentTournament();
+        $currentTournament = $tournamentRepository->loadCurrentTournaments();
         $data = $tournamentRepository->loadLeaders($currentTournament->getId());
-
-        /*
-        $matchesPlayed = $data['generalInfo']['matchesPlayed'];
-        $numPlayers = $data['generalInfo']['uniquePlayers'];
-        $matchPoints = $data['generalInfo']['matchPoints'];
-        $ppm = $data['generalInfo']['matchPointsAvg'];
-        $pps = $data['generalInfo']['setPointsAvg'];
-        $score30 = $data['generalInfo']['score30'];
-        $score31 = $data['generalInfo']['score31'];
-        $score22 = $data['generalInfo']['score22'];
-
-        $weekAvgLeaders = $data['weekAvgLeaders'];
-        $weekPointsLeaders = $data['weekPointsLeaders'];
-
-        $seasonAvgLeaders = $data['seasonAvgLeaders'];
-        $seasonPointsLeaders = $data['seasonPointsLeaders'];
-
-        $message = 'Last week\'s summary. Total *' . $matchesPlayed . '* matches were played, *' . $numPlayers . '* players scored *' . $matchPoints . '* points total with an average of *' . $ppm . '* point per match ' .
-                   '(average *' . $pps . '* points per set). ' . "\n" . ' For BO4 match mode we had *' . $score30 . '* wins with set score 3:0, *' . $score31 . '* wins with 3:1 score and *' . $score22 . '* draws (2:2).';
-
-        $message .= "\n*Last week's average points per set leaders*:\n";
-        foreach ($weekAvgLeaders as $leader) {
-            $message .= "> " . $leader['avgPoints'] . ': ' . $leader['name'] . "\n";
-        }
-        $message .= "\n*Season's average points per set leaders*:\n";
-        foreach ($seasonAvgLeaders as $leader) {
-            $message .= "> " . $leader['avgPoints'] . ': ' . $leader['name'] . "\n";
-        }
-        $message .= "\n*Last week's total points scored leaders*:\n";
-        foreach ($weekPointsLeaders as $leader) {
-            $message .= "> " . $leader['points'] . ': ' . $leader['name'] . "\n";
-        }
-        $message .= "\n*Season's total points scored leaders*:\n";
-        foreach ($seasonPointsLeaders as $leader) {
-            $message .= "> " . $leader['points'] . ': ' . $leader['name'] . "\n";
-        }
-
-        */
 
         return $this->sendJsonResponse($data);
     }

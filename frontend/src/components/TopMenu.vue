@@ -8,7 +8,10 @@
       <div class="dropdown-office"><span @click="toggleDropdown()">OFFICE</span></div>
       <div class="dropdown" v-if="dropdown">
         <div class="dropdown-item" v-for="office in this.offices" v-bind:key="office.id">
-          <div @click="setOfficeIdCookie(office.id)">{{ office.name }}</div>
+          <div @click="setStorageOfficeId(office.id)">
+            <i v-if="office.id == officeId" class="far fa-check-square"></i>
+            {{ office.name }}
+          </div>
         </div>
       </div>
     </div>
@@ -21,26 +24,31 @@
 <script>
 import axios from 'axios'
 import Vue from 'vue'
-import VueCookie from 'vue-cookie'
+import VueLocalStorage from 'vue-localstorage'
 
-Vue.use(VueCookie)
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'TopMenu',
   data () {
     return {
       dropdown: false,
-      offices: []
+      offices: [],
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/offices').then((res) => {
       this.offices = res.data
+      this.officeId = this.$localStorage.get('ttappOfficeId', 1)
     })
   },
   methods: {
-    setOfficeIdCookie (officeId) {
-      this.$cookie.set('officeId', officeId, 365)
+    setStorageOfficeId (officeId) {
+      this.$localStorage.set('ttappOfficeId', officeId)
       this.$router.go(0)
     },
     toggleDropdown () {

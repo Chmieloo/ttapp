@@ -28,9 +28,11 @@
 import axios from 'axios'
 import _ from 'lodash'
 import Vue from 'vue'
-import VueCookie from 'vue-cookie'
-
-Vue.use(VueCookie)
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'App',
@@ -41,21 +43,20 @@ export default {
       nameOrder: 'desc',
       gamesPlayedOrder: 'asc',
       winOrder: 'asc',
-      officeCookieId: 1
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/players').then((res) => {
       this.players = res.data
       this.nameSort()
-      this.officeCookieId = parseInt(this.$cookie.get('officeId'))
-      // console.log(this.officeCookieId)
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
   },
   computed: {
     filteredPlayers: function () {
       return this.players.filter((player) => {
-        return player.officeId === this.officeCookieId
+        return player.officeId === this.officeId
       })
     }
   },

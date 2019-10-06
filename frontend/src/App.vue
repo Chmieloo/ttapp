@@ -8,9 +8,12 @@
 <script>
 import TopMenu from './components/TopMenu.vue'
 import Vue from 'vue'
-import VueCookie from 'vue-cookie'
+import VueLocalStorage from 'vue-localstorage'
 
-Vue.use(VueCookie)
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'App',
@@ -18,16 +21,7 @@ export default {
     TopMenu
   },
   mounted () {
-    this.checkCookie()
-  },
-  methods: {
-    checkCookie () {
-      var officeId = this.$cookie.get('officeId')
-      if (officeId !== '') {
-      } else {
-        this.$cookie.set('officeId', 1, 365)
-      }
-    }
+    this.$localStorage.set('ttappOfficeId', this.$localStorage.get('ttappOfficeId', 1))
   }
 }
 </script>

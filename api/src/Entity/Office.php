@@ -33,9 +33,15 @@ class Office
      */
     private $is_default;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Tournament", mappedBy="office")
+     */
+    private $tournaments;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
+        $this->tournaments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,6 +100,37 @@ class Office
     public function setIsDefault(bool $is_default): self
     {
         $this->is_default = $is_default;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tournament[]
+     */
+    public function getTournaments(): Collection
+    {
+        return $this->tournaments;
+    }
+
+    public function addTournament(Tournament $tournament): self
+    {
+        if (!$this->tournaments->contains($tournament)) {
+            $this->tournaments[] = $tournament;
+            $tournament->setOffice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTournament(Tournament $tournament): self
+    {
+        if ($this->tournaments->contains($tournament)) {
+            $this->tournaments->removeElement($tournament);
+            // set the owning side to null (unless already changed)
+            if ($tournament->getOffice() === $this) {
+                $tournament->setOffice(null);
+            }
+        }
 
         return $this;
     }
