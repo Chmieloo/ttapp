@@ -13,7 +13,7 @@
           <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>                    
           <th class="txt-center mw-100"><a @click="winSort()">m.win%</a></th>
         </tr>
-        <tr v-for="player in this.filteredPlayers" v-bind:key="player.id" class="row-data">
+        <tr v-for="player in this.players" v-bind:key="player.id" class="row-data">
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-right">{{ player.elo }}</td>
           <td class="txt-right">
