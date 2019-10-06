@@ -27,7 +27,8 @@ class PlayerRepository extends ServiceEntityRepository
 
     public function loadAllPlayers()
     {
-        $sql = 'SELECT p.id, p.name, p.nickname, p.tournament_elo as elo, 
+        $sql = 'SELECT p.id, p.name, p.nickname, p.tournament_elo as elo, p.tournament_elo_previous as oldElo, 
+                (p.tournament_elo - p.tournament_elo_previous) as eloChange, 
                 if (count(g.id) is null, 0, count(g.id)) as gamesPlayed,
                 sum(if(g.winner_id = p.id, 1, 0)) as wins,
                 sum(if(g.winner_id = 0, 1, 0)) as draws, 
@@ -50,6 +51,8 @@ class PlayerRepository extends ServiceEntityRepository
             $gamesPlayed = (int) $player['gamesPlayed'];
             $player['gamesPlayed'] = $gamesPlayed;
             $player['elo'] = (int) $player['elo'];
+            $player['oldElo'] = (int) $player['oldElo'];
+            $player['eloChange'] = (int) $player['eloChange'];
             $player['officeId'] = (int) $player['officeId'];
             $player['winPercentage'] = $gamesPlayed ? (float) number_format($player['wins'] / $gamesPlayed * 100, 2) : 0;
         }
