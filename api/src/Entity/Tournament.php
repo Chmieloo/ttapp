@@ -58,6 +58,11 @@ class Tournament
      */
     private $parent_tournament;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="tournaments")
+     */
+    private $office;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
@@ -199,6 +204,18 @@ class Tournament
     public function setParentTournament(?int $parent_tournament): self
     {
         $this->parent_tournament = $parent_tournament;
+
+        return $this;
+    }
+
+    public function getOffice(): ?Office
+    {
+        return $this->office;
+    }
+
+    public function setOffice(?Office $office): self
+    {
+        $this->office = $office;
 
         return $this;
     }
