@@ -7,8 +7,9 @@
     <div>
       <div class="dropdown-office"><span @click="toggleDropdown()">OFFICE</span></div>
       <div class="dropdown" v-if="dropdown">
-        <div class="dropdown-item" @click="setOfficeIdCookie(1)">TRONDHEIM</div>
-        <div class="dropdown-item" @click="setOfficeIdCookie(2)">OSLO</div>
+        <div class="dropdown-item" v-for="office in this.offices" v-bind:key="office.id">
+          <div @click="setOfficeIdCookie(office.id)">{{ office.name }}</div>
+        </div>
       </div>
     </div>
     <div style="float: right;">
@@ -18,6 +19,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Vue from 'vue'
 import VueCookie from 'vue-cookie'
 
@@ -27,8 +29,14 @@ export default {
   name: 'TopMenu',
   data () {
     return {
-      dropdown: false
+      dropdown: false,
+      offices: []
     }
+  },
+  mounted () {
+    axios.get('/api/offices').then((res) => {
+      this.offices = res.data
+    })
   },
   methods: {
     setOfficeIdCookie (officeId) {
@@ -63,7 +71,7 @@ export default {
       div {
         float: none;
         margin: 0px !important;
-        padding: 10px 20px;
+        padding: 5px 10px;
       }
     }
 }

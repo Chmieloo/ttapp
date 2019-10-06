@@ -28,12 +28,16 @@ class OfficeRepository extends ServiceEntityRepository
         $query = $this->connection->createQueryBuilder()
             ->select(
                 "id",
-                "name"
+                "name",
+                "is_default as isDefault"
             )
-            ->from("offices", "o")
+            ->from("office", "o")
             ->orderBy("id");
 
         $result = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($result as &$item) {
+            $item['isDefault'] = (int)$item['isDefault'];
+        }
 
         return $result;
     }

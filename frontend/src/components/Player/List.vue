@@ -12,7 +12,7 @@
           <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>                    
           <th class="txt-center mw-100"><a @click="winSort()">m.win%</a></th>
         </tr>
-        <tr v-for="player in this.players" v-bind:key="player.id" class="row-data">
+        <tr v-for="player in this.filteredPlayers" v-bind:key="player.id" class="row-data">
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-center">{{ player.elo }}</td>
           <td class="txt-center">{{ player.gamesPlayed }}</td>
@@ -27,23 +27,37 @@
 <script>
 import axios from 'axios'
 import _ from 'lodash'
+import Vue from 'vue'
+import VueCookie from 'vue-cookie'
+
+Vue.use(VueCookie)
 
 export default {
   name: 'App',
   data () {
     return {
-      players: null,
+      players: [],
       eloOrder: 'asc',
       nameOrder: 'desc',
       gamesPlayedOrder: 'asc',
-      winOrder: 'asc'
+      winOrder: 'asc',
+      officeCookieId: 1
     }
   },
   mounted () {
     axios.get('/api/players').then((res) => {
       this.players = res.data
       this.nameSort()
+      this.officeCookieId = parseInt(this.$cookie.get('officeId'))
+      // console.log(this.officeCookieId)
     })
+  },
+  computed: {
+    filteredPlayers: function () {
+      return this.players.filter((player) => {
+        return player.officeId === this.officeCookieId
+      })
+    }
   },
   methods: {
     eloSort () {

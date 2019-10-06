@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -15,20 +16,26 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class PlayerRepository extends ServiceEntityRepository
 {
-    public function __construct(RegistryInterface $registry)
+    /** @var Connection  */
+    private $connection;
+
+    public function __construct(RegistryInterface $registry, Connection $connection)
     {
         parent::__construct($registry, Player::class);
+        $this->connection = $connection;
     }
 
     public function loadAllPlayers()
     {
-        $sql = 'SELECT p.id, p.name, p.nickname, p.tournament_elo as elo, count(g.id) as gamesPlayed,
+        $sql = 'SELECT p.id, p.name, p.nickname, p.tournament_elo as elo, 
+                if (count(g.id) is null, 0, count(g.id)) as gamesPlayed,
                 sum(if(g.winner_id = p.id, 1, 0)) as wins,
                 sum(if(g.winner_id = 0, 1, 0)) as draws, 
-                sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses 
+                sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses,
+                p.office_id as officeId  
                 from player p
                 left join game g on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1
-                join tournament t on t.id = g.tournament_id and t.is_official = 1
+                left join tournament t on t.id = g.tournament_id and t.is_official = 1
                 -- where g.is_finished = 1
                 group by p.id
                 order by p.name';
@@ -40,10 +47,11 @@ class PlayerRepository extends ServiceEntityRepository
         $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($players as &$player) {
-            $gamesPlayed = (int) $player['gamesPlayed'] ? : 1;
+            $gamesPlayed = (int) $player['gamesPlayed'];
             $player['gamesPlayed'] = $gamesPlayed;
             $player['elo'] = (int) $player['elo'];
-            $player['winPercentage'] = (float) number_format($player['wins'] / $gamesPlayed * 100, 2);
+            $player['officeId'] = (int) $player['officeId'];
+            $player['winPercentage'] = $gamesPlayed ? (float) number_format($player['wins'] / $gamesPlayed * 100, 2) : 0;
         }
         
         return $players;
@@ -70,10 +78,9 @@ class PlayerRepository extends ServiceEntityRepository
                'sum(if(g.winner_id = 0, 1, 0)) as draws, ' .
                'sum(if(g.winner_id != 0 and g.winner_id != p.id, 1, 0)) as losses ' .
                'from player p ' .
-               'left join game g on p.id in (g.home_player_id, g.away_player_id) ' .
-               'join tournament t on g.tournament_id = t.id ' .
+               'left join game g on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 ' .
+               'left join tournament t on g.tournament_id = t.id and t.is_official = 1 ' .
                'where p.id = :playerId  ' .
-               'and t.is_official = 1 and g.is_finished = 1 ' .
                'group by p.id';
 
         $params['playerId'] = $playerId;
