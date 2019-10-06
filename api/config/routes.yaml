@@ -1,4 +1,15 @@
 # -------------
+# OFFICE ROUTES
+# -------------
+
+# Get all offices
+offices:
+  path: /offices
+  controller: App\Controller\OfficeController::getOffices
+  methods: [GET]
+
+
+# -------------
 # PLAYER ROUTES
 # -------------
 
