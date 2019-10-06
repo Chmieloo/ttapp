@@ -699,13 +699,17 @@ class MatchController extends BaseController
             if ($winnerId == $awayPlayerId) {
                 $playerCache[$awayPlayerId]['elo'] = $winnerNewElo;
                 $playerCache[$awayPlayerId]['gamesPlayed']++;
+                $playerCache[$awayPlayerId]['oldElo'] = $oldAwayElo;
                 $playerCache[$homePlayerId]['elo'] = $loserNewElo;
                 $playerCache[$homePlayerId]['gamesPlayed']++;
+                $playerCache[$homePlayerId]['oldElo'] = $oldHomeElo;
             } else { // draw and home win handles the same
                 $playerCache[$homePlayerId]['elo'] = $winnerNewElo;
                 $playerCache[$homePlayerId]['gamesPlayed']++;
+                $playerCache[$homePlayerId]['oldElo'] = $oldHomeElo;
                 $playerCache[$awayPlayerId]['elo'] = $loserNewElo;
                 $playerCache[$awayPlayerId]['gamesPlayed']++;
+                $playerCache[$awayPlayerId]['oldElo'] = $oldAwayElo;
             }
 
             $gameRepository->updateGameElo((int) $gameId, $oldHomeElo, $oldAwayElo, $playerCache[$homePlayerId]['elo'], $playerCache[$awayPlayerId]['elo']);
@@ -713,7 +717,8 @@ class MatchController extends BaseController
 
         foreach ($playerCache as $playerId => $player) {
             $elo = $player['elo'];
-            $gameRepository->updatePlayerElo($playerId, $elo);
+            $oldElo = $player['oldElo'];
+            $gameRepository->updatePlayerElo($playerId, $elo, $oldElo);
         }
 
         return $this->sendJsonResponse($playerCache);

@@ -1242,16 +1242,18 @@ class GameRepository extends ServiceEntityRepository
         return true;
     }
 
-    public function updatePlayerElo($playerId, $elo)
+    public function updatePlayerElo($playerId, $elo, $oldElo = 1500)
     {
         $baseSql = 'UPDATE player p
                     SET  
-                    p.tournament_elo = :elo
+                    p.tournament_elo = :elo,
+                    p.tournament_elo_previous = :oldElo
                     where p.id = :playerId';
 
         $params = [
             'playerId' => $playerId,
             'elo' => $elo,
+            'oldElo' => $oldElo,
         ];
 
         $em = $this->getEntityManager();
