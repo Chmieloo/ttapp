@@ -227,26 +227,26 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $id
+     * @param $ids
      * @param null $limit
      * @return array
      * @throws DBALException
      */
-    public function loadLastResultsByTournamentId($id, $limit = null)
+    public function loadLastResultsByTournamentIds($ids, $limit = null)
     {
         $matchData = [];
 
         $baseSql = $this->baseListQuery();
-        $baseSql .= 'where g.tournament_id = :tournamentId ';
+        $baseSql .= 'where g.tournament_id IN (:tournamentIds) ';
         $baseSql .= 'and g.is_finished = 1 ';
         $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_played desc ';
 
-        $params['tournamentId'] = $id;
+        $params = ['tournamentIds' => $ids];
+        $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
 
         $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (is_numeric($limit) && $limit) {
@@ -1245,16 +1245,18 @@ class GameRepository extends ServiceEntityRepository
         return true;
     }
 
-    public function updatePlayerElo($playerId, $elo)
+    public function updatePlayerElo($playerId, $elo, $oldElo = 1500)
     {
         $baseSql = 'UPDATE player p
                     SET  
-                    p.tournament_elo = :elo
+                    p.tournament_elo = :elo,
+                    p.tournament_elo_previous = :oldElo
                     where p.id = :playerId';
 
         $params = [
             'playerId' => $playerId,
             'elo' => $elo,
+            'oldElo' => $oldElo,
         ];
 
         $em = $this->getEntityManager();

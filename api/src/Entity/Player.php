@@ -63,6 +63,16 @@ class Player
      */
     private $office;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $profile_pic_url;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $tournament_elo_previous;
+
     public function __construct()
     {
         $this->home_games = new ArrayCollection();
@@ -216,6 +226,30 @@ class Player
     public function setOffice(?Office $office): self
     {
         $this->office = $office;
+
+        return $this;
+    }
+
+    public function getProfilePicUrl(): ?string
+    {
+        return $this->profile_pic_url;
+    }
+
+    public function setProfilePicUrl(?string $profile_pic_url): self
+    {
+        $this->profile_pic_url = $profile_pic_url;
+
+        return $this;
+    }
+
+    public function getTournamentEloPrevious(): ?int
+    {
+        return $this->tournament_elo_previous;
+    }
+
+    public function setTournamentEloPrevious(?int $tournament_elo_previous): self
+    {
+        $this->tournament_elo_previous = $tournament_elo_previous;
 
         return $this;
     }

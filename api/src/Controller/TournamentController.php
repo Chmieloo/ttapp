@@ -86,11 +86,16 @@ class TournamentController extends BaseController
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
 
         # If empty, load current
-        $tournament = $tournamentId ?
+        $tournaments = $tournamentId ?
             $tournamentRepository->find($tournamentId) :
             $tournamentRepository->loadCurrentTournaments();
 
-        $data = $gameRepository->loadLastResultsByTournamentId($tournament->getId(), $numberOfResults);
+        $ids = [];
+        foreach ($tournaments as $tournament) {
+            $ids[] = $tournament->getId();
+        }
+
+        $data = $gameRepository->loadLastResultsByTournamentIds($ids, $numberOfResults);
 
         if (!$data) {
             throw $this->createNotFoundException(
