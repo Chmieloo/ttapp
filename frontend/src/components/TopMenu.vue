@@ -68,6 +68,7 @@ export default {
       background-color: #003e4c;
       box-shadow: 0px 1px 1px 0px black;
       margin-left: -20px;
+      z-index: 100;
       div {
         float: none;
         margin: 0px !important;
