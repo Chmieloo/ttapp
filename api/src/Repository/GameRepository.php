@@ -87,6 +87,7 @@ class GameRepository extends ServiceEntityRepository
             's6.home_points as s6hp, s6.away_points s6ap, ' .
             's7.home_points as s7hp, s7.away_points s7ap, ' .
             'g.tournament_id as tournamentId, ' .
+            'g.office_id as officeId, ' .
             'g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
@@ -249,9 +250,6 @@ class GameRepository extends ServiceEntityRepository
         $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (is_numeric($limit) && $limit) {
-            $result = array_slice($result, 0, $limit);
-        }
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -271,7 +269,9 @@ class GameRepository extends ServiceEntityRepository
             }
 
             $matchData[] = [
+                'tournamentId' => $match['tournamentId'],
                 'matchId' => $matchId,
+                'officeId' => (int)$match['officeId'],
                 'isWalkover' => $match['isWalkover'],
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => date("Y-m-d", strtotime($match['dateOfMatch'])),
@@ -575,10 +575,6 @@ class GameRepository extends ServiceEntityRepository
         $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (is_numeric($limit) && $limit) {
-            $result = array_slice($result, 0, $limit);
-        }
 
         foreach ($result as $match) {
             $matchId = $match['id'];

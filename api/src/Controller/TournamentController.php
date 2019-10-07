@@ -98,9 +98,7 @@ class TournamentController extends BaseController
         $data = $gameRepository->loadLastResultsByTournamentIds($ids, $numberOfResults);
 
         if (!$data) {
-            throw $this->createNotFoundException(
-                'No data'
-            );
+            $data = [];
         }
 
         return $this->sendJsonResponse($data);

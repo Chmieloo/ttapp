@@ -32,7 +32,7 @@ class TournamentRepository extends ServiceEntityRepository
     public function loadList()
     {
         $sql =
-            'select t.id, t.name, t.start_time, t.is_playoffs as isPlayoffs, office_id as officeId, ' .
+            'select t.id, t.name, t.start_time, t.is_playoffs as isPlayoffs, t.office_id as officeId, ' .
             'case when t.is_playoffs = 0 then \'group\' else \'playoffs\' end as phase, ' .
             't.is_finished as isFinished, count(distinct(g.home_player_id)) as participants, ' .
             'count(g.id) as scheduled, if (sum(g.is_finished) is null, 0, sum(g.is_finished)) as finished ' .
