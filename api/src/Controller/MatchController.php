@@ -497,6 +497,7 @@ class MatchController extends BaseController
 
         $em->persist($match);
         $em->flush();
+        $this->recalculateElo();
 
         if ($data['post2Channel'] && true === $data['post2Channel']) {
             $textSetsScore = join(', ', $textSetsScore);

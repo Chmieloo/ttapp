@@ -87,7 +87,7 @@ class TournamentController extends BaseController
 
         # If empty, load current
         $tournaments = $tournamentId ?
-            $tournamentRepository->find($tournamentId) :
+            [$tournamentRepository->find($tournamentId)] :
             $tournamentRepository->loadCurrentTournaments();
 
         $ids = [];
@@ -119,7 +119,7 @@ class TournamentController extends BaseController
 
         # If empty, load current
         $tournaments = $tournamentId ?
-            $tournamentRepository->find($tournamentId) :
+            [$tournamentRepository->find($tournamentId)] :
             $tournamentRepository->loadCurrentTournaments();
 
         $ids = [];
@@ -147,7 +147,7 @@ class TournamentController extends BaseController
 
         # If empty, load current
         $tournaments = $tournamentId ?
-            $tournamentRepository->find($tournamentId) :
+            [$tournamentRepository->find($tournamentId)] :
             $tournamentRepository->loadCurrentTournaments();
 
         $ids = [];
@@ -374,8 +374,13 @@ class TournamentController extends BaseController
     {
         /** @var TournamentRepository $gameRepository */
         $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
-        $currentTournament = $tournamentRepository->loadCurrentTournaments();
-        $data = $tournamentRepository->loadLeaders($currentTournament->getId());
+        $currentTournaments = $tournamentRepository->loadCurrentTournaments();
+
+        $ids = [];
+        foreach ($currentTournaments as $tournament) {
+            $ids[] = $tournament->getId();
+        }
+        $data = $tournamentRepository->loadLeaders($ids);
 
         return $this->sendJsonResponse($data);
     }

@@ -245,10 +245,8 @@ class GameRepository extends ServiceEntityRepository
 
         $params = ['tournamentIds' => $ids];
         $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
-
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
-
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($result as $match) {

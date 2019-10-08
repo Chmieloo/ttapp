@@ -49,7 +49,8 @@ export default {
   methods: {
     setStorageOfficeId (officeId) {
       this.$localStorage.set('ttappOfficeId', officeId)
-      this.$router.go(0)
+      // this.$router.go(0)
+      location.reload()
     },
     toggleDropdown () {
       this.dropdown = !this.dropdown

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Tournament;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\QueryBuilder;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -200,6 +201,7 @@ class TournamentRepository extends ServiceEntityRepository
         $qb = $this->connection->createQueryBuilder()
             ->select(
                 "p.name",
+                "p.office_id as officeId",
                 "sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points",
                 "count(s.id) as sets",
                 "(sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) / count(s.id)) as avgps"
@@ -224,7 +226,8 @@ class TournamentRepository extends ServiceEntityRepository
             ->select(
                 "avg(if(p.id = g.home_player_id, s.home_points - s.away_points, s.away_points - s.home_points)) as avgDiff",
                 "p.id",
-                "p.name"
+                "p.name",
+                "p.office_id as officeId"
             )
             ->from("player", "p")
             ->join("p", "game", "g", "p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and g.is_walkover = 0")
@@ -238,11 +241,16 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $tournamentId
+     * @param $tournamentIds
      * @return array
+     * @throws DBALException
      */
-    public function loadLeaders($tournamentId)
+    public function loadLeaders($tournamentIds)
     {
+        $em = $this->getEntityManager();
+        $params = ['tournamentIds' => $tournamentIds];
+        $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
+
         $result = [];
 
         $data = $this->baseQueryLeadersPoints()
@@ -251,16 +259,16 @@ class TournamentRepository extends ServiceEntityRepository
         $result['allTimePointsLeaders'] = $data;
 
         $data = $this->baseQueryLeadersPoints()
-            ->andWhere("t.id = :tournamentId")
-            ->setParameter("tournamentId", $tournamentId)
+            ->andWhere("t.id in (:tournamentIds)")
+            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['currentTournamentPointsLeaders'] = $data;
 
         $data = $this->baseQueryLeadersPoints()
             ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
-            ->andWhere("t.id = :tournamentId")
-            ->setParameter("tournamentId", $tournamentId)
+            ->andWhere("t.id in (:tournamentIds)")
+            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['lastWeekPointsLeaders'] = $data;
@@ -271,32 +279,32 @@ class TournamentRepository extends ServiceEntityRepository
         $result['avgDiffAllTime'] = $data;
 
         $data = $this->baseQueryAvgAdvantage()
-            ->andWhere("t.id = :tournamentId")
-            ->setParameter("tournamentId", $tournamentId)
+            ->andWhere("t.id in (:tournamentIds)")
+            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['avgDiffCurrentTournament'] = $data;
 
         $data = $this->baseQueryAvgAdvantage()
             ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
-            ->andWhere("t.id = :tournamentId")
-            ->setParameter("tournamentId", $tournamentId)
+            ->andWhere("t.id in (:tournamentIds)")
+            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['avgDiffLastWeek'] = $data;
 
-        $sql = "select p.name, p.tournament_elo as elo
+        $sql = "select p.name, p.tournament_elo as elo, p.office_id as officeId
                 from player p
                 order by tournament_elo desc
                 limit 0,5";
-        $em = $this->getEntityManager();
+
         $stmt = $em->getConnection()->prepare($sql);
         $stmt-> execute([]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['eloLeaders'] = $data;
 
         $sql = "select * from (
-                  select p.id,
+                  select p.id, p.office_id as officeId,
                          p.name,
                          sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
                                 (g.new_away_elo - g.old_away_elo))) as elodiff,
@@ -304,23 +312,19 @@ class TournamentRepository extends ServiceEntityRepository
                   from game g
                            join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
                                             g.is_walkover = 0
-                  where g.tournament_id = :tournamentId
+                  where g.tournament_id IN (:tournamentIds)
                   group by p.id
                   order by g.date_played asc
                 ) x
                 order by x.elodiff desc
                 limit 0,5";
 
-        $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute([
-            'tournamentId' => $tournamentId
-        ]);
+        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['eloLeadersTournament'] = $data;
 
         $sql = "select * from (
-                  select p.id,
+                  select p.id, p.office_id as officeId,
                          p.name,
                          sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
                                 (g.new_away_elo - g.old_away_elo))) as elodiff,
@@ -328,7 +332,7 @@ class TournamentRepository extends ServiceEntityRepository
                   from game g
                            join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
                                             g.is_walkover = 0
-                  where g.tournament_id = :tournamentId
+                  where g.tournament_id IN (:tournamentIds)
                   and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
                   group by p.id
                   order by g.date_played asc
@@ -336,11 +340,7 @@ class TournamentRepository extends ServiceEntityRepository
                 order by x.elodiff desc
                 limit 0,5";
 
-        $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute([
-            'tournamentId' => $tournamentId
-        ]);
+        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['eloLeadersLastWeek'] = $data;
 
