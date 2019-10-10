@@ -1,7 +1,7 @@
 <template>
   <div class="mainMatchContainer">
     <table>
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
+      <tr v-for="match in filteredMatches" v-bind:key="match.id" class="row-data row-schedule">
         <td>{{ match.datePlayed }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
           <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
@@ -34,18 +34,33 @@
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'FullMatchResults',
   data () {
     return {
-      matches: []
+      matches: [],
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/tournaments/' + this.$route.params.id + '/results/0').then((res) => {
       this.matches = res.data
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
+  },
+  computed: {
+    filteredMatches: function () {
+      return this.matches.filter((match) => {
+        return match.officeId === this.officeId
+      })
+    }
   }
 }
 </script>

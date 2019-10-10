@@ -150,6 +150,11 @@ class Game
      */
     private $newAwayELO;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="games")
+     */
+    private $office;
+
     public function __construct()
     {
         $this->scores = new ArrayCollection();
@@ -507,6 +512,18 @@ class Game
     public function setNewAwayELO(?int $newAwayELO): self
     {
         $this->newAwayELO = $newAwayELO;
+
+        return $this;
+    }
+
+    public function getOffice(): ?Office
+    {
+        return $this->office;
+    }
+
+    public function setOffice(?Office $office): self
+    {
+        $this->office = $office;
 
         return $this;
     }

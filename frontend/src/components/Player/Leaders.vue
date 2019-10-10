@@ -14,7 +14,7 @@
               ALL TIME
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['allTimePointsLeaders']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredAllTimePointLeaders" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ leader.points }}</span>
               </div>
@@ -28,7 +28,7 @@
               ONGOING TOURNAMENT
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['currentTournamentPointsLeaders']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredCurrentTournamentPointsLeaders" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ leader.points }}</span>
               </div>
@@ -42,7 +42,7 @@
               LAST WEEK
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['lastWeekPointsLeaders']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredLastWeekPointsLeaders" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ leader.points }}</span>
               </div>
@@ -63,7 +63,7 @@
               ALL TIME
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['avgDiffAllTime']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredAvgDiffAllTime" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ parseFloat(leader.avgDiff).toFixed(2) }}</span>
               </div>
@@ -77,7 +77,7 @@
               ONGOING TOURNAMENT
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['avgDiffCurrentTournament']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredAvgDiffCurrentTournament" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ parseFloat(leader.avgDiff).toFixed(2) }}</span>
               </div>
@@ -91,7 +91,7 @@
               LAST WEEK
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['avgDiffLastWeek']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredAvgDiffLastWeek" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ parseFloat(leader.avgDiff).toFixed(2) }}</span>
               </div>
@@ -112,7 +112,7 @@
               ALL TIME
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['eloLeaders']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredEloLeaders" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value">{{ leader.elo }}</span>
               </div>
@@ -126,7 +126,7 @@
               ELO INCREASE ONGOING TOURNAMENT
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['eloLeadersTournament']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredEloLeadersTournament" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value"><span v-if="(leader.elodiff > 0)">+</span>{{ leader.elodiff }} <span class="valueTelo">({{ leader.telo }})</span></span>
               </div>
@@ -140,7 +140,7 @@
               ELO INCREASE LAST WEEK
             </span>
             <div style="margin-top: 10px;">
-              <div v-for="(leader, index) in this.leaders['eloLeadersLastWeek']" v-bind:key="leader.id" class="row-item">
+              <div v-for="(leader, index) in filteredEloLeadersLastWeek" v-bind:key="leader.id" class="row-item">
                 <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
                 <span class="fr value"><span v-if="(leader.elodiff > 0)">+</span>{{ leader.elodiff }} <span class="valueTelo">({{ leader.telo }})</span></span>
               </div>
@@ -154,18 +154,91 @@
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'App',
   data () {
     return {
-      leaders: []
+      leaders: [],
+      allTimePointsLeaders: [],
+      currentTournamentPointsLeaders: [],
+      lastWeekPointsLeaders: [],
+      avgDiffAllTime: [],
+      avgDiffCurrentTournament: [],
+      avgDiffLastWeek: [],
+      eloLeaders: [],
+      eloLeadersTournament: [],
+      eloLeadersLastWeek: [],
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/leaders').then((res) => {
       this.leaders = res.data
+      this.allTimePointsLeaders = res.data['allTimePointsLeaders']
+      this.currentTournamentPointsLeaders = res.data['currentTournamentPointsLeaders']
+      this.lastWeekPointsLeaders = res.data['lastWeekPointsLeaders']
+      this.avgDiffAllTime = res.data['avgDiffAllTime']
+      this.avgDiffCurrentTournament = res.data['avgDiffCurrentTournament']
+      this.avgDiffLastWeek = res.data['avgDiffLastWeek']
+      this.eloLeaders = res.data['eloLeaders']
+      this.eloLeadersTournament = res.data['eloLeadersTournament']
+      this.eloLeadersLastWeek = res.data['eloLeadersLastWeek']
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
+  },
+  computed: {
+    filteredAllTimePointLeaders: function () {
+      return this.allTimePointsLeaders.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredCurrentTournamentPointsLeaders: function () {
+      return this.currentTournamentPointsLeaders.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredLastWeekPointsLeaders: function () {
+      return this.lastWeekPointsLeaders.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredAvgDiffAllTime: function () {
+      return this.avgDiffAllTime.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredAvgDiffCurrentTournament: function () {
+      return this.avgDiffCurrentTournament.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredAvgDiffLastWeek: function () {
+      return this.avgDiffLastWeek.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredEloLeaders: function () {
+      return this.eloLeaders.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredEloLeadersTournament: function () {
+      return this.eloLeadersTournament.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredEloLeadersLastWeek: function () {
+      return this.eloLeadersLastWeek.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    }
   }
 }
 </script>

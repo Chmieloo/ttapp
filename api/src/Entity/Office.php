@@ -38,10 +38,16 @@ class Office
      */
     private $tournaments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Game", mappedBy="office")
+     */
+    private $games;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
         $this->tournaments = new ArrayCollection();
+        $this->games = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +135,37 @@ class Office
             // set the owning side to null (unless already changed)
             if ($tournament->getOffice() === $this) {
                 $tournament->setOffice(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Game[]
+     */
+    public function getGames(): Collection
+    {
+        return $this->games;
+    }
+
+    public function addGame(Game $game): self
+    {
+        if (!$this->games->contains($game)) {
+            $this->games[] = $game;
+            $game->setOffice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGame(Game $game): self
+    {
+        if ($this->games->contains($game)) {
+            $this->games->removeElement($game);
+            // set the owning side to null (unless already changed)
+            if ($game->getOffice() === $this) {
+                $game->setOffice(null);
             }
         }
 

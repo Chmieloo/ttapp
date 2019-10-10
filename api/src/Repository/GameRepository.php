@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Game;
 use App\Entity\TournamentGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -86,6 +87,7 @@ class GameRepository extends ServiceEntityRepository
             's6.home_points as s6hp, s6.away_points s6ap, ' .
             's7.home_points as s7hp, s7.away_points s7ap, ' .
             'g.tournament_id as tournamentId, ' .
+            'g.office_id as officeId, ' .
             'g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
@@ -130,6 +132,7 @@ class GameRepository extends ServiceEntityRepository
             's6.home_points as s6hp, s6.away_points s6ap, ' .
             's7.home_points as s7hp, s7.away_points s7ap, ' .
             'g.tournament_id as tournamentId, ' .
+            'tt.office_id as officeId, ' .
             'g.server_id as serverId, current_set as currentSet, ' .
             'p1.slack_name as homeSlackName, p2.slack_name as awaySlackName, ' .
             'tg.name as groupName, g.date_of_match as dateOfMatch, g.date_played as datePlayed, g.is_finished as isFinished, ' .
@@ -142,6 +145,7 @@ class GameRepository extends ServiceEntityRepository
             'left join player p1 on p1.id = g.home_player_id ' .
             'left join player p2 on p2.id = g.away_player_id ' .
             'left join tournament_group tg on tg.id = g.tournament_group_id ' .
+            'left join tournament tt on tt.id = g.tournament_id ' .
             'left join scores s1 on s1.game_id = g.id and s1.set_number = 1 ' .
             'left join scores s2 on s2.game_id = g.id and s2.set_number = 2 ' .
             'left join scores s3 on s3.game_id = g.id and s3.set_number = 3 ' .
@@ -156,27 +160,26 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $id
+     * @param $ids
      * @param null $limit
      * @return array
+     * @throws DBALException
      */
-    public function loadOverdueFixturesByTournamentId($id, $limit = null)
+    public function loadOverdueFixturesByTournamentIds($ids, $limit = null)
     {
         $matchData = [];
 
         $baseSql = $this->baseQuery();
-        $baseSql .= 'where g.tournament_id = :tournamentid ';
+        $baseSql .= 'where g.tournament_id IN (:tournamentids) ';
         $baseSql .= 'and g.is_finished = 0 and g.date_of_match < now() ';
         $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match, g.id asc ';
 
-        $params = [
-            'tournamentid' => $id,
-        ];
+        $params = ['tournamentids' => $ids];
+        $types = ['tournamentids' => Connection::PARAM_INT_ARRAY];
 
         $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -217,6 +220,7 @@ class GameRepository extends ServiceEntityRepository
                 'awayScoreTotal' => $match['awayScoreTotal'],
                 'numberOfSets' => $numberOfSets,
                 'scores' => $setScores,
+                'officeId' => (int)$match['officeId'],
             ];
         }
 
@@ -224,31 +228,26 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $id
+     * @param $ids
      * @param null $limit
      * @return array
      * @throws DBALException
      */
-    public function loadLastResultsByTournamentId($id, $limit = null)
+    public function loadLastResultsByTournamentIds($ids, $limit = null)
     {
         $matchData = [];
 
         $baseSql = $this->baseListQuery();
-        $baseSql .= 'where g.tournament_id = :tournamentId ';
+        $baseSql .= 'where g.tournament_id IN (:tournamentIds) ';
         $baseSql .= 'and g.is_finished = 1 ';
         $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_played desc ';
 
-        $params['tournamentId'] = $id;
-
+        $params = ['tournamentIds' => $ids];
+        $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
         $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
-
+        $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (is_numeric($limit) && $limit) {
-            $result = array_slice($result, 0, $limit);
-        }
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -268,7 +267,9 @@ class GameRepository extends ServiceEntityRepository
             }
 
             $matchData[] = [
+                'tournamentId' => $match['tournamentId'],
                 'matchId' => $matchId,
+                'officeId' => (int)$match['officeId'],
                 'isWalkover' => $match['isWalkover'],
                 'groupName' => $match['groupName'],
                 'dateOfMatch' => date("Y-m-d", strtotime($match['dateOfMatch'])),
@@ -550,33 +551,28 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $id
+     * @param $ids
      * @param null $limit
      * @return array
+     * @throws DBALException
      */
-    public function loadUpcomingFixturesByTournamentId($id, $limit = null)
+    public function loadUpcomingFixturesByTournamentIds($ids, $limit = null)
     {
         $matchData = [];
 
         $baseSql = $this->baseQuery();
-        $baseSql .= 'where g.tournament_id = :tournamentid ';
+        $baseSql .= 'where g.tournament_id IN (:tournamentids) ';
         $baseSql .= 'and g.is_finished = 0 and g.date_of_match >= now() ';
         $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match, g.id asc ';
 
-        $params = [
-            'tournamentid' => $id,
-        ];
+        $params = ['tournamentids' => $ids];
+        $types = ['tournamentids' => Connection::PARAM_INT_ARRAY];
 
         $em = $this->getEntityManager();
-        $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (is_numeric($limit) && $limit) {
-            $result = array_slice($result, 0, $limit);
-        }
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -596,7 +592,8 @@ class GameRepository extends ServiceEntityRepository
             }
 
             $matchData[] = [
-                'tournamentId' => $id,
+                'tournamentId' => $match['tournamentId'],
+                'officeId' => (int)$match['officeId'],
                 'matchId' => $matchId,
                 'groupName' => $match['groupName'],
                 'timeOfMatch' => date("H:i", strtotime($match['dateOfMatch'])),

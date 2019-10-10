@@ -2,7 +2,7 @@
   <div class="mainMatchContainer">
     <div v-if="matches.length">
       <table class="fullWidth">
-        <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
+        <tr v-for="match in filteredMatches.slice(0, 20)" v-bind:key="match.id" class="row-data row-schedule">
           <td>
             {{ match.dateOfMatch }}
           </td>
@@ -25,29 +25,47 @@
         </tr>
       </table>
     </div>
-    <div class="containerLink">
+    <div class="containerLink" v-if="filteredMatches.length">
       <i class="fas fa-arrow-circle-right"></i>
-      <router-link :to="'/tournament/' + currentTournament + '/match/list'">show full schedule</router-link>
+      <router-link :to="'/tournament/' + filteredMatches[0].tournamentId + '/match/list'">show full schedule</router-link>
+    </div>
+    <div v-else>
+      no schedule
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'MatchSchedule',
   data () {
     return {
       matches: [],
-      currentTournament: 0
+      currentTournament: 0,
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/tournaments/0/fixtures/20').then((res) => {
       this.matches = res.data
       this.currentTournament = res.data[0].tournamentId
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
+  },
+  computed: {
+    filteredMatches: function () {
+      return this.matches.filter((match) => {
+        return match.officeId === this.officeId
+      })
+    }
   }
 }
 </script>
