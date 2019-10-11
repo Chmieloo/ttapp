@@ -200,6 +200,7 @@ class TournamentRepository extends ServiceEntityRepository
     {
         $qb = $this->connection->createQueryBuilder()
             ->select(
+                "p.id",
                 "p.name",
                 "p.office_id as officeId",
                 "sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points",
@@ -293,7 +294,7 @@ class TournamentRepository extends ServiceEntityRepository
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['avgDiffLastWeek'] = $data;
 
-        $sql = "select p.name, p.tournament_elo as elo, p.office_id as officeId
+        $sql = "select p.id, p.name, p.tournament_elo as elo, p.office_id as officeId
                 from player p
                 order by tournament_elo desc
                 limit 0,5";

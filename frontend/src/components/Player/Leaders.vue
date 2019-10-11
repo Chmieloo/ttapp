@@ -15,7 +15,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredAllTimePointLeaders" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ leader.points }}</span>
               </div>
             </div>
@@ -29,7 +29,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredCurrentTournamentPointsLeaders" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ leader.points }}</span>
               </div>
             </div>
@@ -43,7 +43,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredLastWeekPointsLeaders" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ leader.points }}</span>
               </div>
             </div>
@@ -64,7 +64,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredAvgDiffAllTime" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ parseFloat(leader.avgDiff).toFixed(2) }}</span>
               </div>
             </div>
@@ -78,7 +78,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredAvgDiffCurrentTournament" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ parseFloat(leader.avgDiff).toFixed(2) }}</span>
               </div>
             </div>
@@ -92,7 +92,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredAvgDiffLastWeek" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ parseFloat(leader.avgDiff).toFixed(2) }}</span>
               </div>
             </div>
@@ -113,7 +113,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredEloLeaders" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value">{{ leader.elo }}</span>
               </div>
             </div>
@@ -127,7 +127,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredEloLeadersTournament" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value"><span v-if="(leader.elodiff > 0)">+</span>{{ leader.elodiff }} <span class="valueTelo">({{ leader.telo }})</span></span>
               </div>
             </div>
@@ -141,7 +141,7 @@
             </span>
             <div style="margin-top: 10px;">
               <div v-for="(leader, index) in filteredEloLeadersLastWeek" v-bind:key="leader.id" class="row-item">
-                <span class="fl">{{ index+1 }}. {{ leader.name }}</span>
+                <router-link :to="'/player/' + leader.id + '/info'">{{ index+1 }}. {{ leader.name }}</router-link>
                 <span class="fr value"><span v-if="(leader.elodiff > 0)">+</span>{{ leader.elodiff }} <span class="valueTelo">({{ leader.telo }})</span></span>
               </div>
             </div>
