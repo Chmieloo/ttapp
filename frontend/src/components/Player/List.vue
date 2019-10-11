@@ -1,4 +1,3 @@
-/* global _ */
 <template>
   <div id="app">
     <div class="mainContainer">
@@ -6,7 +5,7 @@
       <span class="header-title">Player list</span>
       <table class="table-player-list">
         <tr class="row-header">
-          <th></th>
+          <th>&nbsp;</th>
           <th class="txt-left"><a @click="nameSort()">name</a></th>
           <th class="txt-right mw-100"><a @click="eloSort()">elo</a></th>
           <th class="txt-right" style="width: 100px;"><a @click="eloChangeSort()">change</a></th>
@@ -14,7 +13,7 @@
           <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>                    
           <th class="txt-center mw-100"><a @click="winSort()">m.win%</a></th>
         </tr>
-        <tr v-for="(player, index) in this.players" v-bind:key="player.id" class="row-data">
+        <tr v-for="(player, index) in this.filteredPlayers" v-bind:key="player.id" class="row-data">
           <td>{{ index + 1 }}</td>
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-right">
@@ -54,9 +53,11 @@
 import axios from 'axios'
 import _ from 'lodash'
 import Vue from 'vue'
-import VueCookie from 'vue-cookie'
-
-Vue.use(VueCookie)
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'App',
@@ -68,21 +69,20 @@ export default {
       nameOrder: 'desc',
       gamesPlayedOrder: 'asc',
       winOrder: 'asc',
-      officeCookieId: 1
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/players').then((res) => {
       this.players = res.data
-      this.eloSort()
-      this.officeCookieId = parseInt(this.$cookie.get('officeId'))
-      // console.log(this.officeCookieId)
+      this.nameSort()
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
   },
   computed: {
     filteredPlayers: function () {
       return this.players.filter((player) => {
-        return parseInt(player.officeId) === this.officeCookieId
+        return player.officeId === this.officeId
       })
     }
   },

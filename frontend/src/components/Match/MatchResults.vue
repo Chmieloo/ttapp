@@ -1,7 +1,7 @@
 <template>
   <div class="mainMatchContainer">
     <table>
-      <tr v-for="match in matches" v-bind:key="match.id" class="row-data row-schedule">
+      <tr v-for="match in filteredMatches.slice(0, 20)" v-bind:key="match.id" class="row-data row-schedule">
         <td>{{ match.datePlayed }}</td>
         <td class="txt-right" v-bind:class="match.winnerId == match.homePlayerId ? 'winner-color' : ''">
           <router-link :to="'/player/' + match.homePlayerId + '/info'">{{ match.homePlayerDisplayName }}</router-link>
@@ -31,27 +31,45 @@
         <td v-else></td>
       </tr>
     </table>
-    <div class="containerLink">
+    <div class="containerLink" v-if="filteredMatches.length">
       <i class="fas fa-arrow-circle-right"></i>
-      <router-link to="/tournament/0/match/list">show all tournament matches</router-link>
+      <router-link :to="'/tournament/' + filteredMatches[0].tournamentId + '/match/list'">show all tournament matches</router-link>
+    </div>
+    <div v-else>
+      no results
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'MatchResults',
   data () {
     return {
-      matches: []
+      matches: [],
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/tournaments/0/results/20').then((res) => {
       this.matches = res.data
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
+  },
+  computed: {
+    filteredMatches: function () {
+      return this.matches.filter((match) => {
+        return match.officeId === this.officeId
+      })
+    }
   }
 }
 </script>

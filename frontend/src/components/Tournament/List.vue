@@ -12,7 +12,7 @@
           <th class="txt-center mw-100">matches scheduled</th>
           <th class="txt-center mw-100">options</th>
         </tr>
-        <tr v-for="tournament in tournaments" v-bind:key="tournament.id" class="row-data">
+        <tr v-for="tournament in this.filteredTournaments" v-bind:key="tournament.id" class="row-data">
           <td class="txt-left">{{ tournament.name }}</td>
           <td class="txt-center">{{ tournament.phase }}</td>
           <td class="txt-center">{{ tournament.participants }}</td>
@@ -40,18 +40,33 @@
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueLocalStorage from 'vue-localstorage'
+Vue.use(VueLocalStorage, {
+  name: 'localStorage',
+  bind: true
+})
 
 export default {
   name: 'App',
   data () {
     return {
-      tournaments: null
+      tournaments: [],
+      officeId: 1
     }
   },
   mounted () {
     axios.get('/api/tournaments').then((res) => {
       this.tournaments = res.data
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
+  },
+  computed: {
+    filteredTournaments: function () {
+      return this.tournaments.filter((tournament) => {
+        return parseInt(tournament.officeId) === this.officeId
+      })
+    }
   }
 }
 </script>
