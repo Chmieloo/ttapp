@@ -2,7 +2,7 @@
   <div class="mainContainer">
     <div>
       <span data-v-729845b3="" class="fa-stack fa-2x" style="opacity: 0.5; margin-left: -60px;">
-        <i data-v-729845b3="" class="fas fa-circle fa-stack-2x"></i> 
+        <i data-v-729845b3="" class="fas fa-circle fa-stack-2x"></i>
         <i data-v-729845b3="" class="fas fa-square fa-stack-2x" style="margin-left: 30px; margin-top: -3px; font-size: 53pt;"></i>
         <i data-v-729845b3="" class="fas fa-circle fa-stack-2x" style="margin-left: 59px;"></i>
       </span>
@@ -53,7 +53,7 @@
             <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ awayScore }}</i>
           </span>
         </div>
-      </div>      
+      </div>
       <div style="clear: both;"></div>
     </div>
     <div v-else style="margin: 0 auto; width: 100%; clear: both;">
@@ -62,7 +62,7 @@
           <span class="fa-stack fa-2x">
             <i v-if="parseInt(awayScoreTotal) < parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
             <i v-else-if="parseInt(awayScoreTotal) === parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #7f949a;"></i>
-            <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>  
+            <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>
             <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ homeScoreTotal }}</i>
           </span>
         </div>
@@ -71,12 +71,12 @@
         <div class="score-right">
           <span class="fa-stack fa-2x">
             <i v-if="parseInt(awayScoreTotal) > parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
-            <i v-else-if="parseInt(awayScoreTotal) === parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #7f949a;"></i>            
-            <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>          
+            <i v-else-if="parseInt(awayScoreTotal) === parseInt(homeScoreTotal)" class="fas fa-circle fa-stack-2x" style="color: #7f949a;"></i>
+            <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>
             <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ awayScoreTotal }}</i>
           </span>
         </div>
-      </div>      
+      </div>
       <div style="clear: both;"></div>
     </div>
     <div v-if="parseInt(isFinished) == 1" style="width: 100%;clear: both;position: absolute;margin-top: -325px;margin-left: -20px;font-size: 20pt;font-weight: 900;color: white;">
@@ -127,6 +127,37 @@
       <div style="clear: both;"></div>
     </div>
     <div style="clear: both;"></div>
+
+    <div class="message-box">
+      <ul>
+        <li v-for="(item, index) in messages" v-bind:key="index">
+          <span class="messagedate">
+            {{ item.date.getHours() }}:{{ item.date.getMinutes() }}:{{ item.date.getSeconds() }}
+          </span>
+          <span class="username">{{ item.name }}</span>
+          <span class="usermessage">{{ item.message }}</span>
+        </li>
+      </ul>
+
+    </div>
+
+    <div class="userinteraction">
+      <div class="input">
+        <input type="text" v-model="messageToSend">
+      </div>
+      <div class="button">
+        <button @click="sendMessage">Send Message</button>
+      </div>
+    </div>
+
+    <div class="userinteraction">
+      <div class="input">
+        <input type="text" v-model="username">
+      </div>
+      <div class="button">
+        <button @click="setUserName">Set User Name</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -136,6 +167,8 @@ import Vue from 'vue'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import io from 'socket.io-client'
+
+window.Pusher.logToConsole = true
 
 Vue.use(VuejsDialog)
 
@@ -158,7 +191,11 @@ export default {
       isFinished: 0,
       spectators: 0,
       homeScoreTotal: 0,
-      awayScoreTotal: 0
+      awayScoreTotal: 0,
+      messages: [],
+      username: localStorage.getItem('TT_USERNAME') || 'Anonymous user',
+      messageToSend: '',
+      channel: undefined
     }
   },
   mounted () {
@@ -188,6 +225,16 @@ export default {
       this.homeScoreTotal = res.data.homeScoreTotal
       this.awayScoreTotal = res.data.awayScoreTotal
     })
+
+    const pusher = new window.Pusher('3d195a138b16ca96fa20', {
+      cluster: 'eu',
+      forceTLS: true
+    })
+
+    const channel = pusher.subscribe(this.$route.params.id)
+    channel.bind('message', (data) => {
+      this.messages.push({ name: data.name, message: data.message, date: new Date() })
+    })
   },
   methods: {
     range: function (min, max) {
@@ -202,6 +249,17 @@ export default {
     resetScores () {
       this.homeScore = 0
       this.awayScore = 0
+    },
+    setUserName (e) {
+      localStorage.setItem('TT_USERNAME', this.username)
+    },
+    sendMessage (e) {
+      axios.post('/api/messages/' + this.$route.params.id, {
+        name: this.username,
+        message: this.messageToSend
+      }).then((res) => {
+        this.messageToSend = ''
+      })
     }
   }
 }
@@ -386,7 +444,7 @@ export default {
 }
 
 .colWinner {
-  color: #40c500;  
+  color: #40c500;
 }
 
 .result-button {
@@ -410,5 +468,49 @@ export default {
   left: 0;
   right: 0;
   top: 0;
+}
+
+.message-box {
+  background: #000000ed;
+  ul {
+    list-style: none;
+    height: 200px;
+    overflow-y: scroll;
+    li {
+      text-align: left;
+      span.messagedate {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.7rem;
+        margin-right: 25px;
+      }
+      span.username {
+        color: #40c500;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.userinteraction {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-bottom: 50px;
+  > div {
+    button {
+      margin-top: 0;
+    }
+    &.input {
+      margin-right: 10px;
+      flex: 0 0 500px;
+      input {
+        width: 90%;
+      }
+    }
+    &.button {
+      flex: 0 0 auto;
+      flex-grow: 0;
+    }
+  }
 }
 </style>
