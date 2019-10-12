@@ -130,6 +130,7 @@ class MatchController extends BaseController
             $datePlayed = new \DateTime(null, new \DateTimeZone('Europe/Berlin'));
             $datePlayed->format('Y-m-d H:i:s');
             $match->setDatePlayed($datePlayed);
+            $officeId = $match->getOffice()->getId();
 
             $em->persist($match);
             $em->flush();
@@ -156,7 +157,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->post2Slack($payload);
+            $this->post2Slack($payload, $officeId);
 
             return $this->sendJsonResponse($data);
         } else {
@@ -241,7 +242,7 @@ class MatchController extends BaseController
             'icon_emoji' => ':table_tennis_paddle_and_ball:'
         ];
 
-        $this->post2Slack($payload);
+        $this->post2Slack($payload, 1);
 
         return $this->sendJsonResponse($data);
     }
@@ -371,21 +372,28 @@ class MatchController extends BaseController
         );
     }
 
-    public function post2Slack($data)
+    /**
+     * @param $data
+     * @param int $officeId
+     * @return bool|string
+     */
+    public function post2Slack($data, $officeId = 1)
     {
-        if ($this->slackKey) {
-            $data_string = json_encode($data);
+        if ($officeId && array_key_exists($officeId, $this->slackKey) && $this->slackKey[$officeId]) {
+            if ($this->slackKey) {
+                $data_string = json_encode($data);
 
-            $ch = curl_init($this->slackKey);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($data_string))
-            );
+                $ch = curl_init($this->slackKey[$officeId]);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($data_string))
+                );
 
-            return curl_exec($ch);
+                return curl_exec($ch);
+            }
         }
     }
 
@@ -497,6 +505,9 @@ class MatchController extends BaseController
 
         $em->persist($match);
         $em->flush();
+
+        $officeId = $match->getOffice()->getId();
+
         $this->recalculateElo();
 
         if ($data['post2Channel'] && true === $data['post2Channel']) {
@@ -518,7 +529,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->post2Slack($payload);
+            $this->post2Slack($payload, $officeId);
         } else {
             $message = null;
         }
@@ -599,6 +610,7 @@ class MatchController extends BaseController
         $match->setIsFinished(true);
         $match->setIsWalkover(true);
         $match->setDatePlayed($datePlayed);
+        $officeId = $match->getOffice();
 
         $message =
             $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
@@ -614,7 +626,7 @@ class MatchController extends BaseController
             'username' => 'tabletennisbot',
             'icon_emoji' => ':table_tennis_paddle_and_ball:'
         ];
-        $this->post2Slack($payload);
+        $this->post2Slack($payload, $officeId);
 
         $em->persist($match);
         $em->flush();

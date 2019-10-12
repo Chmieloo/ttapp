@@ -57,17 +57,36 @@
                       </td>
                     </tr>
                   </table>
+                  <div style="text-align: center; padding: 40px 0px; font-size: 25px;">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
                   <table>
                     <tr>
+                        <td style="padding-left: 20px;">
+                            <div style="font-size: 20px;">MOST RANKING POINTS WON</div>
+                            <div style="font-size: 60px; color: white;">+{{ data.eloPlusValue }} ELO</div>
+                            <div style="font-size: 30px;">{{ data.eloPlusPlayerName }}</div>
+                        </td>
                         <td>
-                            <span style="font-size: 100px; color: white;" class="fa-stack">
-                                <i class="fas fa-rocket fa-stack-1x"></i>
-                                <i class="far fa-comment fa-stack-1x"></i>
+                            <span style="font-size: 150px; color: white; padding-left: 30px;">
+                                <i class="fas fa-rocket fa-flip-horizontal"></i>
+                            </span>
+                        </td>
+                    </tr>
+                  </table>
+                  <table style="margin-top: 20px;">
+                    <tr>
+                        <td>
+                            <span style="font-size: 150px; color: white; padding-left: 30px;">
+                                <i class="fas fa-meteor fa-flip-horizontal"></i>
                             </span>
                         </td>
                         <td style="padding-left: 20px;">
-                            <div style="font-size: 60px;">+286 ELO</div>
-                            <div style="font-size: 30px;">JOHN JOHNSON</div>
+                            <div style="font-size: 20px;">MOST RANKING POINTS LOST</div>
+                            <div style="font-size: 60px; color: white;">{{ data.eloMinusValue }} ELO</div>
+                            <div style="font-size: 30px;">{{ data.eloMinusPlayerName }}</div>
                         </td>
                     </tr>
                   </table>
