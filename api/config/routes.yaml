@@ -224,6 +224,11 @@ match_save:
   controller: App\Controller\MatchController::saveMatch
   methods: [POST]
 
+match_spectator:
+  path: /matches/add/spectator
+  controller: App\Controller\MatchController::addSpectatorData
+  methods: [POST]
+
 # POINTS
 
 points_save:
