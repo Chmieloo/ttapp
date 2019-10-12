@@ -362,9 +362,17 @@ class TournamentRepository extends ServiceEntityRepository
                 (sum(s.home_points) + sum(s.away_points)) as totalPoints, g.office_id as officeId,
                 if (g.home_score = 0 or g.away_score = 0, 1, 0) as score30,
                 if (g.home_score = 1 or g.away_score = 1, 1, 0) as score31,
-                if (g.home_score = 2 or g.away_score = 2, 1, 0) as score22
+                if (g.home_score = 2 or g.away_score = 2, 1, 0) as score22,
+                if (pts.pointId is not null, 1, 0) as scouted
                 from game g
                 join scores s on g.id = s.game_id
+                left join (
+                    select p.id pointId, g2.id as gameId from
+                    points p
+                    join scores s2 on p.score_id = s2.id
+                    join game g2 on s2.game_id = g2.id
+                    group by g2.id
+                    ) pts on g.id = pts.gameId
                 where g.date_played between subdate(curdate(),dayofweek(curdate())+5)
                 and subdate(curdate(),dayofweek(curdate())-1)
                 and tournament_id in (:tournamentIds)
@@ -385,6 +393,7 @@ class TournamentRepository extends ServiceEntityRepository
                     'score30' => 0,
                     'score31' => 0,
                     'score22' => 0,
+                    'scouted' => 0,
                 ];
                 $playersCache[$officeId] = [];
             }
@@ -403,6 +412,8 @@ class TournamentRepository extends ServiceEntityRepository
             $result[$officeId]['score22'] += $item['score22'];
             $result[$officeId]['setsCount'] += $item['setsCount'];
             $result[$officeId]['totalPoints'] += $item['totalPoints'];
+            $result[$officeId]['scouted'] += $item['scouted'];
+            $result[$officeId]['scoutedPercentage'] = number_format(($result[$officeId]['scouted'] / $result[$officeId]['gamesCount']) * 100, 2);
         }
 
         $sql = "select * from (

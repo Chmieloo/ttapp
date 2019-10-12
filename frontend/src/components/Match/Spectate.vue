@@ -192,8 +192,7 @@ export default {
   },
   methods: {
     postSpectators (spectators) {
-      console.log('posting spectators, idle: ' + this.idle)
-      if (this.idle === false) {
+      if (this.idle === false || this.isFinished === 1) {
         return false
       }
       // add 0 spectators at the beginning of the match
