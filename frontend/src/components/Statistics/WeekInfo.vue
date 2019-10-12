@@ -45,15 +45,15 @@
                     </div>
                     <table>
                       <tr>
-                          <td style="font-size: 20px; width: 60%;">
-                              <div style="font-size: 80px; color: white;">{{ parseFloat(data.scoutedPercentage).toFixed(2) }}%</div>                            
-                              <div>of games were scouted</div>
-                          </td>
-                          <td style="padding-left: 20px;">
+                          <td>
                               <div style="font-size: 150px;"><i class="fas fa-couch"></i></div>
                           </td>
                           <td style="vertical-align: bottom;">
                               <div style="font-size: 50px;"><i class="fas fa-gamepad"></i></div>
+                          </td>
+                          <td style="font-size: 20px; width: 60%; padding-left: 20px;">
+                              <div style="font-size: 80px; color: white;">{{ parseFloat(data.scoutedPercentage).toFixed(2) }}%</div>
+                              <div>of games were scouted</div>
                           </td>
                       </tr>
                     </table>
