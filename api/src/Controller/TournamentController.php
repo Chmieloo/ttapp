@@ -384,4 +384,22 @@ class TournamentController extends BaseController
 
         return $this->sendJsonResponse($data);
     }
+
+    /**
+     * @return Response
+     */
+    public function weekStatistics()
+    {
+        /** @var TournamentRepository $gameRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $currentTournaments = $tournamentRepository->loadCurrentTournaments();
+
+        $ids = [];
+        foreach ($currentTournaments as $tournament) {
+            $ids[] = $tournament->getId();
+        }
+        $data = $tournamentRepository->loadWeekStats($ids);
+
+        return $this->sendJsonResponse($data);
+    }
 }

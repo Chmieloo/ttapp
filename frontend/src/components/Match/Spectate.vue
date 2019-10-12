@@ -174,6 +174,7 @@ export default {
       }
     })
     this.socket.on('CONNECTIONS', (data) => {
+      console.log(data)
       this.spectators = data
     })
     this.idle = false

@@ -347,4 +347,64 @@ class TournamentRepository extends ServiceEntityRepository
 
         return $result;
     }
+
+    public function loadWeekStats($tournamentIds)
+    {
+        $em = $this->getEntityManager();
+        $params = ['tournamentIds' => $tournamentIds];
+        $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
+
+        $result = [];
+
+        $sql = "select g.home_player_id homePlayerId, g.away_player_id awayPlayerId, g.home_score homeScore, g.away_score awayScore, 
+                sum(s.home_points) sumHomePoints, sum(s.away_points) sumAwayPoints, 
+                (g.home_score + g.away_score) as setsCount,
+                (sum(s.home_points) + sum(s.away_points)) as totalPoints, g.office_id as officeId,
+                if (g.home_score = 0 or g.away_score = 0, 1, 0) as score30,
+                if (g.home_score = 1 or g.away_score = 1, 1, 0) as score31,
+                if (g.home_score = 2 or g.away_score = 2, 1, 0) as score22
+                from game g
+                join scores s on g.id = s.game_id
+                where g.date_played between subdate(curdate(),dayofweek(curdate())+5)
+                and subdate(curdate(),dayofweek(curdate())-1)
+                and tournament_id in (:tournamentIds)
+                group by g.id";
+
+        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $playersCache = [];
+
+        foreach ($data as $item) {
+            $officeId = $item['officeId'];
+            if (!array_key_exists($officeId, $result)) {
+                $result[$officeId] = [
+                    'gamesCount' => 0,
+                    'setsCount' => 0,
+                    'totalPoints' => 0,
+                    'score30' => 0,
+                    'score31' => 0,
+                    'score22' => 0,
+                ];
+                $playersCache[$officeId] = [];
+            }
+
+            if (!in_array($item['homePlayerId'], $playersCache[$officeId])) {
+                $playersCache[$officeId][] = $item['homePlayerId'];
+            }
+            if (!in_array($item['awayPlayerId'], $playersCache[$officeId])) {
+                $playersCache[$officeId][] = $item['awayPlayerId'];
+            }
+
+            $result[$officeId]['playersCount'] = count($playersCache[$officeId]);
+            $result[$officeId]['gamesCount']++;
+            $result[$officeId]['score30'] += $item['score30'];
+            $result[$officeId]['score31'] += $item['score31'];
+            $result[$officeId]['score22'] += $item['score22'];
+            $result[$officeId]['setsCount'] += $item['setsCount'];
+            $result[$officeId]['totalPoints'] += $item['totalPoints'];
+        }
+
+        return $result;
+    }
 }
