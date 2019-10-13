@@ -194,6 +194,13 @@ match_timeline:
   requirements:
     id: '\d+'
 
+match_spectator_timeline:
+  path: /matches/{id}/spectatortimeline
+  controller: App\Controller\MatchController::getMatchSpectatorTimeline
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 match_server:
   path: /matches/{id}/server
   controller: App\Controller\MatchController::setServer

@@ -73,6 +73,9 @@
           </td>    
         </tr>
       </table>
+      <div style="margin-top: 30px;" v-if="this.lineChartData.length">
+        <GChart type="AreaChart" :data="lineChartData" :options="lineChartOptions" class="chartSpectators" />
+      </div>
     </div>
     <div>
       <span class="header-title">
@@ -223,6 +226,10 @@
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import VueGoogleCharts from 'vue-google-charts'
+
+Vue.use(VueGoogleCharts)
 
 export default {
   data () {
@@ -232,7 +239,61 @@ export default {
       awayName: null,
       groupName: null,
       tournamentName: null,
-      matchData: null
+      matchData: null,
+      ticks: [],
+      lineChartData: null,
+      lineChartOptions: {
+        vAxis: {
+          baselineColor: '#aaa',
+          textStyle: {
+            color: 'white',
+            fontName: 'Nunito',
+            fontSize: 16
+          },
+          minorGridLines: {
+            count: 3
+          },
+          gridlines: {
+            count: 2,
+            color: '#aaa'
+          }
+        },
+        hAxis: {
+          baselineColor: '#aaa',
+          textStyle: {
+            color: 'white',
+            fontName: 'Nunito',
+            fontSize: 12
+          },
+          minorGridLines: {
+            count: 3
+          },
+          gridlines: {
+            count: 2,
+            color: '#aaa'
+          },
+          ticks: [],
+          slantedTextAngle: 40
+        },
+        lineWidth: 4,
+        pointSize: 10,
+        pointShape: 'circle',
+        pointsVisible: true,
+        legend: {
+          position: 'top',
+          textStyle: {
+            color: 'white', fontSize: 16
+          }
+        },
+        backgroundColor: '#0e3c46',
+        curveType: 'function',
+        chart: {
+          title: 'Spectators'
+        },
+        chartArea: {
+          backgroundColor: '#0e3c46'
+        }
+      }
     }
   },
   mounted () {
@@ -244,6 +305,10 @@ export default {
       this.groupName = res.data.matchData.groupName
       this.tournamentName = res.data.matchData.tournamentName
       this.matchData = res.data.matchData
+    })
+    axios.get('/api/matches/' + this.$route.params.id + '/spectatortimeline').then((res) => {
+      this.lineChartData = res.data.resource
+      this.lineChartOptions.hAxis.ticks = res.data.ticks
     })
   },
   methods: {
@@ -272,6 +337,10 @@ export default {
   text-align: center;
   font-weight: 600;
   color: white;
+}
+
+.chartSpectators {
+    height: 300px;
 }
 
 .noborder {

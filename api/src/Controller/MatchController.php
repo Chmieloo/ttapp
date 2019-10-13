@@ -53,6 +53,21 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($data);
     }
 
+    public function getMatchSpectatorTimeline($id)
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $data = $gameRepository->loadSpectatorTimelineById($id);
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
+
     /**
      * @param $id
      * @return Response
