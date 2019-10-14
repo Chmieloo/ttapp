@@ -168,8 +168,6 @@ import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import io from 'socket.io-client'
 
-window.Pusher.logToConsole = true
-
 Vue.use(VuejsDialog)
 
 export default {
