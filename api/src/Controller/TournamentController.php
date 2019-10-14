@@ -229,7 +229,7 @@ class TournamentController extends BaseController
             if ($this->slackKey) {
                 $data_string = json_encode($data);
 
-                $ch = curl_init($this->slackKey);
+                $ch = curl_init($this->slackKey[$officeId]);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
