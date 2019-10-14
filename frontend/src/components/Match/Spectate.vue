@@ -168,8 +168,6 @@ import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import io from 'socket.io-client'
 
-window.Pusher.logToConsole = true
-
 Vue.use(VuejsDialog)
 
 export default {
@@ -199,6 +197,7 @@ export default {
     }
   },
   mounted () {
+    this.idle = false
     this.socket.on('MESSAGE', (data) => {
       if (this.isFinished === 0) {
         this.homeScore = data.message.score.homeScore
@@ -212,8 +211,8 @@ export default {
     })
     this.socket.on('CONNECTIONS', (data) => {
       this.spectators = data
+      this.postSpectators(this.spectators)
     })
-    this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.currentSet = res.data.currentSet
       this.match = res.data
@@ -221,9 +220,9 @@ export default {
       this.matchScores = res.data.scores
       this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
-      this.idle = true
       this.homeScoreTotal = res.data.homeScoreTotal
       this.awayScoreTotal = res.data.awayScoreTotal
+      this.idle = true
     })
 
     const pusher = new window.Pusher('3d195a138b16ca96fa20', {
@@ -237,6 +236,30 @@ export default {
     })
   },
   methods: {
+    postSpectators (spectators) {
+      if (this.idle === false || this.isFinished === 1) {
+        return false
+      }
+      // add 0 spectators at the beginning of the match
+      axios.post('/api/matches/add/spectator', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        gameId: this.$route.params.id,
+        spectatorCount: spectators,
+        type: 1
+      }).then((res) => {
+        this.errors = []
+        if (res.status === 200) {
+          // added spectators
+          this.idle = true
+        }
+        return true
+      }).catch(error => {
+        console.log(error)
+        this.errors = []
+      })
+    },
     range: function (min, max) {
       var array = []
       var j = 0

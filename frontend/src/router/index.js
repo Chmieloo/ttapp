@@ -19,6 +19,7 @@ import MatchNew from '@/components/Match/New'
 import Updates from '@/components/Updates'
 import TournamentResultsEdit from '@/components/Tournament/ResultsEdit'
 import PlayerInfo from '@/components/Player/Info'
+import WeekInfo from '@/components/Statistics/WeekInfo'
 // Quick Play
 import QuickMatchList from '@/components/QuickMatch/List'
 // Playoffs
@@ -49,6 +50,7 @@ export default new Router({
     { path: '/match/:id/spectate', name: 'MatchSpectate', component: MatchSpectate },
     { path: '/match/:id/summary', name: 'MatchSummary', component: MatchSummary },
     { path: '/player/:id/info', name: 'PlayerInfo', component: PlayerInfo },
+    { path: '/statistics/week', name: 'WeekInfo', component: WeekInfo },
     { path: '/quickmatches', name: 'QuickMatchList', component: QuickMatchList },
     // playoffs
     { path: '/playoffs/match/list', name: 'PlayoffsMatchList', component: PlayoffsMatchList },

@@ -5,7 +5,7 @@
     <div><router-link to="/tournament/list">tournaments</router-link></div>
     <div><router-link to="/leaders">leaders</router-link></div>
     <div>
-      <div class="dropdown-office"><span @click="toggleDropdown()">OFFICE</span></div>
+      <div class="dropdown-office"><span @click="toggleDropdown()">OFFICE ({{ this.officeName }})</span></div>
       <div class="dropdown" v-if="dropdown">
         <div class="dropdown-item" v-for="office in this.offices" v-bind:key="office.id">
           <div @click="setStorageOfficeId(office.id)">
@@ -37,19 +37,22 @@ export default {
     return {
       dropdown: false,
       offices: [],
-      officeId: 1
+      officeId: 1,
+      officeName: ''
     }
   },
   mounted () {
     axios.get('/api/offices').then((res) => {
       this.offices = res.data
       this.officeId = this.$localStorage.get('ttappOfficeId', 1)
+      this.officeName = this.offices[this.officeId - 1].name
     })
   },
   methods: {
     setStorageOfficeId (officeId) {
       this.$localStorage.set('ttappOfficeId', officeId)
       this.officeId = this.$localStorage.get('ttappOfficeId', 1)
+      this.officeName = this.offices[this.officeId - 1].name
       this.$router.push('/')
       this.toggleDropdown()
       this.$router.go(0)
