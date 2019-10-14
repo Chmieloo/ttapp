@@ -24,8 +24,13 @@ class BaseController extends AbstractController
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
 
+        $data = explode(';', $slackKey);
+        foreach ($data as $item) {
+            $line = explode('|', $item);
+            $this->slackKey[$line[0]] = trim($line[1]);
+        }
+
         $this->serializer = new Serializer($normalizers, $encoders);
-        $this->slackKey = $slackKey;
         $this->guiUrl = $guiUrl;
     }
 
@@ -40,6 +45,7 @@ class BaseController extends AbstractController
         $response = new Response();
         $response->setContent($data);
         $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
 
         return $response;
     }

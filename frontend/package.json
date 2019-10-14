@@ -25,6 +25,7 @@
     "vue-datetime": "^1.0.0-beta.10",
     "vue-gamepad": "^1.1.0",
     "vue-google-charts": "^0.3.2",
+    "vue-localstorage": "^0.6.2",
     "vue-plain-slider": "^1.1.1",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.16.3",

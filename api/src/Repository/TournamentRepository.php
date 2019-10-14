@@ -200,6 +200,7 @@ class TournamentRepository extends ServiceEntityRepository
     {
         $qb = $this->connection->createQueryBuilder()
             ->select(
+                "p.id",
                 "p.name",
                 "p.office_id as officeId",
                 "sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points",
@@ -293,7 +294,7 @@ class TournamentRepository extends ServiceEntityRepository
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['avgDiffLastWeek'] = $data;
 
-        $sql = "select p.name, p.tournament_elo as elo, p.office_id as officeId
+        $sql = "select p.id, p.name, p.tournament_elo as elo, p.office_id as officeId
                 from player p
                 order by tournament_elo desc
                 limit 0,5";
@@ -343,6 +344,133 @@ class TournamentRepository extends ServiceEntityRepository
         $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['eloLeadersLastWeek'] = $data;
+
+        return $result;
+    }
+
+    public function loadWeekStats($tournamentIds)
+    {
+        $em = $this->getEntityManager();
+        $params = ['tournamentIds' => $tournamentIds];
+        $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
+
+        $result = [];
+
+        $sql = "select g.home_player_id homePlayerId, g.away_player_id awayPlayerId, g.home_score homeScore, g.away_score awayScore, 
+                sum(s.home_points) sumHomePoints, sum(s.away_points) sumAwayPoints, 
+                (g.home_score + g.away_score) as setsCount,
+                (sum(s.home_points) + sum(s.away_points)) as totalPoints, g.office_id as officeId,
+                if (g.home_score = 0 or g.away_score = 0, 1, 0) as score30,
+                if (g.home_score = 1 or g.away_score = 1, 1, 0) as score31,
+                if (g.home_score = 2 or g.away_score = 2, 1, 0) as score22,
+                if (pts.pointId is not null, 1, 0) as scouted
+                from game g
+                join scores s on g.id = s.game_id
+                left join (
+                    select p.id pointId, g2.id as gameId from
+                    points p
+                    join scores s2 on p.score_id = s2.id
+                    join game g2 on s2.game_id = g2.id
+                    group by g2.id
+                    ) pts on g.id = pts.gameId
+                where g.date_played between subdate(curdate(),dayofweek(curdate())+5)
+                and subdate(curdate(),dayofweek(curdate())-1)
+                and tournament_id in (:tournamentIds)
+                group by g.id";
+
+        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $playersCache = [];
+
+        foreach ($data as $item) {
+            $officeId = $item['officeId'];
+            if (!array_key_exists($officeId, $result)) {
+                $result[$officeId] = [
+                    'gamesCount' => 0,
+                    'setsCount' => 0,
+                    'totalPoints' => 0,
+                    'score30' => 0,
+                    'score31' => 0,
+                    'score22' => 0,
+                    'scouted' => 0,
+                ];
+                $playersCache[$officeId] = [];
+            }
+
+            if (!in_array($item['homePlayerId'], $playersCache[$officeId])) {
+                $playersCache[$officeId][] = $item['homePlayerId'];
+            }
+            if (!in_array($item['awayPlayerId'], $playersCache[$officeId])) {
+                $playersCache[$officeId][] = $item['awayPlayerId'];
+            }
+
+            $result[$officeId]['playersCount'] = count($playersCache[$officeId]);
+            $result[$officeId]['gamesCount']++;
+            $result[$officeId]['score30'] += $item['score30'];
+            $result[$officeId]['score31'] += $item['score31'];
+            $result[$officeId]['score22'] += $item['score22'];
+            $result[$officeId]['setsCount'] += $item['setsCount'];
+            $result[$officeId]['totalPoints'] += $item['totalPoints'];
+            $result[$officeId]['scouted'] += $item['scouted'];
+            $result[$officeId]['scoutedPercentage'] = number_format(($result[$officeId]['scouted'] / $result[$officeId]['gamesCount']) * 100, 2);
+        }
+
+        $sql = "select * from (
+                  select p.id, p.office_id as officeId,
+                         p.name,
+                         sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
+                                (g.new_away_elo - g.old_away_elo))) as elodiff,
+                                p.tournament_elo as telo
+                  from game g
+                           join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
+                                            g.is_walkover = 0
+                  where g.tournament_id IN (:tournamentIds)
+                  and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
+                  group by p.id
+                  order by g.date_played asc
+                ) x
+                order by x.elodiff asc";
+
+        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+        $eloData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($eloData as $item) {
+            $officeId = $item['officeId'];
+            $playerName = $item['name'];
+            $eloDiff = $item['elodiff'];
+
+            $result[$officeId]['eloPlusPlayerName'] = $playerName;
+            $result[$officeId]['eloPlusValue'] = $eloDiff;
+        }
+
+        $sql = "select * from (
+                  select p.id, p.office_id as officeId,
+                         p.name,
+                         sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
+                                (g.new_away_elo - g.old_away_elo))) as elodiff,
+                                p.tournament_elo as telo
+                  from game g
+                           join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
+                                            g.is_walkover = 0
+                  where g.tournament_id IN (:tournamentIds)
+                  and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
+                  group by p.id
+                  order by g.date_played asc
+                ) x
+                order by x.elodiff desc";
+
+        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+        $eloData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($eloData as $item) {
+            $officeId = $item['officeId'];
+            $playerName = $item['name'];
+            $eloDiff = $item['elodiff'];
+
+            $result[$officeId]['eloMinusPlayerName'] = $playerName;
+            $result[$officeId]['eloMinusValue'] = $eloDiff;
+        }
 
         return $result;
     }

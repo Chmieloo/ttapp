@@ -6,10 +6,12 @@ use App\Entity\Game;
 use App\Entity\GameMode;
 use App\Entity\Player;
 use App\Entity\Scores;
+use App\Entity\Spectators;
 use App\Entity\Tournament;
 use App\Entity\TournamentGroup;
 use App\Repository\GameRepository;
 use App\Repository\ScoresRepository;
+use App\Repository\SpectatorsRepository;
 use App\Repository\TournamentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +43,21 @@ class MatchController extends BaseController
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
         $data = $gameRepository->loadTimelineById($id);
+
+        if (!$data) {
+            throw $this->createNotFoundException(
+                'No data'
+            );
+        }
+
+        return $this->sendJsonResponse($data);
+    }
+
+    public function getMatchSpectatorTimeline($id)
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $data = $gameRepository->loadSpectatorTimelineById($id);
 
         if (!$data) {
             throw $this->createNotFoundException(
@@ -130,6 +147,7 @@ class MatchController extends BaseController
             $datePlayed = new \DateTime(null, new \DateTimeZone('Europe/Berlin'));
             $datePlayed->format('Y-m-d H:i:s');
             $match->setDatePlayed($datePlayed);
+            $officeId = $match->getOffice()->getId();
 
             $em->persist($match);
             $em->flush();
@@ -156,7 +174,8 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->post2Slack($payload);
+            $this->post2Slack($payload, $officeId);
+            $this->finalizeSpectators($matchId);
 
             return $this->sendJsonResponse($data);
         } else {
@@ -241,7 +260,7 @@ class MatchController extends BaseController
             'icon_emoji' => ':table_tennis_paddle_and_ball:'
         ];
 
-        $this->post2Slack($payload);
+        $this->post2Slack($payload, 1);
 
         return $this->sendJsonResponse($data);
     }
@@ -371,21 +390,28 @@ class MatchController extends BaseController
         );
     }
 
-    public function post2Slack($data)
+    /**
+     * @param $data
+     * @param int $officeId
+     * @return bool|string
+     */
+    public function post2Slack($data, $officeId = 1)
     {
-        if ($this->slackKey) {
-            $data_string = json_encode($data);
+        if ($officeId && array_key_exists($officeId, $this->slackKey) && $this->slackKey[$officeId]) {
+            if ($this->slackKey) {
+                $data_string = json_encode($data);
 
-            $ch = curl_init($this->slackKey);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($data_string))
-            );
+                $ch = curl_init($this->slackKey[$officeId]);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($data_string))
+                );
 
-            return curl_exec($ch);
+                return curl_exec($ch);
+            }
         }
     }
 
@@ -497,6 +523,9 @@ class MatchController extends BaseController
 
         $em->persist($match);
         $em->flush();
+
+        $officeId = $match->getOffice()->getId();
+
         $this->recalculateElo();
 
         if ($data['post2Channel'] && true === $data['post2Channel']) {
@@ -518,7 +547,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->post2Slack($payload);
+            $this->post2Slack($payload, $officeId);
         } else {
             $message = null;
         }
@@ -599,6 +628,7 @@ class MatchController extends BaseController
         $match->setIsFinished(true);
         $match->setIsWalkover(true);
         $match->setDatePlayed($datePlayed);
+        $officeId = $match->getOffice();
 
         $message =
             $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .
@@ -614,7 +644,7 @@ class MatchController extends BaseController
             'username' => 'tabletennisbot',
             'icon_emoji' => ':table_tennis_paddle_and_ball:'
         ];
-        $this->post2Slack($payload);
+        $this->post2Slack($payload, $officeId);
 
         $em->persist($match);
         $em->flush();
@@ -763,23 +793,93 @@ class MatchController extends BaseController
 
     /**
      * @param $data
+     * @param int $officeId
      * @return bool|string
      */
-    private function postSlackMessage($data)
+    private function postSlackMessage($data, $officeId = 1)
     {
-        if ($this->slackKey) {
-            $data_string = json_encode($data);
+        if ($officeId && array_key_exists($officeId, $this->slackKey) && $this->slackKey[$officeId]) {
+            if ($this->slackKey) {
+                $data_string = json_encode($data);
 
-            $ch = curl_init($this->slackKey);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($data_string))
-            );
+                $ch = curl_init($this->slackKey[$officeId]);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($data_string))
+                );
 
-            return curl_exec($ch);
+                return curl_exec($ch);
+            }
         }
+    }
+
+    public function finalizeSpectators($gameId)
+    {
+        # remove all duplicated timestamps
+        $spectatorsRepository = $this->getDoctrine()->getRepository(Spectators::class);
+        $spectatorsRepository->finalizeGame($gameId);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function addSpectatorData(Request $request)
+    {
+        $spectatorsRepository = $this->getDoctrine()->getRepository(Spectators::class);
+        $data = json_decode($request->getContent(), true);
+
+        $gameId = $data['gameId'];
+        $spectatorCount = $data['spectatorCount'];
+        $type = $data['type'];
+
+        if ($type == 0 && $spectatorCount == 0) {
+            # first event, remove any additional ones for this game;
+            $spectatorsRepository->initGame($gameId);
+        }
+
+        $date = new \DateTime();
+        $date->setTimezone(new \DateTimeZone('Europe/Berlin'));
+        $formattedDate = $date->format('Y-m-d H:i:s');
+
+        if (empty($gameId)) {
+            return new JsonResponse([
+                'status' => 'error',
+                'errorText' => 'Choose tournament and match mode'
+            ],
+                JsonResponse::HTTP_BAD_REQUEST
+            );
+        }
+
+        $doctrine = $this->getDoctrine();
+        $em = $doctrine->getManager();
+
+
+        $spectatorsObject = $spectatorsRepository->loadByTimestamp($formattedDate);
+        if ($spectatorsObject) {
+            $spectators = $spectatorsRepository->find($spectatorsObject['id']);
+            $spectators->setSpectators($spectatorCount);
+            $em->persist($spectators);
+            $em->flush();
+        } else {
+            $spectators = new Spectators();
+            $spectators->setGameId($gameId);
+            $spectators->setSpectators($spectatorCount);
+            $spectators->setPit($date);
+
+            $em->persist($spectators);
+            $em->flush();
+        }
+
+        return new JsonResponse([
+            'status' => 'done',
+            'errorText' => 'Added'
+        ],
+            JsonResponse::HTTP_OK
+        );
     }
 }

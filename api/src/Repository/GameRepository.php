@@ -1260,6 +1260,94 @@ class GameRepository extends ServiceEntityRepository
         return true;
     }
 
+    public function loadSpectatorTimelineById($id)
+    {
+        $em = $this->getEntityManager();
+        $resource = [];
+        $params = [
+            'gameId' => $id,
+        ];
+
+        # if there is no spectator data, just return empty array
+        $query = "select count(s.id) as hasSpectators from spectators s where s.game_id = :gameId";
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt->execute($params);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data['hasSpectators']) {
+            return [
+                'ticks' => [],
+                'resource' => [],
+            ];
+        }
+
+        $headers = ['time', 'spectators'];
+        array_unshift($resource, $headers);
+
+        $query = "select s.spectators as spectators, unix_timestamp(s.pit) as pit, -1 as hpts, -1 as apts, -1 as setNumber, 0 as pid
+                    from spectators s
+                    where s.game_id = :gameId
+                    union
+                    select 0 as spectators, unix_timestamp(p.time) as pit, p.is_home_point as hpts, p.is_away_point as apts, s2.set_number as setNumber, p.id as pid
+                    from points p
+                    join scores s2 on p.score_id = s2.id and s2.game_id = :gameId
+                    order by 2 asc";
+
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $homePoints = 0;
+        $awayPoints = 0;
+        $lastSetNumber = 1;
+        $lastSpectators = null;
+        $ticksArray = [];
+        foreach ($data as $key => $item) {
+            $spectators = $item['spectators'];
+            $isHomePoint = (int)$item['hpts'];
+            $isAwayPoint = (int)$item['apts'];
+            $setNumber = (int)$item['setNumber'];
+
+            if ($setNumber == -1) {
+                # spectators
+                array_push($resource, [
+                    (int)$key,
+                    (int)$spectators
+                ]);
+                $lastSpectators = $spectators;
+            } else {
+                # score change
+                if ($setNumber != $lastSetNumber) {
+                    $homePoints = $isHomePoint;
+                    $awayPoints = $isAwayPoint;
+                } else {
+                    $homePoints += $isHomePoint;
+                    $awayPoints += $isAwayPoint;
+                }
+
+                array_push($resource, [
+                    (int)$key,
+                    (int)$lastSpectators ?? (int)$spectators
+                ]);
+
+                $ticksArray[] = [
+                    'v' => $key,
+                    'f' => 's' . $setNumber . ' (' . $homePoints . ':' . $awayPoints . ')'
+                ];
+                //echo $item['pid'] . ': ' . $homePoints . ' ' . $awayPoints . "\n";
+
+                $lastSetNumber = $setNumber;
+            }
+        }
+
+        $result = [
+            'ticks' => $ticksArray,
+            'resource' => $resource,
+        ];
+
+        return $result;
+    }
+
     public function loadTimelineById($id)
     {
         $sql = "select g.server_id as serverId, g.home_player_id as homePlayerId, g.away_player_id as awayPlayerId, g.home_score as homeTotalScore, g.away_score as awayTotalScore,

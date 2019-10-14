@@ -1,5 +1,11 @@
 <template>
   <div class="mainContainer">
+    <div class="lastWeekBox">
+      <span class="header-title">
+        <i class="fas fa-table-tennis marr20"></i>
+        <router-link :to="'/statistics/week'">LAST WEEK'S SUMMARY</router-link>
+        </span>
+    </div>
     <div class="halfContainerSmaller">
       <span class="header-title">
         <i class="fas fa-clock marr20"></i>
@@ -50,7 +56,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
 .halfContainer {
   float: left;
   width: 50%;
@@ -85,6 +91,14 @@ export default {
   font-weight: 600;
   margin-bottom: 40px;
   margin-right: 40px;
+  a {
+    color: #177990;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: none;
+    color: #fff;
+  }
 }
 
 .mainTable {
@@ -154,5 +168,12 @@ hr{
   transform: rotate(10deg);
   margin-right: 50px;
   margin-top: -50px;
+}
+
+.lastWeekBox {
+  margin-top: 30px;
+  width: 600px;
+  padding: 10px;
+  border-bottom: 1px solid #105869;
 }
 </style>

@@ -3,6 +3,22 @@
     <div class="mainContainer">
       <span class="header-title">Update history</span>
       <div style="margin-top: 20px;">
+        <div style="margin-bottom: 10px;">2019-10-13</div>
+        <div style="border-left: 3px solid #8a8a8a; padding: 20px;">
+          <span style="color: white;">Bug fixes</span>
+          <ul>
+            <li>Fixed spectator count</li>
+          </ul>
+          <span style="color: white;">New features</span>
+          <ul>
+            <li>Multiple office support</li>
+            <li>Added office name to top menu</li>
+            <li>Added spectator timeline showing on match summary page (only for games scouted with gamepad)</li>
+            <li>Added initial version of weekly summary page</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
         <div style="margin-bottom: 10px;">2019-09-30</div>
         <div style="border-left: 3px solid #8a8a8a; padding: 20px;">
           <span style="color: white;">Bug fixes</span>
