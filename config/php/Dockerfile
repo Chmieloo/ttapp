@@ -4,7 +4,7 @@ RUN apt-get update \
   && docker-php-ext-install pdo_mysql mysqli
 
 RUN apt-get update \
-  && apt-get install -y libmemcached-dev zlib1g-dev \
+  && apt-get install -y libmemcached-dev zlib1g-dev zip unzip \
   && pecl install memcached-3.0.3 \
   && docker-php-ext-enable memcached opcache
 
