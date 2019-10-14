@@ -254,57 +254,97 @@ class TournamentRepository extends ServiceEntityRepository
 
         $result = [];
 
+        # ALL TIME DATA
         $data = $this->baseQueryLeadersPoints()
+            ->andWhere('g.office_id = 1')
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['allTimePointsLeaders'] = $data;
-
         $data = $this->baseQueryLeadersPoints()
-            ->andWhere("t.id in (:tournamentIds)")
-            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
+            ->andWhere('g.office_id = 2')
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
-        $result['currentTournamentPointsLeaders'] = $data;
+        $result['allTimePointsLeaders'] = array_merge($result['allTimePointsLeaders'], $data);
 
-        $data = $this->baseQueryLeadersPoints()
-            ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
-            ->andWhere("t.id in (:tournamentIds)")
-            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
-            ->execute()
-            ->fetchAll(PDO::FETCH_ASSOC);
-        $result['lastWeekPointsLeaders'] = $data;
+        $result['currentTournamentPointsLeaders'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $data = $this->baseQueryLeadersPoints()
+                ->andWhere("t.id in (:tournamentId)")
+                ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
+                ->execute()
+                ->fetchAll(PDO::FETCH_ASSOC);
+            $result['currentTournamentPointsLeaders'] = array_merge($result['currentTournamentPointsLeaders'], $data);
+        }
 
+        $result['lastWeekPointsLeaders'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $data = $this->baseQueryLeadersPoints()
+                ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
+                ->andWhere("t.id in (:tournamentId)")
+                ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
+                ->execute()
+                ->fetchAll(PDO::FETCH_ASSOC);
+            $result['lastWeekPointsLeaders'] = array_merge($result['lastWeekPointsLeaders'], $data);
+        }
+
+        # ALL TIME DATA
         $data = $this->baseQueryAvgAdvantage()
+            ->andWhere('g.office_id = 1')
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
         $result['avgDiffAllTime'] = $data;
-
         $data = $this->baseQueryAvgAdvantage()
-            ->andWhere("t.id in (:tournamentIds)")
-            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
+            ->andWhere('g.office_id = 2')
             ->execute()
             ->fetchAll(PDO::FETCH_ASSOC);
-        $result['avgDiffCurrentTournament'] = $data;
+        $result['avgDiffAllTime'] = array_merge($result['avgDiffAllTime'], $data);
 
-        $data = $this->baseQueryAvgAdvantage()
-            ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
-            ->andWhere("t.id in (:tournamentIds)")
-            ->setParameter("tournamentIds", $tournamentIds, Connection::PARAM_INT_ARRAY)
-            ->execute()
-            ->fetchAll(PDO::FETCH_ASSOC);
-        $result['avgDiffLastWeek'] = $data;
 
-        $sql = "select p.id, p.name, p.tournament_elo as elo, p.office_id as officeId
+        $result['avgDiffCurrentTournament'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $data = $this->baseQueryAvgAdvantage()
+                ->andWhere("t.id in (:tournamentId)")
+                ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
+                ->execute()
+                ->fetchAll(PDO::FETCH_ASSOC);
+            $result['avgDiffCurrentTournament'] = array_merge($result['avgDiffCurrentTournament'], $data);
+        }
+
+
+        $result['avgDiffLastWeek'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $data = $this->baseQueryAvgAdvantage()
+                ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
+                ->andWhere("t.id in (:tournamentId)")
+                ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
+                ->execute()
+                ->fetchAll(PDO::FETCH_ASSOC);
+            $result['avgDiffLastWeek'] = array_merge($result['avgDiffLastWeek'], $data);
+        }
+
+
+        $sql = "(select p.id, p.name, p.tournament_elo as elo, p.office_id as officeId
                 from player p
+                where p.office_id = 1
                 order by tournament_elo desc
-                limit 0,5";
+                limit 0,5)
+                union
+                (select p.id, p.name, p.tournament_elo as elo, p.office_id as officeId
+                from player p
+                where p.office_id = 2
+                order by tournament_elo desc
+                limit 0,5)";
 
         $stmt = $em->getConnection()->prepare($sql);
         $stmt-> execute([]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['eloLeaders'] = $data;
 
-        $sql = "select * from (
+        $result['eloLeadersTournament'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $params = ['tournamentId' => $tournamentId];
+            $types = ['tournamentId' => PDO::PARAM_INT];
+            $sql = "select * from (
                   select p.id, p.office_id as officeId,
                          p.name,
                          sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
@@ -313,18 +353,23 @@ class TournamentRepository extends ServiceEntityRepository
                   from game g
                            join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
                                             g.is_walkover = 0
-                  where g.tournament_id IN (:tournamentIds)
+                  where g.tournament_id IN (:tournamentId)
                   group by p.id
                   order by g.date_played asc
                 ) x
                 order by x.elodiff desc
                 limit 0,5";
 
-        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $result['eloLeadersTournament'] = $data;
+            $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result['eloLeadersTournament'] = array_merge($result['eloLeadersTournament'], $data);
+        }
 
-        $sql = "select * from (
+        $result['eloLeadersLastWeek'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $params = ['tournamentId' => $tournamentId];
+            $types = ['tournamentId' => PDO::PARAM_INT];
+            $sql = "select * from (
                   select p.id, p.office_id as officeId,
                          p.name,
                          sum(if(p.id = g.home_player_id, (g.new_home_elo - g.old_home_elo),
@@ -333,7 +378,7 @@ class TournamentRepository extends ServiceEntityRepository
                   from game g
                            join player p on p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and
                                             g.is_walkover = 0
-                  where g.tournament_id IN (:tournamentIds)
+                  where g.tournament_id IN (:tournamentId)
                   and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
                   group by p.id
                   order by g.date_played asc
@@ -341,9 +386,10 @@ class TournamentRepository extends ServiceEntityRepository
                 order by x.elodiff desc
                 limit 0,5";
 
-        $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $result['eloLeadersLastWeek'] = $data;
+            $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result['eloLeadersLastWeek'] = array_merge($result['eloLeadersLastWeek'], $data);
+        }
 
         return $result;
     }
