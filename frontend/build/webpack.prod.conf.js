@@ -36,6 +36,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': env
     }),
+    new webpack.NormalModuleReplacementPlugin(/debug/, __dirname + '/noop.js'),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false

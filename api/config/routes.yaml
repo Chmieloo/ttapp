@@ -4,7 +4,7 @@
 
 # Get all offices
 offices:
-  path: /offices
+  path: /api/offices
   controller: App\Controller\OfficeController::getOffices
   methods: [GET]
 
@@ -15,13 +15,13 @@ offices:
 
 # Get all players
 players:
-  path: /players
+  path: /api/players
   controller: App\Controller\PlayerController::getPlayers
   methods: [GET]
 
 # Get basic player info, used in profile
 player:
-  path: /players/{id}
+  path: /api/players/{id}
   controller: App\Controller\PlayerController::getPlayerById
   methods: [GET]
   requirements:
@@ -29,7 +29,7 @@ player:
 
 # Get all player's matches
 player_results:
-  path: /players/{id}/results
+  path: /api/players/{id}/results
   controller: App\Controller\PlayerController::getPlayerResults
   methods: [GET]
   requirements:
@@ -37,7 +37,7 @@ player_results:
 
 # Get all player's upcoming matches
 player_schedule:
-  path: /players/{id}/schedule
+  path: /api/players/{id}/schedule
   controller: App\Controller\PlayerController::getPlayerSchedule
   methods: [GET]
   requirements:
@@ -45,7 +45,7 @@ player_schedule:
 
 # Add player
 player_add:
-  path: /players/add
+  path: /api/players/add
   controller: App\Controller\PlayerController::addPlayer
   methods: [POST]
 
@@ -55,26 +55,26 @@ player_add:
 
 # Add a tournament
 tournament_add:
-  path: /tournaments/add
+  path: /api/tournaments/add
   controller: App\Controller\TournamentController::addTournament
   methods: [POST]
 
 # Get all official tournaments
 tournaments:
-  path: /tournaments
+  path: /api/tournaments
   controller: App\Controller\TournamentController::getTournaments
   methods: [GET]
 
 # Get standings for tournament (current => id = 0)
 tournament_standings:
-  path: /tournaments/{id}/standings
+  path: /api/tournaments/{id}/standings
   controller: App\Controller\TournamentController::getStandings
   requirements:
     id: '\d+'
 
 # Get results for tournament (current => id = 0), (all results => numberOfResults = 0)
 tournament_results:
-  path: /tournaments/{tournamentId}/results/{numberOfResults}
+  path: /api/tournaments/{tournamentId}/results/{numberOfResults}
   controller: App\Controller\TournamentController:getTournamentResults
   requirements:
     tournamentId: '\d+'
@@ -82,27 +82,27 @@ tournament_results:
 
 # Get schedule for tournament (current => id = 0), (all fixtures => numberOfFixtures = 0)
 tournament_schedule_overdue:
-  path: /tournaments/{tournamentId}/overdue/{numberOfFixtures}
+  path: /api/tournaments/{tournamentId}/overdue/{numberOfFixtures}
   controller: App\Controller\TournamentController:getTournamentOverdueSchedule
   requirements:
     tournamentId: '\d+'
     numberOfFixtures: '\d+'
 
 tournament_schedule:
-  path: /tournaments/{tournamentId}/fixtures/{numberOfFixtures}
+  path: /api/tournaments/{tournamentId}/fixtures/{numberOfFixtures}
   controller: App\Controller\TournamentController:getTournamentSchedule
   requirements:
     tournamentId: '\d+'
 
 tournament_daily_schedule:
-  path: /tournaments/{tournamentId}/fixturestoday
+  path: /api/tournaments/{tournamentId}/fixturestoday
   controller: App\Controller\TournamentController:getTodaysFixtures
   requirements:
     tournamentId: '\d+'
     numberOfFixtures: '\d+'
 
 tournament_matches_fullfeed:
-  path: /tournaments/{tournamentId}/matches/fullfeed
+  path: /api/tournaments/{tournamentId}/matches/fullfeed
   controller: App\Controller\TournamentController:getTournamentMatchesFullfeed
   requirements:
     tournamentId: '\d+'
@@ -110,20 +110,20 @@ tournament_matches_fullfeed:
 # PLAYOFFS
 
 tournament_playoffs:
-  path: /playoffs/{tournamentId}
+  path: /api/playoffs/{tournamentId}
   controller: App\Controller\TournamentController:getTournamentPlayoffsData
   requirements:
     tournamentId: '\d+'
 
 tournament_playoffs_division:
-  path: /playoffs/{tournamentId}/group/{groupId}
+  path: /api/playoffs/{tournamentId}/group/{groupId}
   controller: App\Controller\TournamentController:getTournamentPlayoffsDivisionData
   requirements:
     tournamentId: '\d+'
     groupId: '\d+'
 
 tournament_playoffs_divisions:
-  path: /playoffs/{tournamentId}/groups
+  path: /api/playoffs/{tournamentId}/groups
   controller: App\Controller\TournamentController:getTournamentPlayoffsDivisionsData
   requirements:
     tournamentId: '\d+'
@@ -131,45 +131,45 @@ tournament_playoffs_divisions:
 # GROUP ROUTES
 
 groups_by_tournament:
-  path: /groups/tournaments/{id}
+  path: /api/groups/tournaments/{id}
   controller: App\Controller\TournamentGroupController::getTournamentGroupsByTournamentId
   methods: [GET]
   requirements:
     id: '\d+'
 
 group_add:
-  path: /groups/add
+  path: /api/groups/add
   controller: App\Controller\TournamentGroupController::addTournamentGroup
   methods: [POST]
 
 # MATCH MODE ROUTES
 
 match_mode:
-  path: /matches/modes/{id}
+  path: /api/matches/modes/{id}
   controller: App\Controller\MatchModeController::getMatchModeById
 
 match_modes:
-  path: /matches/modes
+  path: /api/matches/modes
   controller: App\Controller\MatchModeController::getMatchModes
 
 # MATCH ROUTES
 
 match_finish:
-  path: /matches/{matchId}/finish
+  path: /api/matches/{matchId}/finish
   controller: App\Controller\MatchController::finishSet
   methods: [GET]
   requirements:
     matchId: '\d+'
 
 match_startmessage:
-  path: /matches/{matchId}/startmessage
+  path: /api/matches/{matchId}/startmessage
   controller: App\Controller\MatchController::startMessage
   methods: [GET]
   requirements:
     matchId: '\d+'
 
 match_walkover:
-  path: /matches/{matchId}/walkover/{playerId}
+  path: /api/matches/{matchId}/walkover/{playerId}
   controller: App\Controller\MatchController::walkover
   methods: [GET]
   requirements:
@@ -177,28 +177,28 @@ match_walkover:
     playerId: '\d+'
 
 match:
-  path: /matches/{id}
+  path: /api/matches/{id}
   controller: App\Controller\MatchController::getMatch
   methods: [GET]
   requirements:
     id: '\d+'
 
 match_timeline:
-  path: /matches/{id}/timeline
+  path: /api/matches/{id}/timeline
   controller: App\Controller\MatchController::getMatchTimeline
   methods: [GET]
   requirements:
     id: '\d+'
 
 match_server:
-  path: /matches/{id}/server
+  path: /api/matches/{id}/server
   controller: App\Controller\MatchController::setServer
   methods: [GET]
   requirements:
     id: '\d+'
 
 match_broadcast:
-  path: /matches/{id}/broadcast
+  path: /api/matches/{id}/broadcast
   controller: App\Controller\MatchController::broadcast
   methods: [GET]
   requirements:
@@ -206,33 +206,33 @@ match_broadcast:
 
 # posts facts for last week
 leaders:
-  path: /leaders
+  path: /api/leaders
   controller: App\Controller\TournamentController:leaders
   methods: [GET]
 
 match_add:
-  path: /matches/add/official
+  path: /api/matches/add/official
   controller: App\Controller\MatchController::addMatch
   methods: [POST]
 
 match_save:
-  path: /matches/save
+  path: /api/matches/save
   controller: App\Controller\MatchController::saveMatch
   methods: [POST]
 
 # POINTS
 
 points_save:
-  path: /points/add
+  path: /api/points/add
   controller: App\Controller\PointController::addPoint
   methods: [POST]
 
 points_remove:
-  path: /points/del
+  path: /api/points/del
   controller: App\Controller\PointController::deletePoint
   methods: [POST]
 
 elo_recalculate:
-  path: /elo/recalculate
+  path: /api/elo/recalculate
   controller: App\Controller\MatchController::recalculateElo
   methods: [GET]

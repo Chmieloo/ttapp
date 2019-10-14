@@ -25,6 +25,19 @@ services:
     ports:
         - "9000:9000"
 
+  frontend:
+    image: node:10
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    environment:
+      - NODE_ENV=production
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
   webserver:
     image: nginx:latest
     ports:
@@ -34,5 +47,8 @@ services:
       - ./config/web/site.conf:/etc/nginx/conf.d/default.conf
     links:
       - php-fpm
+      - frontend
     depends_on:
       - database
+
+
