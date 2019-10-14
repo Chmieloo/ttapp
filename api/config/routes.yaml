@@ -107,6 +107,10 @@ tournament_matches_fullfeed:
   requirements:
     tournamentId: '\d+'
 
+tournament_week_stats:
+  path: /tournaments/statistics/week
+  controller: App\Controller\TournamentController:weekStatistics
+
 # PLAYOFFS
 
 tournament_playoffs:
@@ -190,6 +194,13 @@ match_timeline:
   requirements:
     id: '\d+'
 
+match_spectator_timeline:
+  path: /matches/{id}/spectatortimeline
+  controller: App\Controller\MatchController::getMatchSpectatorTimeline
+  methods: [GET]
+  requirements:
+    id: '\d+'
+
 match_server:
   path: /matches/{id}/server
   controller: App\Controller\MatchController::setServer
@@ -218,6 +229,11 @@ match_add:
 match_save:
   path: /matches/save
   controller: App\Controller\MatchController::saveMatch
+  methods: [POST]
+
+match_spectator:
+  path: /matches/add/spectator
+  controller: App\Controller\MatchController::addSpectatorData
   methods: [POST]
 
 # POINTS

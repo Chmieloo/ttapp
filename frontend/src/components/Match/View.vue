@@ -424,8 +424,29 @@ export default {
         if (res.data) {
           this.idle = true
         }
+        this.postSpectators()
       })
       this.sendMessage(this.getPayload())
+    },
+    postSpectators () {
+      // add 0 spectators at the beginning of the match
+      axios.post('/api/matches/add/spectator', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        gameId: this.$route.params.id,
+        spectatorCount: 0,
+        type: 0
+      }).then((res) => {
+        this.errors = []
+        if (res.status === 200) {
+          // added initial spectators
+        }
+        return true
+      }).catch(error => {
+        console.log(error)
+        this.errors = []
+      })
     },
     resetScores () {
       this.homeScore = 0

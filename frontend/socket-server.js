@@ -13,6 +13,7 @@ io.on('connection', function(socket) {
     io.sockets.emit('CONNECTIONS', total);
 
     socket.on("disconnect", () => {
+      total = io.engine.clientsCount;
       io.sockets.emit('CONNECTIONS', total);
     });
 
