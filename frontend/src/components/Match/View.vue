@@ -219,7 +219,7 @@ export default {
       idle: true,
       resultVisible: false,
       post2Channel: true,
-      socket: io(window.location.hostname + ':3001'),
+      socket: null,
       broadcasted: false,
       startMessage: null
     }
@@ -233,6 +233,7 @@ export default {
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
       this.idle = true
       this.checkServer()
+      this.socket = io(window.location.hostname + ':3001?game_id=' + this.match.matchId)
     })
   },
   methods: {
@@ -417,14 +418,25 @@ export default {
       }
       this.startMessage = 'GAME STARTED'
       this.broadcasted = true
-
       // set idle state to 1, as we are sending request to change server
       this.idle = false
-      axios.get('/api/matches/' + this.$route.params.id + '/broadcast').then((res) => {
-        if (res.data) {
+      // post broadcast message to office channel
+      axios.post('/api/matches/broadcast', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        gameId: this.$route.params.id
+      }).then((res) => {
+        this.errors = []
+        if (res.status === 200) {
+          // added spectators
           this.idle = true
         }
         this.postSpectators()
+        return true
+      }).catch(error => {
+        console.log(error)
+        this.errors = []
       })
       this.sendMessage(this.getPayload())
     },

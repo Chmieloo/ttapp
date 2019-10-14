@@ -209,11 +209,9 @@ match_server:
     id: '\d+'
 
 match_broadcast:
-  path: /matches/{id}/broadcast
+  path: /matches/broadcast
   controller: App\Controller\MatchController::broadcast
-  methods: [GET]
-  requirements:
-    id: '\d+'
+  methods: [POST]
 
 # posts facts for last week
 leaders:

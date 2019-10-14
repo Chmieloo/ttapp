@@ -13,6 +13,7 @@ use App\Repository\GameRepository;
 use App\Repository\ScoresRepository;
 use App\Repository\SpectatorsRepository;
 use App\Repository\TournamentRepository;
+use Doctrine\DBAL\DBALException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -755,11 +756,22 @@ class MatchController extends BaseController
         return $this->sendJsonResponse($playerCache);
     }
 
-    public function broadcast($id)
+    /**
+     * Send message to office channel
+     * @param Request $request
+     * @return Response
+     * @throws DBALException
+     */
+    public function broadcast(Request $request)
     {
+        $data = json_decode($request->getContent(), true);
+        $gameId = $data['gameId'];
+
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
-        $data = $gameRepository->loadById($id);
+        $data = $gameRepository->loadById($gameId);
+
+        $officeId = is_numeric($data['officeId']) ? $data['officeId'] : 1;
 
         if ($data['scores']) {
             # if we have scores, match was broadcasted
@@ -771,7 +783,7 @@ class MatchController extends BaseController
         if ($data) {
             $message .= "> :table_tennis_paddle_and_ball: Official match starting\n";
             $message .= "> *" . $data['groupName'] . "*: " . $data['homeSlackName'] . " *vs* " . $data['awaySlackName'] . "\n";
-            $message .= "> <" . $this->guiUrl . "/#/match/" . $id . "/spectate|Spectate>";
+            $message .= "> <" . $this->guiUrl . "/#/match/" . $gameId . "/spectate|Spectate>";
         }
 
         if ($message) {
@@ -785,7 +797,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->postSlackMessage($payload);
+            $this->postSlackMessage($payload, $officeId);
         }
 
         return $this->sendJsonResponse([]);

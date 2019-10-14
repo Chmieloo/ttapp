@@ -1077,6 +1077,7 @@ class GameRepository extends ServiceEntityRepository
             'homeElo' => $homeElo >= 0 ? '+' . $homeElo : $homeElo,
             'awayElo' => $awayElo >= 0 ? '+' . $awayElo : $awayElo,
             'pts' => $result['pts'],
+            'officeId' => (int)$result['officeId'],
         ];
 
         return $matchData;

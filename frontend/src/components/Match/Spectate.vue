@@ -153,7 +153,7 @@ export default {
       serverFlipped: false,
       numServes: 2,
       idle: true,
-      socket: io(window.location.hostname + ':3001'),
+      socket: null,
       currentSet: 0,
       isFinished: 0,
       spectators: 0,
@@ -163,21 +163,6 @@ export default {
   },
   mounted () {
     this.idle = false
-    this.socket.on('MESSAGE', (data) => {
-      if (this.isFinished === 0) {
-        this.homeScore = data.message.score.homeScore
-        this.awayScore = data.message.score.awayScore
-        this.matchScores = data.message.setScores
-        this.currentSet = data.message.currentSet
-        this.isFinished = data.message.isFinished
-        this.homeScoreTotal = data.message.homeScoreTotal
-        this.awayScoreTotal = data.message.awayScoreTotal
-      }
-    })
-    this.socket.on('CONNECTIONS', (data) => {
-      this.spectators = data
-      this.postSpectators(this.spectators)
-    })
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.currentSet = res.data.currentSet
       this.match = res.data
@@ -188,6 +173,23 @@ export default {
       this.homeScoreTotal = res.data.homeScoreTotal
       this.awayScoreTotal = res.data.awayScoreTotal
       this.idle = true
+      console.log(this.match)
+      this.socket = io(window.location.hostname + ':3001?game_id=' + this.match.matchId)
+      this.socket.on('MESSAGE', (data) => {
+        if (this.isFinished === 0) {
+          this.homeScore = data.message.score.homeScore
+          this.awayScore = data.message.score.awayScore
+          this.matchScores = data.message.setScores
+          this.currentSet = data.message.currentSet
+          this.isFinished = data.message.isFinished
+          this.homeScoreTotal = data.message.homeScoreTotal
+          this.awayScoreTotal = data.message.awayScoreTotal
+        }
+      })
+      this.socket.on('CONNECTIONS', (data) => {
+        this.spectators = data
+        this.postSpectators(this.spectators)
+      })
     })
   },
   methods: {
