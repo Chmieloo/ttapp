@@ -33,3 +33,11 @@ To run dev environment:
 ```
 $ npm start dev
 ```
+
+##### How to deploy frontend to production
+1. `cd frontend`
+2. `npm install`
+3. `npm run build`
+
+that's it, nginx uses the folder frontend/dist as mounted volume, so to update a build
+is enough to just rerun the build command
