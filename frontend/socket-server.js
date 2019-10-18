@@ -31,19 +31,3 @@ io.on('connection', function(socket) {
       io.to(game).emit('MESSAGE', msg);
     });
 });
-
-/*
-io.on('connection', function(socket) {
-    var total = io.engine.clientsCount;
-    io.sockets.emit('CONNECTIONS', total);
-
-    socket.on("disconnect", () => {
-      total = io.engine.clientsCount;
-      io.sockets.emit('CONNECTIONS', total);
-    });
-
-    socket.on('SEND_MESSAGE', function(data) {
-        io.emit('MESSAGE', data)
-    });
-});
-*/

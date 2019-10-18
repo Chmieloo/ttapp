@@ -196,7 +196,7 @@ class PlayerRepository extends ServiceEntityRepository
         $baseSql = $this->baseQuery();
         $baseSql .= 'where (g.home_player_id = :playerId OR g.away_player_id = :playerId)';
         $baseSql .= 'and g.is_finished = 1 and tg.is_official = 1 ';
-        $baseSql .= 'order by g.date_of_match desc';
+        $baseSql .= 'order by g.date_played desc';
 
         $params['playerId'] = $playerId;
 
