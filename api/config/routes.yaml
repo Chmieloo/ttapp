@@ -8,7 +8,6 @@ offices:
   controller: App\Controller\OfficeController::getOffices
   methods: [GET]
 
-
 # -------------
 # PLAYER ROUTES
 # -------------
@@ -20,7 +19,7 @@ players:
   methods: [GET]
 
 # Get basic player info, used in profile
-player:
+players_player:
   path: /players/{id}
   controller: App\Controller\PlayerController::getPlayerById
   methods: [GET]
@@ -28,7 +27,7 @@ player:
     id: '\d+'
 
 # Get all player's matches
-player_results:
+players_player_results:
   path: /players/{id}/results
   controller: App\Controller\PlayerController::getPlayerResults
   methods: [GET]
@@ -36,28 +35,16 @@ player_results:
     id: '\d+'
 
 # Get all player's upcoming matches
-player_schedule:
+players_player_schedule:
   path: /players/{id}/schedule
   controller: App\Controller\PlayerController::getPlayerSchedule
   methods: [GET]
   requirements:
     id: '\d+'
 
-# Add player
-player_add:
-  path: /players/add
-  controller: App\Controller\PlayerController::addPlayer
-  methods: [POST]
-
 # -----------------
 # TOURNAMENT ROUTES
 # -----------------
-
-# Add a tournament
-tournament_add:
-  path: /tournaments/add
-  controller: App\Controller\TournamentController::addTournament
-  methods: [POST]
 
 # Get all official tournaments
 tournaments:
@@ -66,35 +53,37 @@ tournaments:
   methods: [GET]
 
 # Get standings for tournament (current => id = 0)
-tournament_standings:
+tournaments_tournament_standings:
   path: /tournaments/{id}/standings
   controller: App\Controller\TournamentController::getStandings
   requirements:
     id: '\d+'
 
 # Get results for tournament (current => id = 0), (all results => numberOfResults = 0)
-tournament_results:
+tournaments_tournament_results:
   path: /tournaments/{tournamentId}/results/{numberOfResults}
   controller: App\Controller\TournamentController:getTournamentResults
   requirements:
     tournamentId: '\d+'
     numberOfResults: '\d+'
 
-# Get schedule for tournament (current => id = 0), (all fixtures => numberOfFixtures = 0)
-tournament_schedule_overdue:
+# Get overdue schedule for tournament (current => id = 0), (all fixtures => numberOfFixtures = 0)
+tournaments_tournament_schedule_overdue:
   path: /tournaments/{tournamentId}/overdue/{numberOfFixtures}
   controller: App\Controller\TournamentController:getTournamentOverdueSchedule
   requirements:
     tournamentId: '\d+'
     numberOfFixtures: '\d+'
 
-tournament_schedule:
+# Get schedule for tournament (current => id = 0), (all fixtures => numberOfFixtures = 0)
+tournaments_tournament_schedule:
   path: /tournaments/{tournamentId}/fixtures/{numberOfFixtures}
   controller: App\Controller\TournamentController:getTournamentSchedule
   requirements:
     tournamentId: '\d+'
 
-tournament_daily_schedule:
+# Get schedule for tournament for today
+tournaments_tournament_daily_schedule:
   path: /tournaments/{tournamentId}/fixturestoday
   controller: App\Controller\TournamentController:getTodaysFixtures
   requirements:
@@ -140,11 +129,6 @@ groups_by_tournament:
   methods: [GET]
   requirements:
     id: '\d+'
-
-group_add:
-  path: /groups/add
-  controller: App\Controller\TournamentGroupController::addTournamentGroup
-  methods: [POST]
 
 # MATCH MODE ROUTES
 
@@ -218,11 +202,6 @@ leaders:
   path: /leaders
   controller: App\Controller\TournamentController:leaders
   methods: [GET]
-
-match_add:
-  path: /matches/add/official
-  controller: App\Controller\MatchController::addMatch
-  methods: [POST]
 
 match_save:
   path: /matches/save

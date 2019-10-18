@@ -82,35 +82,4 @@ class PlayerController extends BaseController
 
         return $this->sendJsonResponse($players);
     }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse|Response
-     */
-    public function addPlayer(Request $request)
-    {
-        $data = json_decode($request->getContent(), true);
-
-        if (empty($data['name'])) {
-            return new JsonResponse([
-                'status' => 'error',
-                'errorText' => 'Fill the form'
-            ],
-                JsonResponse::HTTP_BAD_REQUEST
-            );
-        }
-
-        if (!empty($data['name'])) {
-            $em = $this->getDoctrine()->getManager();
-            $player = new Player();
-            $player->setName($data['name']);
-            $player->setNickname($data['nickname']);
-            $player->setTournamentElo(self::STARTING_ELO);
-            $player->setCurrentElo(self::STARTING_ELO);
-            $em->persist($player);
-            $em->flush();
-
-            return new Response($player->getId());
-        }
-    }
 }
