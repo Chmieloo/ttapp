@@ -24,17 +24,16 @@ class MatchController extends BaseController
     const MINIMAL_END_SCORE = 11;
     const END_SCORE_DIFFERENCE = 2;
 
+    /**
+     * @param $id
+     * @return Response
+     * @throws DBALException
+     */
     public function getMatch($id)
     {
         /** @var GameRepository $gameRepository */
         $gameRepository = $this->getDoctrine()->getRepository(Game::class);
         $data = $gameRepository->loadById($id);
-
-        if (!$data) {
-            throw $this->createNotFoundException(
-                'No data'
-            );
-        }
 
         return $this->sendJsonResponse($data);
     }

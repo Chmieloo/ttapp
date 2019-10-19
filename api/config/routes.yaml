@@ -90,17 +90,21 @@ tournaments_tournament_daily_schedule:
     tournamentId: '\d+'
     numberOfFixtures: '\d+'
 
+# Get all matches for requested tournament, with results
 tournament_matches_fullfeed:
   path: /tournaments/{tournamentId}/matches/fullfeed
   controller: App\Controller\TournamentController:getTournamentMatchesFullfeed
   requirements:
     tournamentId: '\d+'
 
+# Weekly statistics for current tournament
 tournament_week_stats:
   path: /tournaments/statistics/week
   controller: App\Controller\TournamentController:weekStatistics
 
-# PLAYOFFS
+# -------------------
+# TOURNAMENT PLAYOFFS
+# -------------------
 
 tournament_playoffs:
   path: /playoffs/{tournamentId}
@@ -130,9 +134,12 @@ groups_by_tournament:
   requirements:
     id: '\d+'
 
-# MATCH MODE ROUTES
+# ------------
+# MATCH ROUTES
+# ------------
 
-match_mode:
+# Get requested match mode
+matches_match_modes:
   path: /matches/modes/{id}
   controller: App\Controller\MatchModeController::getMatchModeById
 

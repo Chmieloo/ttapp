@@ -25,15 +25,9 @@ class MatchModeController extends BaseController
             ->getRepository(GameMode::class)
             ->find($id);
 
-        if (!$matchMode) {
-            throw $this->createNotFoundException(
-                'Match mode not found with id: ' . $id
-            );
-        }
+        $matchMode = $matchMode ?? [];
 
-        $data = $this->serializer->serialize($matchMode, 'json');
-
-        return new Response($data);
+        return $this->sendJsonResponse($matchMode);
     }
 
     /**

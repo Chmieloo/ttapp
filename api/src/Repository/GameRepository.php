@@ -954,6 +954,10 @@ class GameRepository extends ServiceEntityRepository
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        if (!$result['id']) {
+            return [];
+        }
+
         # check scored points
         $result['pts'] = $this->hasManualScoring($id);
 
