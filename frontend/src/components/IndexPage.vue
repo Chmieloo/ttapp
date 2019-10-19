@@ -1,10 +1,12 @@
 <template>
   <div class="mainContainer">
     <div class="lastWeekBox">
-      <span class="header-title">
-        <i class="fas fa-table-tennis marr20"></i>
-        <router-link :to="'/statistics/week'">LAST WEEK'S SUMMARY</router-link>
-        </span>
+      <div class="header-title">
+        <div class="cutoff">
+          <i class="fas fa-table-tennis marr20" style="position: absolute; font-size: 63px; left: 640px; color: #fff;"></i>
+          <router-link :to="'/statistics/week'">LAST WEEK'S SUMMARY</router-link>
+        </div>
+      </div>      
     </div>
     <div class="halfContainerSmaller">
       <span class="header-title">
@@ -63,6 +65,16 @@ export default {
   margin-top: 40px;
 }
 
+.cutoff {
+    font-size: 25pt;
+    padding: 10px;
+    background: #105869;
+    -webkit-clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 25%, 75% 0);
+    clip-path: polygon(0 0, 0 100%, 96% 100%, 100% 0%, 100% 0);
+    width: 700px;
+    padding-left: 20px;
+}
+
 .halfContainerSmaller {
   float: left;
   width: 45%;
@@ -92,12 +104,12 @@ export default {
   margin-bottom: 40px;
   margin-right: 40px;
   a {
-    color: #177990;
+    color: #fff;
     text-decoration: none;
   }
   a:hover {
     text-decoration: none;
-    color: #fff;
+    color: #177990;
   }
 }
 
@@ -172,7 +184,7 @@ hr{
 
 .lastWeekBox {
   margin-top: 30px;
-  width: 600px;
+  width: 90%;
   padding: 10px;
   border-bottom: 1px solid #105869;
 }
