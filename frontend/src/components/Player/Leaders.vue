@@ -2,8 +2,10 @@
   <div class="mainContainer">
     <table style="width: 100%; border-spacing: 30px; border-collapse: separate;">
       <tr>
-        <td colspan="3" STYLE="font-size: 25pt;">
-          TOTAL POINTS SCORED
+        <td colspan="3" style="font-size: 25pt;">
+          <div class="cutoff">
+            <span style="font-weight: 600; color: white;">TOP 5</span> POINTS SCORERS
+          </div>
         </td>
       </tr>
       <tr>
@@ -51,8 +53,10 @@
         </td>
       </tr>
       <tr>
-        <td colspan="3" STYLE="font-size: 25pt;">
-          HIGHEST AVERAGE OF WINNER'S POINT ADVANTAGE
+        <td colspan="3" style="font-size: 25pt;">
+          <div class="cutoff">
+            <span style="font-weight: 600; color: white;">TOP 5</span> AVERAGE POINTS ADVANTAGE 
+          </div>
         </td>
       </tr>
       <tr>
@@ -100,8 +104,10 @@
         </td>
       </tr>
       <tr>
-        <td colspan="3" STYLE="font-size: 25pt;">
-          ELO LEADERS
+        <td colspan="3" style="font-size: 25pt;">
+          <div class="cutoff">
+            <span style="font-weight: 600; color: white;">TOP 5</span> ELO LEADERS
+          </div>
         </td>
       </tr>
       <tr>
@@ -148,6 +154,57 @@
           </div>
         </td>
       </tr>
+      <tr>
+        <td colspan="3" style="font-size: 25pt;">
+          <div class="cutoff">
+            <span style="font-weight: 600; color: white;">TOP 5</span> SPECTATED GAMES
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 33%;">
+          <div class="container">
+            <span class="header-title">
+              <i class="fas fa-trophy header-icon"></i>
+              ALL TIME
+            </span>
+            <div style="margin-top: 10px;">
+              <div v-for="(leader) in filteredSpectatorsLeaders" v-bind:key="leader.id" class="row-item">
+                <router-link :to="'/match/' + leader.id + '/summary'">{{ leader.p1name }} <span style="color: #69797a;">vs</span> {{ leader.p2name }}</router-link>
+                <span class="fr value">{{ leader.spectators }}</span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td style="width: 33%;">
+          <div class="container">
+            <span class="header-title">
+              <i class="fas fa-trophy header-icon"></i>
+              ONGOING TOURNAMENT
+            </span>
+            <div style="margin-top: 10px;">
+              <div v-for="(leader) in filteredSpectatorsLeadersTournament" v-bind:key="leader.id" class="row-item">
+                <router-link :to="'/match/' + leader.id + '/summary'">{{ leader.p1name }} <span style="color: #69797a;">vs</span> {{ leader.p2name }}</router-link>
+                <span class="fr value">{{ leader.spectators }}</span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td style="width: 33%;">
+          <div class="container">
+            <span class="header-title">
+              <i class="fas fa-trophy header-icon"></i>
+              LAST WEEK
+            </span>
+            <div style="margin-top: 10px;">
+              <div v-for="(leader) in filteredSpectatorsLeadersLastWeek" v-bind:key="leader.id" class="row-item">
+                <router-link :to="'/match/' + leader.id + '/summary'">{{ leader.p1name }} <span style="color: #69797a;">vs</span> {{ leader.p2name }}</router-link>
+                <span class="fr value">{{ leader.spectators }}</span>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
     </table>
   </div>
 </template>
@@ -175,6 +232,9 @@ export default {
       eloLeaders: [],
       eloLeadersTournament: [],
       eloLeadersLastWeek: [],
+      spectatorsLeaders: [],
+      spectatorsLeadersTournament: [],
+      spectatorsLeadersLastWeek: [],
       officeId: 1
     }
   },
@@ -190,6 +250,9 @@ export default {
       this.eloLeaders = res.data['eloLeaders']
       this.eloLeadersTournament = res.data['eloLeadersTournament']
       this.eloLeadersLastWeek = res.data['eloLeadersLastWeek']
+      this.spectatorsLeaders = res.data['spectatorsLeaders']
+      this.spectatorsLeadersTournament = res.data['spectatorsLeadersTournament']
+      this.spectatorsLeadersLastWeek = res.data['spectatorsLeadersLastWeek']
       this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
   },
@@ -238,6 +301,21 @@ export default {
       return this.eloLeadersLastWeek.filter((leader) => {
         return parseInt(leader.officeId) === this.officeId
       })
+    },
+    filteredSpectatorsLeaders: function () {
+      return this.spectatorsLeaders.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredSpectatorsLeadersTournament: function () {
+      return this.spectatorsLeadersTournament.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
+    },
+    filteredSpectatorsLeadersLastWeek: function () {
+      return this.spectatorsLeadersLastWeek.filter((leader) => {
+        return parseInt(leader.officeId) === this.officeId
+      })
     }
   }
 }
@@ -251,6 +329,15 @@ export default {
 
 .fr {
   float: right;
+}
+
+.cutoff {
+    font-size: 25pt;
+    padding: 10px;
+    background: #105869;
+    -webkit-clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 25%, 75% 0);
+    clip-path: polygon(0 0, 0 100%, 96% 100%, 100% 0%, 100% 0);
+    width: 700px;
 }
 
 .mainContainer {

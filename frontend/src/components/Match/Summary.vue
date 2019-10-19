@@ -73,9 +73,6 @@
           </td>    
         </tr>
       </table>
-      <div style="margin-top: 30px;" v-if="this.lineChartData.length">
-        <GChart type="AreaChart" :data="lineChartData" :options="lineChartOptions" class="chartSpectators" />
-      </div>
     </div>
     <div>
       <span class="header-title">
@@ -219,6 +216,16 @@
             </tr>
           </table>
         </div>
+      </div>
+    </div>
+    <div>
+      <span class="header-title">
+        SPECTATORS
+      </span>
+    </div>
+    <div class="setContainer">
+      <div style="margin-top: 30px;" v-if="this.lineChartData.length">
+        <GChart type="AreaChart" :data="lineChartData" :options="lineChartOptions" class="chartSpectators" />
       </div>
     </div>
   </div>

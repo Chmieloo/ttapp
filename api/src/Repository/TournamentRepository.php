@@ -202,6 +202,7 @@ class TournamentRepository extends ServiceEntityRepository
             ->select(
                 "p.id",
                 "p.name",
+                "p.profile_pic_url as picUrl",
                 "p.office_id as officeId",
                 "sum(if(p.id = g.home_player_id, s.home_points, s.away_points)) as points",
                 "count(s.id) as sets",
@@ -389,6 +390,59 @@ class TournamentRepository extends ServiceEntityRepository
             $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $result['eloLeadersLastWeek'] = array_merge($result['eloLeadersLastWeek'], $data);
+        }
+
+        # Spectators
+        $sql = "select g.id, max(s.spectators) as spectators, p1.name as p1name, p2.name as p2name, g.office_id as officeId
+                from spectators s
+                join game g on s.game_id = g.id
+                join player p1 on g.away_player_id = p1.id
+                join player p2 on g.home_player_id = p2.id
+                group by g.id
+                order by 2 desc
+                limit 0,5";
+
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute([]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result['spectatorsLeaders'] = $data;
+
+        $result['spectatorsLeadersTournament'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $params = ['tournamentId' => $tournamentId];
+            $types = ['tournamentId' => PDO::PARAM_INT];
+            $sql = "select g.id, max(s.spectators) as spectators, p1.name as p1name, p2.name as p2name, g.office_id as officeId
+                from spectators s
+                join game g on s.game_id = g.id
+                join player p1 on g.away_player_id = p1.id
+                join player p2 on g.home_player_id = p2.id
+                where g.tournament_id IN (:tournamentId)
+                group by g.id
+                order by 2 desc
+                limit 0,5";
+
+            $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result['spectatorsLeadersTournament'] = array_merge($result['spectatorsLeadersTournament'], $data);
+        }
+
+        $result['spectatorsLeadersLastWeek'] = [];
+        foreach ($tournamentIds as $tournamentId) {
+            $params = ['tournamentId' => $tournamentId];
+            $types = ['tournamentId' => PDO::PARAM_INT];
+            $sql = "select g.id, max(s.spectators) as spectators, p1.name as p1name, p2.name as p2name, g.office_id as officeId
+                from spectators s
+                join game g on s.game_id = g.id
+                join player p1 on g.away_player_id = p1.id
+                join player p2 on g.home_player_id = p2.id
+                where g.tournament_id IN (:tournamentId)
+                group by g.id
+                order by 2 desc
+                limit 0,5";
+
+            $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result['spectatorsLeadersLastWeek'] = array_merge($result['spectatorsLeadersLastWeek'], $data);
         }
 
         return $result;

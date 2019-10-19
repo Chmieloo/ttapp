@@ -163,4 +163,19 @@ export default {
     text-decoration: underline;
   }
 }
+
+.container {
+  margin-bottom: 20px;
+  background: #0e3c46;
+  padding: 20px;
+  box-shadow: 0px 0px 3px black;
+  .row-item{
+    height: 35px;
+    line-height: 35px;
+    border-bottom: 1px solid #ffffff2b;
+  }
+  :last-child {
+    border-bottom: none;
+  }
+}
 </style>
