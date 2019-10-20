@@ -931,6 +931,74 @@ class GameRepository extends ServiceEntityRepository
 
         return $result['pts'] ? 1 : 0;
     }
+
+    public function loadLive()
+    {
+        $data = [];
+        $baseSql = "select
+                        g.id,
+                        g.current_set as currentSet,
+                           g.office_id as officeId,
+                           p1.name as homePlayerName,
+                           p2.name as awayPlayerName,
+                           s.set_number as setNumber,
+                           p.is_home_point as isHomePoint,
+                           p.is_away_point as isAwayPoint,
+                           g.date_played as datePlayed,
+                           o.name as officeName
+                    from game g
+                        join player p1 on p1.id = g.home_player_id
+                        join player p2 on p2.id = g.away_player_id
+                        join office o on o.id = g.office_id
+                    join scores s on g.id = s.game_id
+                    join points p on s.id = p.score_id
+                    where (g.is_finished = 0 and current_set != 0) or
+                          (g.date_played > CONVERT_TZ(NOW(),'+00:00','+2:00') - interval 5 minute )
+                    order by g.id, s.set_number";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($baseSql);
+        $stmt->execute([]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as $row) {
+            $matchId = $row['id'];
+            $officeId = $row['officeId'];
+            $officeName = $row['officeName'];
+            $homePlayerName = $row['homePlayerName'];
+            $awayPlayerName = $row['awayPlayerName'];
+            $setNumber = $row['setNumber'];
+            $isHomePoint = $row['isHomePoint'];
+            $isAwayPoint = $row['isAwayPoint'];
+
+            if (!isset($data[$matchId])) {
+                $data[$matchId] = [
+                    'matchId' => (int)$matchId,
+                    'officeId' => (int)$officeId,
+                    'officeName' => $officeName,
+                    'homePlayerName' => $homePlayerName,
+                    'awayPlayerName' => $awayPlayerName,
+                    'setNumber' => (int)$setNumber,
+                ];
+            }
+
+            if (!isset($data[$matchId]['setScores'][$setNumber]['homeScore'])) {
+                $data[$matchId]['setScores'][$setNumber]['homeScore'] = 0;
+                $data[$matchId]['setScores'][$setNumber]['awayScore'] = 0;
+            }
+
+            $data[$matchId]['setScores'][$setNumber]['homeScore'] += $isHomePoint;
+            $data[$matchId]['setScores'][$setNumber]['awayScore'] += $isAwayPoint;
+        }
+
+        $resource = [];
+        foreach ($data as $item) {
+            $resource[] = $item;
+        }
+
+        return $resource;
+    }
+
     /**
      * @param $id
      * @return array

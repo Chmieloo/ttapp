@@ -448,6 +448,11 @@ class TournamentRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /**
+     * @param $tournamentIds
+     * @return array
+     * @throws DBALException
+     */
     public function loadWeekStats($tournamentIds)
     {
         $em = $this->getEntityManager();

@@ -138,6 +138,11 @@ groups_by_tournament:
 # MATCH ROUTES
 # ------------
 
+# live matches feed
+matches_live:
+  path: /matches/live
+  controller: App\Controller\MatchController::getLiveMatches
+
 # Get requested match mode
 matches_match_modes:
   path: /matches/modes/{id}

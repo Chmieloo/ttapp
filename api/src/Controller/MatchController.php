@@ -678,6 +678,20 @@ class MatchController extends BaseController
     }
 
     /**
+     * Load list of live games
+     *
+     * @return Response
+     */
+    public function getLiveMatches()
+    {
+        /** @var GameRepository $gameRepository */
+        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $data = $gameRepository->loadLive();
+
+        return $this->sendJsonResponse($data);
+    }
+
+    /**
      * @param $data
      * @param int $officeId
      * @return bool|string
