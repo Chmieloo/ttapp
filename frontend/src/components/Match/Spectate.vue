@@ -19,16 +19,16 @@
       </span>
     </div>
     <div style="margin: 0 auto; width: 80%; clear: both; height: 350px;">
-      <div class="container-fl">
-        <div>
+      <div class="container-fl" style="height: 100%;">
+        <div style="height: 100%;">
           <span class="fa-stack fa-2x">
             <i class="fas fa-walking" style="font-size: 300px; color: #105869; margin-left: -40px;"></i>
             <i class="fas fa-table-tennis fa-stack-1x fa-inverse" style="margin-top: -200px;margin-left: 120px;font-size: 60px;color: #105869;"></i>
           </span>
         </div>
       </div>
-      <div class="container-fr">
-        <div>
+      <div class="container-fr" style="height: 100%;">
+        <div style="height: 100%;">
           <span class="fa-stack fa-2x">
             <i class="fas fa-walking fa-flip-horizontal" style="font-size: 300px; color: #105869; margin-left: -70px;"></i>
             <i class="fas fa-table-tennis fa-stack-1x fa-inverse fa-flip-horizontal" style="margin-top: -200px;margin-left: -120px;font-size: 60px;color: #105869;"></i>
@@ -45,12 +45,56 @@
             <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ homeScore }}</i>
           </span>
         </div>
+        <div style="padding-top: 5px; text-align: right; padding-right: 80px;">
+          <span>
+            <span v-if="!match.isFinished && (parseInt(currentServerId) === parseInt(match.homePlayerId))" class="blinking">
+              <span style="font-size: 20px;">
+                <span v-if="parseInt(this.currentNumServes) === 2" class="blinking">
+                  <i class="fas fa-circle"></i>
+                  <i class="fas fa-circle"></i>
+                </span>
+                <span v-else-if="parseInt(this.currentNumServes) === 1">
+                  <i class="fas fa-circle blinking" style="color: #fff;"></i>
+                  <i class="fas fa-circle" style="color: #3c494c;"></i>
+                </span>
+              </span>
+            </span>
+            <span v-else>
+              <span style="font-size: 20px; color: #3c494c;">
+                <i class="fas fa-circle"></i>
+                <i class="fas fa-circle"></i>
+              </span>
+            </span>
+          </span>
+        </div>
       </div>
       <div class="container-score-fr">
         <div class="score-right">
           <span class="fa-stack fa-2x">
             <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
             <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ awayScore }}</i>
+          </span>
+        </div>
+        <div style="padding-top: 5px; text-align: left; padding-left: 80px;">
+          <span>
+            <span v-if="!match.isFinished && (parseInt(currentServerId) === parseInt(match.awayPlayerId))">
+              <span style="font-size: 20px;">
+                <span v-if="parseInt(this.currentNumServes) === 2" class="blinking">
+                  <i class="fas fa-circle"></i>
+                  <i class="fas fa-circle"></i>
+                </span>
+                <span v-else-if="parseInt(this.currentNumServes) === 1">
+                  <i class="fas fa-circle blinking" style="color: #fff;"></i>
+                  <i class="fas fa-circle" style="color: #3c494c;"></i>
+                </span>
+              </span>
+            </span>
+            <span v-else>
+              <span style="font-size: 20px; color: #3c494c;">
+                <i class="fas fa-circle"></i>
+                <i class="fas fa-circle"></i>
+              </span>
+            </span>
           </span>
         </div>
       </div>      
@@ -158,7 +202,9 @@ export default {
       isFinished: 0,
       spectators: 0,
       homeScoreTotal: 0,
-      awayScoreTotal: 0
+      awayScoreTotal: 0,
+      currentServerId: null,
+      currentNumServes: null
     }
   },
   mounted () {
@@ -172,8 +218,8 @@ export default {
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
       this.homeScoreTotal = res.data.homeScoreTotal
       this.awayScoreTotal = res.data.awayScoreTotal
+      this.currentNumServes = res.data.currentNumServes
       this.idle = true
-      console.log(this.match)
       this.socket = io(window.location.hostname + ':3001?game_id=' + this.match.matchId)
       this.socket.on('MESSAGE', (data) => {
         if (this.isFinished === 0) {
@@ -182,8 +228,11 @@ export default {
           this.matchScores = data.message.setScores
           this.currentSet = data.message.currentSet
           this.isFinished = data.message.isFinished
+          this.currentServerId = data.message.currentServerId
+          this.currentNumServes = data.message.currentNumServes
           this.homeScoreTotal = data.message.homeScoreTotal
           this.awayScoreTotal = data.message.awayScoreTotal
+          console.log(this.currentNumServes)
         }
       })
       this.socket.on('CONNECTIONS', (data) => {
@@ -235,6 +284,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.blinking{
+	animation:blinkingText 3s infinite;
+}
+
+@keyframes blinkingText{
+	0%{		color: #fff;	}
+	50%{	color: transparent;	}
+	100%{	color: #fff;	}
+}
+
 .score-left {
   text-align: right;
   font-size: 2.5em;

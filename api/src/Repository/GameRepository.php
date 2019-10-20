@@ -1000,6 +1000,47 @@ class GameRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param $matchId
+     * @return mixed
+     * @throws DBALException
+     */
+    public function getCurrentServerData($matchId)
+    {
+        $query = "select g.id, g.current_set as setNumber,
+                       @firstServer:=if(g.server_id = g.home_player_id, g.home_player_id, g.away_player_id) as fs,
+                       @otherServer:=if(g.server_id = g.home_player_id, g.away_player_id, g.home_player_id) as os,
+                       @css:=if (mod(g.current_set + 1, 2) = 0, @firstServer, @otherServer) as currentSetStarter,
+                       @oss:=if (mod(g.current_set + 1, 2) = 0, @otherServer, @firstServer) as currentOtherSetStarter,
+                       @ss:=if (count(p.id) >= 20, 1, 0) as singleSwitch,
+                       if (if (count(p.id) >= 20, 1, 0) = 1,
+                           if(
+                               mod(count(p.id), 2) = 0,
+                               if (mod(g.current_set + 1, 2) = 0, @firstServer, @otherServer),
+                               if (mod(g.current_set + 1, 2) = 0, @otherServer, @firstServer)
+                               ),
+                           if(mod((floor(count(p.id) / 2)), 2) = 0, 
+                               if (mod(g.current_set + 1, 2) = 0, @firstServer, @otherServer),
+                               if (mod(g.current_set + 1, 2) = 0, @otherServer, @firstServer)
+                               )
+                           ) as currentServerId,
+                       if (if(count(p.id) >= 20, 1, 0) = 1, 1, mod(count(p.id)+1, 2) + 1) as numServes
+                from game g
+                left join scores s on g.id = s.game_id and s.set_number = g.current_set
+                left join points p on s.id = p.score_id
+                where g.id = :matchId";
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt->execute([
+            'matchId' => $matchId
+        ]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
      * @param $id
      * @return array
      * @throws DBALException
@@ -1029,9 +1070,7 @@ class GameRepository extends ServiceEntityRepository
         # check scored points
         $result['pts'] = $this->hasManualScoring($id);
 
-        $prettyScore =
-            $result['homeScoreTotal'] . ' - ' . $result['awayScoreTotal'] . ' (';
-
+        $prettyScore = $result['homeScoreTotal'] . ' - ' . $result['awayScoreTotal'] . ' (';
 
         $matchId = $result['id'];
 
@@ -1151,6 +1190,12 @@ class GameRepository extends ServiceEntityRepository
             'pts' => $result['pts'],
             'officeId' => (int)$result['officeId'],
         ];
+
+        $serverData = $this->getCurrentServerData($matchId);
+        if ($serverData) {
+            $matchData['currentServerId'] = (int)$serverData['currentServerId'];
+            $matchData['currentNumServes'] = (int)$serverData['numServes'];
+        }
 
         return $matchData;
     }

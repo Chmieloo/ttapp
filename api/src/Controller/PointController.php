@@ -80,9 +80,17 @@ class PointController extends BaseController
         $em->persist($point);
         $em->flush();
 
+        $serverData = $doctrine->getRepository(Game::class)->getCurrentServerData($matchId);
+        if ($serverData) {
+            $currentServer = $serverData['currentServerId'];
+            $numServes = $serverData['numServes'];
+        }
+
         return new JsonResponse([
             'text' => 'Point added',
             'currentSet' => $match->getCurrentSet(),
+            'currentServerId' => $currentServer ?? 0,
+            'currentNumServes' => $numServes ?? 0,
         ],
             JsonResponse::HTTP_OK
         );
@@ -107,9 +115,18 @@ class PointController extends BaseController
         # Delete last point (home / away) for given match id
         $pointRepository->removeLastPoint($home, $away, $matchId);
 
+        $doctrine = $this->getDoctrine();
+        $serverData = $doctrine->getRepository(Game::class)->getCurrentServerData($matchId);
+        if ($serverData) {
+            $currentServer = $serverData['currentServerId'];
+            $numServes = $serverData['numServes'];
+        }
+
         return new JsonResponse([
             'status'    => 'done',
-            'errorText' => 'Point removed'
+            'errorText' => 'Point removed',
+            'currentServerId' => $currentServer ?? 0,
+            'currentNumServes' => $numServes ?? 0,
         ],
             JsonResponse::HTTP_OK
         );

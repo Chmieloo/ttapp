@@ -233,13 +233,17 @@ export default {
       post2Channel: true,
       socket: null,
       broadcasted: false,
-      startMessage: null
+      startMessage: null,
+      currentServerId: null,
+      currentNumServes: 2
     }
   },
   mounted () {
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
+      this.currentServerId = res.data.currentServerId
+      this.currentNumServes = res.data.currentNumServes
       this.setScores = res.data.scores
       this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
@@ -390,6 +394,8 @@ export default {
             this.match = res.data
             this.idle = true
             this.numServes = 2
+            this.currentNumServes = res.data.currentNumServes
+            this.currentServerId = res.data.currentServerId
             this.checkServer()
             this.sendMessage(this.getPayload())
           }
@@ -491,7 +497,6 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
-        this.sendMessage(this.getPayload())
       }
     },
     getPayload () {
@@ -507,7 +512,8 @@ export default {
         'awayScoreTotal': this.match.awayScoreTotal,
         'startingServer': this.match.serverId,
         'serverFlipped': this.serverFlipped,
-        'numServes': this.numServes
+        'currentNumServes': this.currentNumServes,
+        'currentServerId': this.currentServerId
       }
     },
     addPointRight () {
@@ -525,7 +531,6 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
-        this.sendMessage(this.getPayload())
       }
     },
     /**
@@ -595,7 +600,10 @@ export default {
         matchId: matchId
       }).then((res) => {
         this.match.currentSet = res.data.currentSet
+        this.currentServerId = res.data.currentServerId
+        this.currentNumServes = res.data.currentNumServes
         this.idle = true
+        this.sendMessage(this.getPayload())
       }).catch(error => {
         this.idle = true
         console.log('error while adding point: ' + error.response)
@@ -616,9 +624,10 @@ export default {
         away: awayScore,
         matchId: matchId
       }).then((res) => {
-        // TODO log
+        this.currentServerId = res.data.currentServerId
+        this.currentNumServes = res.data.currentNumServes
         this.idle = true
-        // console.log('Point removed')
+        this.sendMessage(this.getPayload())
       }).catch(error => {
         // TODO log
         this.idle = true
