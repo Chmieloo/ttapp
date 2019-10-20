@@ -3,6 +3,26 @@
     <div class="mainContainer">
       <span class="header-title">Update history</span>
       <div style="margin-top: 20px;">
+        <div style="margin-bottom: 10px;">2019-10-20</div>
+        <div style="border-left: 3px solid #8a8a8a; padding: 20px;">
+          <span style="color: white;">Bug fixes</span>
+          <ul>
+            <li>Fixed order of played matches in player's profile</li>
+          </ul>
+          <span style="color: white;">New features</span>
+          <ul>
+            <li>Minor style changes</li>
+            <li style="list-style-type: none;">different font on match scoring page (scout)</li>
+            <li style="list-style-type: none;">clear indication of won sets on scoring page</li>
+            <li style="list-style-type: none;">category banners on leaders page</li>
+            <li style="list-style-type: none;">moved spectators timeline chart to the bottom of summary view</li>
+            <li>Added new leaders category: games with most spectators</li>
+            <li>Added new live matches endpoint to API TTAPP_URL:8888/matches/live</li>
+            <li>Added serving player indicator to spectate view with number of serves</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
         <div style="margin-bottom: 10px;">2019-10-13</div>
         <div style="border-left: 3px solid #8a8a8a; padding: 20px;">
           <span style="color: white;">Bug fixes</span>
