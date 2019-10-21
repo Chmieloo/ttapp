@@ -436,6 +436,7 @@ class TournamentRepository extends ServiceEntityRepository
                 join player p1 on g.away_player_id = p1.id
                 join player p2 on g.home_player_id = p2.id
                 where g.tournament_id IN (:tournamentId)
+                and g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)
                 group by g.id
                 order by 2 desc
                 limit 0,5";
