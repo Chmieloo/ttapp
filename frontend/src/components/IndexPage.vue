@@ -1,13 +1,5 @@
 <template>
   <div class="mainContainer">
-    <div class="lastWeekBox">
-      <div class="header-title">
-        <div class="cutoff">
-          <i class="fas fa-table-tennis marr20" style="position: absolute; font-size: 63px; left: 640px; color: #fff;"></i>
-          <router-link :to="'/statistics/week'">LAST WEEK'S SUMMARY</router-link>
-        </div>
-      </div>      
-    </div>
     <div class="halfContainerSmaller">
       <span class="header-title">
         <i class="fas fa-clock marr20"></i>
