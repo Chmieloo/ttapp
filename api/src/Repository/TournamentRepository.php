@@ -28,7 +28,8 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return mixed
+     * @return mixed[]
+     * @throws DBALException
      */
     public function loadList()
     {
@@ -47,6 +48,35 @@ class TournamentRepository extends ServiceEntityRepository
         $stmt-> execute();
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @return mixed[]
+     * @throws DBALException
+     */
+    public function loadInfo()
+    {
+        $sql =
+            'select t.id as tournamentId, t.name as tournamentName, t.is_finished as isFinished, t.is_playoffs as isPlayoffs, t.office_id as officeId,
+               pt.is_finished
+                from tournament t
+                left join tournament pt on t.parent_tournament = pt.id
+                where t.is_finished = 0 and t.is_official = 1 and t.is_playoffs = 1
+                and (pt.is_finished is null or pt.is_finished = 1)';
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt-> execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($result as &$item) {
+            $item['tournamentId'] = (int)$item['tournamentId'];
+            $item['isFinished'] = (int)$item['isFinished'];
+            $item['officeId'] = (int)$item['officeId'];
+        }
 
         return $result;
     }

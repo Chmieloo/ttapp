@@ -102,6 +102,11 @@ tournament_week_stats:
   path: /tournaments/statistics/week
   controller: App\Controller\TournamentController:weekStatistics
 
+# Info about current tournament
+tournament_info:
+  path: /tournaments/info
+  controller: App\Controller\TournamentController:getInfo
+
 # -------------------
 # TOURNAMENT PLAYOFFS
 # -------------------

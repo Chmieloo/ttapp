@@ -366,14 +366,18 @@ class GameRepository extends ServiceEntityRepository
             'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName, ' .
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
             'g.playoff_home_player_id as homePlayer, g.playoff_away_player_id as awayPlayer, g.winner_id as winnerId, ' .
-            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal ' .
+            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, level as outcome, g.is_finished as isFinished, ' .
+            'if (g.is_finished = 1, 1, if (count(p.id) = 0, 3, 2)) as status ' .
             'from game g ' .
             'left join player p1 on p1.id = g.home_player_id ' .
             'left join player p2 on p2.id = g.away_player_id ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'join tournament t on t.id = g.tournament_id ' .
             'join tournament_group l on l.id = g.tournament_group_id ' .
+            'left join scores s on g.id = s.game_id ' .
+            'left join points p on s.id = p.score_id ' .
             'where t.is_finished = 0 and t.id = :tournamentid ' .
+            'group by g.id ' .
             'order by g.play_order';
 
         $params = [
@@ -437,13 +441,17 @@ class GameRepository extends ServiceEntityRepository
                 'division' => $match['division'],
                 'name' => $match['name'],
                 'dateOfMatch' => date("D M j", strtotime($match['dateOfMatch'])),
-                'homePlayerId' => $match['hpid'],
-                'awayPlayerId' => $match['apid'],
+                'homePlayerId' => (int)$match['hpid'],
+                'awayPlayerId' => (int)$match['apid'],
                 'homePlayerDisplayName' => $homePlayerString ?: 'TBD',
                 'awayPlayerDisplayName' => $awayPlayerString ?: 'TBD',
-                'winnerId' => $match['winnerId'] ?: 0,
-                'homeScoreTotal' => $match['homeScoreTotal'],
-                'awayScoreTotal' => $match['awayScoreTotal'],
+                'winnerId' => (int)$match['winnerId'] ?: 0,
+                'homeScoreTotal' => (int)$match['homeScoreTotal'],
+                'awayScoreTotal' => (int)$match['awayScoreTotal'],
+                'outcome' => $match['outcome'],
+                'isFinished' => (int)$match['isFinished'],
+                # 1 finished, 2 live, 3 not started
+                'status' => (int)$match['status'],
             ];
         }
 

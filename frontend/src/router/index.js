@@ -4,6 +4,7 @@ import VueScrollTo from 'vue-scrollto'
 import IndexPage from '@/components/IndexPage'
 import PlayerList from '@/components/Player/List'
 import Leaders from '@/components/Player/Leaders'
+import PlayoffsInfo from '@/components/Tournament/PlayoffsInfo'
 import TournamentList from '@/components/Tournament/List'
 import TournamentStandings from '@/components/Tournament/Standings'
 import TournamentMatchList from '@/components/Tournament/MatchList'
@@ -47,6 +48,7 @@ export default new Router({
     // playoffs
     { path: '/playoffs/match/list', name: 'PlayoffsMatchList', component: PlayoffsMatchList },
     { path: '/playoffs/group/:id/ladder', name: 'PlayoffsLadder', component: PlayoffsLadder },
-    { path: '/playoffs/:id/ladders', name: 'Ladders', component: Ladders }
+    { path: '/playoffs/:id/ladders', name: 'Ladders', component: Ladders },
+    { path: '/playoffs/:id/info', name: 'PlayoffsInfo', component: PlayoffsInfo }
   ]
 })

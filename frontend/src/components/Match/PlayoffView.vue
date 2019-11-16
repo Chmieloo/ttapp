@@ -163,13 +163,6 @@
     <div v-if="isConnected()">
       <i class="fas fa-gamepad pad"></i>
     </div>
-    <div class="footer" v-if="warmupVisible == 0 && match.nextMatchId">
-      <span>next:</span>
-      <span>{{ match.nextMatchName }}</span>
-      <span class="playerName">{{ match.nextMatchHomePlayer }}</span>
-      <span>vs</span>
-      <span class="playerName">{{ match.nextMatchAwayPlayer }}</span>
-    </div>
   </div>
 </template>
 
@@ -179,6 +172,7 @@ import Vue from 'vue'
 import VueGamepad from 'vue-gamepad'
 import VuejsDialog from 'vuejs-dialog'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
+import io from 'socket.io-client'
 
 Vue.use(VuejsDialog)
 Vue.use(VueGamepad)
@@ -209,21 +203,31 @@ export default {
       clockInterval: null,
       clockPaused: false,
       clockRemaining: 0,
-      posted: 0
+      posted: 0,
+      currentServerId: null,
+      currentNumServes: 2
     }
   },
   mounted () {
     this.idle = false
     axios.get('/api/matches/' + this.$route.params.id).then((res) => {
       this.match = res.data
+      this.currentServerId = res.data.currentServerId
+      this.currentNumServes = res.data.currentNumServes
       this.homeScore = res.data.currentHomePoints ? res.data.currentHomePoints : 0
       this.awayScore = res.data.currentAwayPoints ? res.data.currentAwayPoints : 0
       this.idle = true
       this.checkServer()
+      this.socket = io(window.location.hostname + ':3001?game_id=' + this.match.matchId)
     })
     this.setupClock()
   },
   methods: {
+    sendMessage (data) {
+      this.socket.emit('SEND_MESSAGE', {
+        message: data
+      })
+    },
     walkover (playerId, playerName) {
       if (confirm('Are you sure player ' + playerName + ' wins by walkover?')) {
         axios.get('/api/matches/' + this.$route.params.id + '/walkover/' + playerId).then((res) => {
@@ -232,7 +236,7 @@ export default {
       }
     },
     setupClock () {
-      this.warmupSeconds = 180
+      this.warmupSeconds = 10
       var currentTime = Date.parse(new Date())
       this.warmupDeadline = new Date(currentTime + (this.warmupSeconds / 60) * 60 * 1000)
       this.clockInterval = setInterval(this.runClock, 1000)
@@ -279,9 +283,26 @@ export default {
     postMatchStart () {
       axios.get('/api/matches/' + this.$route.params.id + '/startmessage').then((res) => {
         if (res.data) {
-          console.log(res.data)
+          this.postSpectators()
         }
       })
+    },
+    getPayload () {
+      return {
+        'score': {
+          'homeScore': this.homeScore,
+          'awayScore': this.awayScore
+        },
+        'setScores': this.match.scores,
+        'currentSet': this.match.currentSet,
+        'isFinished': this.match.isFinished,
+        'homeScoreTotal': this.match.homeScoreTotal,
+        'awayScoreTotal': this.match.awayScoreTotal,
+        'startingServer': this.match.serverId,
+        'serverFlipped': this.serverFlipped,
+        'currentNumServes': this.currentNumServes,
+        'currentServerId': this.currentServerId
+      }
     },
     toggleVisibility () {
       this.warmupVisible = !this.warmupVisible
@@ -418,6 +439,21 @@ export default {
         this.idle = false
         axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
           if (res.data) {
+            this.endSet = 0
+            this.flipSides()
+            this.resetScores()
+            this.match = res.data
+            this.idle = true
+            this.numServes = 2
+            this.currentNumServes = res.data.currentNumServes
+            this.currentServerId = res.data.currentServerId
+            this.checkServer()
+            this.sendMessage(this.getPayload())
+          }
+        })
+        /*
+        axios.get('/api/matches/' + this.$route.params.id + '/finish').then((res) => {
+          if (res.data) {
             if (res.data.isFinished === 1) {
               this.endSet = 0
               this.resetScores()
@@ -431,11 +467,12 @@ export default {
               this.match = res.data
               this.idle = true
               this.numServes = 2
-              console.log(res.data)
               this.checkServer()
             }
+            this.sendMessage(this.getPayload())
           }
         })
+        */
       }
     },
     flipSides () {
@@ -466,6 +503,26 @@ export default {
       this.homeScore = 0
       this.awayScore = 0
     },
+    postSpectators () {
+      // add 0 spectators at the beginning of the match
+      axios.post('/api/matches/add/spectator', {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
+        gameId: this.$route.params.id,
+        spectatorCount: 0,
+        type: 0
+      }).then((res) => {
+        this.errors = []
+        if (res.status === 200) {
+          // added initial spectators
+        }
+        return true
+      }).catch(error => {
+        console.log(error)
+        this.errors = []
+      })
+    },
     addPointLeft () {
       if (!this.endSet && this.idle) {
         if (this.flipped) {
@@ -477,6 +534,7 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     addPointRight () {
@@ -490,6 +548,7 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     /**
@@ -510,6 +569,7 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     subPointRight () {
@@ -527,6 +587,7 @@ export default {
         }
         this.checkFinalScore()
         this.checkServer()
+        this.sendMessage(this.getPayload())
       }
     },
     isConnected () {
@@ -550,7 +611,10 @@ export default {
       }).then((res) => {
         console.log('response status: ' + res.status + ', ' + res.data.text)
         this.match.currentSet = res.data.currentSet
+        this.currentServerId = res.data.currentServerId
+        this.currentNumServes = res.data.currentNumServes
         this.idle = true
+        this.sendMessage(this.getPayload())
       }).catch(error => {
         this.idle = true
         console.log('error while adding point: ' + error.response)
@@ -573,7 +637,9 @@ export default {
       }).then((res) => {
         // TODO log
         this.idle = true
-        // console.log('Point removed')
+        this.currentServerId = res.data.currentServerId
+        this.currentNumServes = res.data.currentNumServes
+        this.sendMessage(this.getPayload())
       }).catch(error => {
         // TODO log
         this.idle = true
@@ -587,6 +653,7 @@ export default {
 <style lang="less" scoped>
 .maincontainer {
   overflow: hidden;
+  font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
 }
 
 .rowData {

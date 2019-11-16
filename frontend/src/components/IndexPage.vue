@@ -1,5 +1,14 @@
 <template>
   <div class="mainContainer">
+    <div v-if="filteredPlayoffs">
+      <div v-for="playoffsTournament in filteredPlayoffs" v-bind:key="playoffsTournament.tournamentId">
+        <div class="poBox">
+          <div>
+            <router-link :to="'/playoffs/' + playoffsTournament.tournamentId + '/info'">{{ playoffsTournament.tournamentName }}</router-link>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="halfContainerSmaller">
       <span class="header-title">
         <i class="fas fa-clock marr20"></i>
@@ -33,6 +42,7 @@
 import MatchResults from './Match/MatchResults.vue'
 import MatchSchedule from './Match/MatchSchedule.vue'
 import MatchScheduleOverdue from './Match/MatchScheduleOverdue.vue'
+import axios from 'axios'
 
 export default {
   name: 'IndexPage',
@@ -43,7 +53,21 @@ export default {
   },
   data () {
     return {
-      msg: "Today's schedule"
+      playoffs: [],
+      officeId: 1
+    }
+  },
+  mounted () {
+    axios.get('/api/tournaments/info').then((res) => {
+      this.playoffs = res.data
+      this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
+    })
+  },
+  computed: {
+    filteredPlayoffs: function () {
+      return this.playoffs.filter((playoff) => {
+        return playoff.officeId === this.officeId
+      })
     }
   }
 }
@@ -57,14 +81,12 @@ export default {
   margin-top: 40px;
 }
 
-.cutoff {
-    font-size: 25pt;
-    padding: 10px;
-    background: #105869;
-    -webkit-clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 25%, 75% 0);
-    clip-path: polygon(0 0, 0 100%, 96% 100%, 100% 0%, 100% 0);
-    width: 700px;
-    padding-left: 20px;
+.poBox {
+  width: 95%; margin-top: 30px; padding: 20px;
+  background: #0e3c46;
+  padding: 20px;
+  -webkit-box-shadow: 0px 0px 3px black;
+  box-shadow: 0px 0px 3px black;
 }
 
 .halfContainerSmaller {

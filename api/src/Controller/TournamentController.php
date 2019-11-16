@@ -14,7 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 class TournamentController extends BaseController
 {
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
+     * @throws DBALException
      */
     public function getTournaments()
     {
@@ -32,6 +33,30 @@ class TournamentController extends BaseController
         return $this->sendJsonResponse($tournaments);
     }
 
+    /**
+     * @return Response
+     * @throws DBALException
+     */
+    public function getInfo()
+    {
+        /** @var TournamentRepository $tournamentRepository */
+        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+
+        $tournaments = $tournamentRepository->loadInfo();
+
+        if (!$tournaments) {
+            throw $this->createNotFoundException(
+                'No tournaments found'
+            );
+        }
+
+        return $this->sendJsonResponse($tournaments);
+    }
+
+    /**
+     * @param $id
+     * @return Response
+     */
     public function getStandings($id)
     {
         /** @var TournamentRepository $tournamentRepository */

@@ -232,6 +232,8 @@ class MatchController extends BaseController
         $nextHomePlayer = $data['nextMatchHomePlayer'];
         $nextAwayPlayer = $data['nextMatchAwayPlayer'];
 
+        $tournamentId = $data['tournamentId'];
+
         $homeSlackName = $data['homeSlackName'];
         $awaySlackName = $data['awaySlackName'];
 
@@ -243,9 +245,10 @@ class MatchController extends BaseController
         $message .= ":table_tennis_paddle_and_ball: ";
         //}
 
-        $message .= " Playoffs match is about to start (" . $groupName . ", " . $matchName . ", " . $modeName . ") ";
-        $message .= "<" . $this->guiUrl . "/#/playoffs/ladders|ladder here>";
+        $message .= " Playoffs match is about to start (" . $groupName . ", " . $matchName . ", " . $modeName . ")\n";
         $message .= "\n*" . $homeSlackName . "* vs *" . $awaySlackName . "*\n";
+        $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/ladders|ladder> | ";
+        $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule>";
         if ($data['nextMatchId']) {
             $message .= "next: *" . $nextHomePlayer . "* vs *" . $nextAwayPlayer . "*\n";
         }
