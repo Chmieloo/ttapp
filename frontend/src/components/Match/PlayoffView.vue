@@ -81,12 +81,24 @@
         <div class="tableSetScores">
           <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
             <div v-for="(score, index) in match.scores" v-bind:key="index" class="rowData">
-              <span v-if="match.currentSet - 1 != index">{{ score.home }}</span>
+              <span v-if="match.currentSet - 1 != index">
+                <span class="fa-stack" style="font-size: 30px;">
+                  <i v-if="parseInt(score.home) > parseInt(score.away)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
+                  <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+                  <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ score.home }}</i>
+                </span>
+              </span>
             </div>
           </div>
           <div v-bind:class="flipped ? 'set-container-fl' : 'set-container-fr'">
             <div v-for="(score, index) in match.scores" v-bind:key="index" class="rowData">
-              <span v-if="match.currentSet - 1 != index">{{ score.away }}</span>
+              <span v-if="match.currentSet - 1 != index">
+                <span class="fa-stack" style="font-size: 30px;">
+                  <i v-if="parseInt(score.away) > parseInt(score.home)" class="fas fa-circle fa-stack-2x" style="color: #40c500;"></i>
+                  <i v-else class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+                  <i class="fas fa-stack-1x" style="color: black; font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;">{{ score.away }}</i>
+                </span>  
+              </span>
             </div>
           </div>
         </div>
@@ -651,7 +663,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.maincontainer {
+.mainContainer {
   overflow: hidden;
   font-family: 'Poppins', 'Avenir', Helvetica, Arial, sans-serif;
 }

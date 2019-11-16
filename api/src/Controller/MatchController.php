@@ -506,7 +506,7 @@ class MatchController extends BaseController
         $match->setIsFinished(true);
         $match->setIsWalkover(true);
         $match->setDatePlayed($datePlayed);
-        $officeId = $match->getOffice();
+        $officeId = $match->getOffice()->getId();
 
         $message =
             $match->getHomePlayer()->getSlackName() . ' - ' . $match->getAwayPlayer()->getSlackName() .

@@ -367,7 +367,7 @@ class GameRepository extends ServiceEntityRepository
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
             'g.playoff_home_player_id as homePlayer, g.playoff_away_player_id as awayPlayer, g.winner_id as winnerId, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, level as outcome, g.is_finished as isFinished, ' .
-            'if (g.is_finished = 1, 1, if (count(p.id) = 0, 3, 2)) as status ' .
+            'if (g.is_finished = 1, 1, if (count(p.id) = 0, 3, 2)) as status, t.name as tournamentName ' .
             'from game g ' .
             'left join player p1 on p1.id = g.home_player_id ' .
             'left join player p2 on p2.id = g.away_player_id ' .
@@ -435,6 +435,20 @@ class GameRepository extends ServiceEntityRepository
                 $awayPlayerString = $match['awayPlayerDisplayName'];
             }
 
+            $outcome = $match['outcome'];
+            if ((int)$match['isFinished'] == 1) {
+                $winnerName = $match['hpid'] == $match['winnerId'] ? $homePlayerString : $awayPlayerString;
+                $loserName = $match['hpid'] == $match['winnerId'] ? $awayPlayerString : $homePlayerString;
+                $leagueName = $match['division'];
+                $tournamentName = $match['tournamentName'];
+
+                $outcome = str_replace(
+                    ['|WINNER|', '|LOSER|', '|LEAGUE|', '|TOURNAMENT|'],
+                    [$winnerName, $loserName, $leagueName, $tournamentName],
+                    $match['outcome']
+                );
+            }
+
             $matchData[] = [
                 'order' => $match['matchNumber'],
                 'matchId' => $matchId,
@@ -448,7 +462,7 @@ class GameRepository extends ServiceEntityRepository
                 'winnerId' => (int)$match['winnerId'] ?: 0,
                 'homeScoreTotal' => (int)$match['homeScoreTotal'],
                 'awayScoreTotal' => (int)$match['awayScoreTotal'],
-                'outcome' => $match['outcome'],
+                'outcome' => $outcome,
                 'isFinished' => (int)$match['isFinished'],
                 # 1 finished, 2 live, 3 not started
                 'status' => (int)$match['status'],

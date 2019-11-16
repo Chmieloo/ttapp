@@ -410,6 +410,7 @@ table {
   font-size: 18pt;
   color: white;
   min-width: 250px;
+  padding-right: 20px;
 }
 
 .winnerColor {
