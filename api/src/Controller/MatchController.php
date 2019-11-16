@@ -248,7 +248,7 @@ class MatchController extends BaseController
         $message .= " Playoffs match is about to start (" . $groupName . ", " . $matchName . ", " . $modeName . ")\n";
         $message .= "\n*" . $homeSlackName . "* vs *" . $awaySlackName . "*\n";
         $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/ladders|ladder> | ";
-        $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule>";
+        $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule>\n";
         if ($data['nextMatchId']) {
             $message .= "next: *" . $nextHomePlayer . "* vs *" . $nextAwayPlayer . "*\n";
         }
