@@ -2,10 +2,42 @@
   <div class="mainContainer">
     <div v-if="filteredPlayoffs">
       <div v-for="playoffsTournament in filteredPlayoffs" v-bind:key="playoffsTournament.tournamentId">
-        <div class="poBox">
-          <div>
-            <router-link :to="'/playoffs/' + playoffsTournament.tournamentId + '/info'">{{ playoffsTournament.tournamentName }}</router-link>
-          </div>
+        <div class="poBox" style="overflow: hidden;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="font-size: 50px; font-family: Poppins; font-weight: 900; color: white;">
+                <span class="fa-stack" style="font-size: 30px;">
+                  <i class="fas fa-circle fa-stack-2x stack-shield"></i>
+                  <i class="fas fa-stack-2x fa-medal stack-medal" style="color: black;"></i>
+                </span>
+                {{ playoffsTournament.tournamentName }}
+              </td>
+              <td style="vertical-align: top; text-align: right;" rowspan="2">
+                <div v-if="filteredLiveMatches.length > 0">
+                  <div style="margin-bottom: 15px;">
+                    <span style="padding: 5px 8px; background-color: #2399b5; color: white; font-weight: 600; border-radius: 5px;" class="blinking">
+                      LIVE
+                    </span>
+                  </div>
+                  <div v-for="filteredLiveMatch in filteredLiveMatches" v-bind:key="filteredLiveMatch.matchId">
+                    <div style="margin-bottom: 20px;">
+                      <span style="color: white;">{{ filteredLiveMatch.homePlayerName }}</span> vs 
+                      <span style="color: white;">{{ filteredLiveMatch.awayPlayerName }}</span>
+                    </div>
+                    <span style="padding: 5px 8px; background-color: #105869; color: white; font-weight: 600; border-radius: 5px;">
+                      <router-link :to="'/match/' + filteredLiveMatch.matchId + '/spectate'">spectate</router-link>
+                    </span>                                    
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <router-link :to="'/playoffs/' + playoffsTournament.tournamentId + '/ladders'">ladders</router-link> | 
+                <router-link :to="'/playoffs/' + playoffsTournament.tournamentId + '/info'">schedule</router-link>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
@@ -54,7 +86,8 @@ export default {
   data () {
     return {
       playoffs: [],
-      officeId: 1
+      officeId: 1,
+      liveMatches: []
     }
   },
   mounted () {
@@ -62,11 +95,27 @@ export default {
       this.playoffs = res.data
       this.officeId = parseInt(this.$localStorage.get('ttappOfficeId', 1))
     })
+    this.getLiveMatches()
+    setInterval(function () {
+      this.getLiveMatches()
+    }.bind(this), 10000)
+  },
+  methods: {
+    getLiveMatches () {
+      axios.get('/api/matches/live').then((res) => {
+        this.liveMatches = res.data
+      })
+    }
   },
   computed: {
     filteredPlayoffs: function () {
       return this.playoffs.filter((playoff) => {
         return playoff.officeId === this.officeId
+      })
+    },
+    filteredLiveMatches: function () {
+      return this.liveMatches.filter((match) => {
+        return match.officeId === this.officeId
       })
     }
   }
@@ -81,12 +130,43 @@ export default {
   margin-top: 40px;
 }
 
+.blinking{
+  animation:blinkingText 3s infinite;
+  background-color: #2399b5;
+  padding: 3px 8px;
+  border-radius: 3px;
+  width: 100px !important;
+}
+
+@keyframes blinkingText{
+	0%{		background-color: #2399b5;	}
+	50%{	background-color: transparent;	}
+	100%{	background-color: #2399b5;	}
+}
+
+.module {
+  --notchSize: 20px;  
+  clip-path: 
+    polygon(
+      0% 100%, 
+      var(--notchSize) 0%, 
+      100% 0%, 
+      calc(100% - var(--notchSize)) 100%, 
+      100% calc(100% - var(--notchSize)), 
+      calc(100% - var(--notchSize)) 100%, 
+      0% 100%, 
+      0% 0%
+    );
+}
+
 .poBox {
   width: 95%; margin-top: 30px; padding: 20px;
   background: #0e3c46;
   padding: 20px;
   -webkit-box-shadow: 0px 0px 3px black;
   box-shadow: 0px 0px 3px black;
+  height: 110px;
+  background: linear-gradient(100deg, #556187 30%, #333e6c 60%);
 }
 
 .halfContainerSmaller {
@@ -196,10 +276,8 @@ hr{
   margin-top: -50px;
 }
 
-.lastWeekBox {
-  margin-top: 30px;
-  width: 90%;
-  padding: 10px;
-  border-bottom: 1px solid #105869;
+.stack-medal {
+  color: #556181 !important;
+  font-size: 47px;
 }
 </style>

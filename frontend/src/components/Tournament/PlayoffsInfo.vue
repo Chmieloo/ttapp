@@ -59,7 +59,12 @@
         </td>
       </tr>
       <tr v-if="match.isFinished" style="background-color: #022d38; border: 1px solid #0e3f4a;">
-        <td colspan="6">&nbsp;</td>
+        <td>&nbsp;</td>
+        <td colspan="5" style="text-align: center;">
+          <span v-for="score in match.scores" v-bind:key="score.id" style="font-size: 14px;padding: 3px 5px; margin-right: 3px; border: 1px solid #092229; background-color: #0e3f4a;">
+            {{ score }}
+          </span>
+        </td>
         <td colspan="4" style="padding: 15px;">
           {{ match.outcome }}
         </td>
@@ -126,7 +131,11 @@ export default {
 }
 
 .blinking{
-	animation:blinkingText 3s infinite;
+  animation:blinkingText 3s infinite;
+  background-color: #6b8e42;
+  padding: 3px 8px;
+  border-radius: 3px;
+  width: 100px !important;
 }
 
 @keyframes blinkingText{

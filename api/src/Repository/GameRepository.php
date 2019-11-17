@@ -367,7 +367,14 @@ class GameRepository extends ServiceEntityRepository
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
             'g.playoff_home_player_id as homePlayer, g.playoff_away_player_id as awayPlayer, g.winner_id as winnerId, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, level as outcome, g.is_finished as isFinished, ' .
-            'if (g.is_finished = 1, 1, if (count(p.id) = 0, 3, 2)) as status, t.name as tournamentName ' .
+            'if (g.is_finished = 1, 1, if (count(p.id) = 0, 3, 2)) as status, t.name as tournamentName, ' .
+            'concat(s1.home_points, \' : \', s1.away_points) as s1, ' .
+            'concat(s2.home_points, \' : \', s2.away_points) as s2, ' .
+            'concat(s3.home_points, \' : \', s3.away_points) as s3, ' .
+            'concat(s4.home_points, \' : \', s4.away_points) as s4, ' .
+            'concat(s5.home_points, \' : \', s5.away_points) as s5, ' .
+            'concat(s6.home_points, \' : \', s6.away_points) as s6, ' .
+            'concat(s7.home_points, \' : \', s7.away_points) as s7 ' .
             'from game g ' .
             'left join player p1 on p1.id = g.home_player_id ' .
             'left join player p2 on p2.id = g.away_player_id ' .
@@ -376,6 +383,13 @@ class GameRepository extends ServiceEntityRepository
             'join tournament_group l on l.id = g.tournament_group_id ' .
             'left join scores s on g.id = s.game_id ' .
             'left join points p on s.id = p.score_id ' .
+            'left join scores s1 on g.id = s1.game_id and s1.set_number = 1 ' .
+            'left join scores s2 on g.id = s2.game_id and s2.set_number = 2 ' .
+            'left join scores s3 on g.id = s3.game_id and s3.set_number = 3 ' .
+            'left join scores s4 on g.id = s4.game_id and s4.set_number = 4 ' .
+            'left join scores s5 on g.id = s5.game_id and s5.set_number = 5 ' .
+            'left join scores s6 on g.id = s6.game_id and s6.set_number = 6 ' .
+            'left join scores s7 on g.id = s7.game_id and s7.set_number = 7 ' .
             'where t.is_finished = 0 and t.id = :tournamentid ' .
             'group by g.id ' .
             'order by g.play_order';
@@ -449,6 +463,17 @@ class GameRepository extends ServiceEntityRepository
                 );
             }
 
+            # Set scores
+            $scores = array_filter([
+                $match['s1'],
+                $match['s2'],
+                $match['s3'],
+                $match['s4'],
+                $match['s5'],
+                $match['s6'],
+                $match['s7'],
+            ]);
+
             $matchData[] = [
                 'order' => $match['matchNumber'],
                 'matchId' => $matchId,
@@ -466,6 +491,7 @@ class GameRepository extends ServiceEntityRepository
                 'isFinished' => (int)$match['isFinished'],
                 # 1 finished, 2 live, 3 not started
                 'status' => (int)$match['status'],
+                'scores' => $scores,
             ];
         }
 
@@ -967,11 +993,13 @@ class GameRepository extends ServiceEntityRepository
                            p.is_home_point as isHomePoint,
                            p.is_away_point as isAwayPoint,
                            g.date_played as datePlayed,
-                           o.name as officeName
+                           o.name as officeName,
+                           tg.name as groupName
                     from game g
                         join player p1 on p1.id = g.home_player_id
                         join player p2 on p2.id = g.away_player_id
                         join office o on o.id = g.office_id
+                        left join tournament_group tg on tg.id = g.tournament_group_id
                     join scores s on g.id = s.game_id
                     join points p on s.id = p.score_id
                     where (g.is_finished = 0 and current_set != 0) or
@@ -992,6 +1020,7 @@ class GameRepository extends ServiceEntityRepository
             $setNumber = $row['setNumber'];
             $isHomePoint = $row['isHomePoint'];
             $isAwayPoint = $row['isAwayPoint'];
+            $groupName = $row['groupName'];
 
             if (!isset($data[$matchId])) {
                 $data[$matchId] = [
@@ -1001,6 +1030,7 @@ class GameRepository extends ServiceEntityRepository
                     'homePlayerName' => $homePlayerName,
                     'awayPlayerName' => $awayPlayerName,
                     'setNumber' => (int)$setNumber,
+                    'groupName' => $groupName,
                 ];
             }
 
