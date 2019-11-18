@@ -139,7 +139,8 @@ class GameRepository extends ServiceEntityRepository
             'sum(pp.is_home_point) as currentHomePoints, sum(pp.is_away_point) as currentAwayPoints, ' .
             'if(count(pp.id) > 0, 1, 0) as pts, ' .
             'if (g.home_player_id, p1.name, g.playoff_home_player_id) as homePlayerDisplayName, ' .
-            'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName ' .
+            'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName, ' .
+            'p1.tournament_elo as homeElo, p2.tournament_elo as awayElo ' .
             'from game g ' .
             'join game_mode gm on gm.id = g.game_mode_id ' .
             'left join player p1 on p1.id = g.home_player_id ' .
@@ -1233,6 +1234,8 @@ class GameRepository extends ServiceEntityRepository
             'nextMatchId' => $nextMatchId,
             'nextMatchHomePlayer' => $nextMatchHomePlayer,
             'nextMatchAwayPlayer' => $nextMatchAwayPlayer,
+            'currentHomeElo' => $result['homeElo'],
+            'currentAwayElo' => $result['awayElo'],
             'oldHomeElo' => $result['ohElo'],
             'newHomeElo' => $result['nhElo'],
             'oldAwayElo' => $result['oaElo'],

@@ -103,8 +103,36 @@
           </div>
         </div>
       </div>
-      <div class="result-dialog" v-if="warmupVisible">
-        <table class="warmupTable">
+      <div class="result-dialog" v-if="warmupVisible">        
+        <div class="warmupTable">
+          <div class="wtTitle" style="color: white; padding-top: 50px; font-family: Alata, 'sans-serif'; font-size: 64px; font-weight: 600;">
+            Sportradar Table Tennis Playoffs
+          </div>
+          <div style="font-size: 30px;">
+            {{ match.matchName }} / {{ match.groupName }} / {{ match.modeName }}
+          </div>
+          <div style="font-size: 30px; color: #97724e; padding-top: 20px;">WARM-UP</div>
+          <div class="wtClock">{{ this.clock }}</div>
+          <div>
+            <table style="width: 90%; margin: 0 auto; padding-top: 50px;">
+              <tr>
+                <td style="width: 50%; font-size: 45px; color: #97724e; font-weight: 600;">
+                  <div>{{ match.homePlayerDisplayName }}</div>
+                  <div style="color: #aaa;">elo.{{ match.currentHomeElo }}</div>
+                </td>
+                <td style="width: 50%; font-size: 45px; color: #97724e; font-weight: 600;">
+                  <div>{{ match.awayPlayerDisplayName }}</div>
+                  <div style="color: #aaa;">elo.{{ match.currentAwayElo }}</div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="loader-container">
+            <div class="loader"></div>
+            <div class="loader-shadow"></div> 
+          </div>           
+        </div>
+        <table class="warmupTable1">     
           <tr>
             <td class="left">
               <div class="label-sr">SPORTRADAR</div>
@@ -119,7 +147,7 @@
               <div class="label-clock">{{ this.clock }}</div>
               <div class="label-match-name">
                 <i class="fas fa-arrow-alt-circle-right"></i>
-                {{ match.matchName }} / {{ match.groupName }}
+                {{ match.matchName }} / {{ match.groupName }} / {{ match.modeName }}
                 </div>
               <div class="label-players">
                 <span>{{ match.homePlayerDisplayName }}</span>
@@ -140,6 +168,14 @@
                   <li>table tennis</li>
                 </ul>
               </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="loader-container">
+                <div class="loader"></div>
+                <div class="loader-shadow"></div>
+              </div>                   
             </td>
           </tr>
         </table>
@@ -836,9 +872,18 @@ export default {
   left: 0;
   right: 0;
   top: 0;
+  overflow: hidden;
 }
 
 .warmupTable {
+  background-color: #1a303d;
+  width: 100%;
+  height: 100%;
+  font-family: Alata, 'sans-serif';
+}
+
+.warmupTable1 {
+  visibility: hidden;
   border: none;
   margin: 0;
   width: 100%;
@@ -966,5 +1011,83 @@ export default {
     color: white;
     font-weight: 600;
   }
+}
+
+@width: 40px;
+@height: 40px;
+@color: #fff;
+@bounce-height: 60px;
+@bounce-width: 3; // float, suggested 0-3
+@bounce-duration: 1s;
+@shadow-strength: 0.5;
+
+.loader {
+  width: @width;
+  height: @height;
+  background-color: @color;
+  border-radius: @width + @height;
+  position: absolute;
+  animation: bounce @bounce-duration linear infinite, move @bounce-duration * 6 linear infinite @bounce-duration / 2.5;
+}
+
+.loader-shadow {
+  width: @width / 2;
+  height: 0;
+  margin-left: (@width / 4);
+  background-color: rgba(0,0,0,0.2);
+  box-shadow: 0 0 (@width / 10) 1px rgba(0,0,0,@shadow-strength);
+  border-radius: @width @height;
+  position: absolute;
+  animation: move @bounce-duration * 6 linear infinite @bounce-duration / 2.5;
+}
+
+@keyframes bounce {
+  0% {
+    bottom: 0;
+    animation-timing-function: ease-out;
+  }
+  50% {
+    bottom: @bounce-height;
+    animation-timing-function: ease-in;
+  }
+  100% {
+    bottom: 0;
+  }
+}
+
+@keyframes move {
+  0% {
+    transform: translateX(@width * @bounce-width * -1);
+  }
+  16.666% {
+    transform: translateX(@width * @bounce-width * -0.3333);
+  }
+  33.3333% {
+    transform: translateX(@width * @bounce-width * 0.3333);
+  }
+  50% {
+    transform: translateX(@width * @bounce-width * 1);
+  }
+  66.6666% {
+    transform: translateX(@width * @bounce-width * 0.3333);
+  }
+  83.333% {
+    transform: translateX(@width * @bounce-width * -0.3333);
+  }
+  100% {
+    transform: translateX(@width * @bounce-width * -1);
+  }
+}
+
+.loader-container {
+  bottom: 40%;
+  left: 50%;
+  position: absolute;
+}
+
+.wtClock {
+  font-size: 50px;
+  font-family: Montserrat;
+  font-weight: 300;
 }
 </style>
