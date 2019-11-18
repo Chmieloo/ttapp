@@ -32,8 +32,9 @@
                             <th class="txt-center">+/-</th>
                             <th class="txt-center">points</th>
                         </tr>
-                        <tr v-for="player in group.players" v-bind:key="player.playerId" class="group-container player-row">
+                        <tr v-for="(player, index) in group.players" v-bind:key="player.playerId" class="group-container player-row">
                             <td :class="['level', 'level-c' + player.posColor]">
+                                <span style="color: black;">{{ index + 1 }}</span>
                                 <router-link :to="'/player/' + player.playerId + '/info'">{{ player.playerName }}</router-link>
                             </td>
                             <td class="txt-center">{{ player.played }}</td>
