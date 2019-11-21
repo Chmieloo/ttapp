@@ -183,6 +183,8 @@
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
       <button v-gamepad:button-start="startGame">Press me!</button>
+
+      <input v-on:keyup.81="addPointLeft">Press me!</input>
     </div>
     <div v-if="!match.isFinished">
       <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
@@ -250,6 +252,33 @@ export default {
       this.idle = true
       this.checkServer()
       this.socket = io(window.location.hostname + ':3001?game_id=' + this.match.matchId)
+    })
+    window.addEventListener('keypress', e => {
+      console.log(e.keyCode)
+      if (e.keyCode === 113) {
+        this.addPointLeft()
+      }
+      if (e.keyCode === 101) {
+        this.addPointRight()
+      }
+      if (e.keyCode === 97) {
+        this.subPointLeft()
+      }
+      if (e.keyCode === 100) {
+        this.subPointRight()
+      }
+      if (e.keyCode === 32) {
+        this.startGame()
+      }
+      if (e.keyCode === 46) {
+        this.flipSides()
+      }
+      if (e.keyCode === 112) {
+        this.setServer()
+      }
+      if (e.keyCode === 96) {
+        this.finalizeSet()
+      }
     })
   },
   methods: {
