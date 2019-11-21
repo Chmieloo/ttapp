@@ -76,7 +76,10 @@
       </div>
     </div>
     <div class="container-mid">
-      <div class="midInfoHeader">SET SCORE</div>
+      <div v-if="startMessage" style="color: white; border-radius: 10px; padding: 10px; font-size: 20px; margin-bottom: 10px; background-color: #10880f;">
+        {{ startMessage }}
+      </div>      
+      <div class="midInfoHeader">SET SCORES</div>   
       <div class="midInfoValue">
         <div class="tableSetScores">
           <div v-bind:class="flipped ? 'set-container-fr' : 'set-container-fl'">
@@ -193,9 +196,8 @@
       <button v-gamepad:button-b="subPointRight">Press me!</button>
       <button v-gamepad:shoulder-left="flipSides">Press me!</button>
       <button v-gamepad:button-select="setServer">Press me!</button>
-      <button v-gamepad:button-start="toggleVisibility">Press me!</button>
-      <button v-gamepad:left-analog-right="nextMatch">Press me!</button>
-      <button v-gamepad:left-analog-left="toggleWarmupTimer">Press me!</button>
+      <button v-gamepad:button-start="startGame">Press me!</button>
+      <button v-gamepad:left-analog-down="toggleVisibility">Press me!</button>
     </div>
     <div v-if="!match.isFinished">
       <div v-bind:class="serverFlipped ? 'container-fr' : 'container-fl'">
@@ -251,9 +253,10 @@ export default {
       clockInterval: null,
       clockPaused: false,
       clockRemaining: 0,
-      posted: 0,
+      broadcasted: 0,
       currentServerId: null,
-      currentNumServes: 2
+      currentNumServes: 2,
+      startMessage: null
     }
   },
   mounted () {
@@ -284,7 +287,7 @@ export default {
       }
     },
     setupClock () {
-      this.warmupSeconds = 180
+      this.warmupSeconds = 10
       var currentTime = Date.parse(new Date())
       this.warmupDeadline = new Date(currentTime + (this.warmupSeconds / 60) * 60 * 1000)
       this.clockInterval = setInterval(this.runClock, 1000)
@@ -295,10 +298,17 @@ export default {
       if (t.total <= 0) {
         clearInterval(this.clockInterval)
         this.warmupVisible = false
-        if (this.posted === 0) {
-          this.postMatchStart()
-          this.posted = 1
-        }
+        // if (this.broadcasted === 0) {
+        // this.postMatchStart()
+        // this.broadcasted = 1
+        // }
+      }
+    },
+    startGame () {
+      if (!this.warmupVisible && !this.broadcasted) {
+        this.startMessage = 'GAME STARTED'
+        this.broadcasted = true
+        this.postMatchStart()
       }
     },
     timeRemaining (endtime) {
@@ -353,11 +363,8 @@ export default {
       }
     },
     toggleVisibility () {
-      this.warmupVisible = !this.warmupVisible
-    },
-    nextMatch () {
-      if (this.match.isFinished && this.match.nextMatchId) {
-        this.$router.push({ name: 'MatchPlayoffView', params: { id: this.match.nextMatchId } })
+      if (!this.broadcasted) {
+        this.warmupVisible = !this.warmupVisible
       }
     },
     postResults (event) {
@@ -572,6 +579,10 @@ export default {
       })
     },
     addPointLeft () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (!this.endSet && this.idle) {
         if (this.flipped) {
           this.awayScore++
@@ -586,6 +597,10 @@ export default {
       }
     },
     addPointRight () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (!this.endSet && this.idle) {
         if (this.flipped) {
           this.homeScore++
@@ -603,6 +618,10 @@ export default {
      * Substract points from player on the left side of the screen
      */
     subPointLeft () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (this.idle) {
         if (this.flipped) {
           if (this.awayScore > 0) {
@@ -621,6 +640,10 @@ export default {
       }
     },
     subPointRight () {
+      if (!this.broadcasted) {
+        this.startMessage = 'PRESS START ON GAMEPAD'
+        return
+      }
       if (this.idle) {
         if (this.flipped) {
           if (this.homeScore > 0) {

@@ -242,10 +242,10 @@ class MatchController extends BaseController
         //if ($data['matchName'] == "Grand final") {
         //    $message .= ":trophy: ";
         //} else {
-        $message .= ":table_tennis_paddle_and_ball: ";
+        //$message .= ":trophy: ";
         //}
 
-        $message .= " Playoffs match is about to start (" . $groupName . ", " . $matchName . ", " . $modeName . ")\n";
+        $message .= " Playoffs match started (" . $groupName . ", " . $matchName . ", " . $modeName . ") :trophy:\n";
         $message .= "\n*" . $homeSlackName . "* vs *" . $awaySlackName . "*\n";
         $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/ladders|ladder> | ";
         $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule>\n";

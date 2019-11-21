@@ -41,7 +41,8 @@ class TournamentRepository extends ServiceEntityRepository
             'from tournament t ' .
             'left join game g on g.tournament_id = t.id ' .
             'where t.is_official = 1 ' .
-            'group by t.id';
+            'group by t.id ' .
+            'order by t.start_time desc';
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);

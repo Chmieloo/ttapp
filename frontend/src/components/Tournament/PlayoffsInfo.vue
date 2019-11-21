@@ -53,7 +53,7 @@
           </span>
         </td>
         <td style="padding-right: 20px; width: 70px;">
-          <span v-if="match.status == 3">
+          <span v-if="match.status == 3 && isConnected()">
             <router-link :to="'/match/playoff/' + match.matchId + '/view'">play</router-link>
           </span>
         </td>
@@ -99,6 +99,10 @@ export default {
       axios.get('/api/playoffs/' + this.$route.params.id).then((res) => {
         this.data = res.data
       })
+    },
+    isConnected () {
+      var body = document.getElementsByTagName('body')
+      return body[0].classList.contains('gamepad-connected')
     }
   }
 }
