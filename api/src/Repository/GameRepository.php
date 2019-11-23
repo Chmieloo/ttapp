@@ -367,7 +367,7 @@ class GameRepository extends ServiceEntityRepository
             'if (g.away_player_id, p2.name, g.playoff_away_player_id) as awayPlayerDisplayName, ' .
             'g.date_of_match as dateOfMatch, g.id, g.play_order as matchNumber, l.id as groupId, l.name as division, g.name, ' .
             'g.playoff_home_player_id as homePlayer, g.playoff_away_player_id as awayPlayer, g.winner_id as winnerId, ' .
-            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, level as outcome, g.is_finished as isFinished, ' .
+            'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, level as outcome, g.is_walkover as isWalkover, g.is_finished as isFinished, ' .
             'if (g.is_finished = 1, 1, if (count(p.id) = 0, 3, 2)) as status, t.name as tournamentName, ' .
             'concat(s1.home_points, \' : \', s1.away_points) as s1, ' .
             'concat(s2.home_points, \' : \', s2.away_points) as s2, ' .
@@ -490,6 +490,7 @@ class GameRepository extends ServiceEntityRepository
                 'awayScoreTotal' => (int)$match['awayScoreTotal'],
                 'outcome' => $outcome,
                 'isFinished' => (int)$match['isFinished'],
+                'isWalkover' => (int)$match['isWalkover'],
                 # 1 finished, 2 live, 3 not started
                 'status' => (int)$match['status'],
                 'scores' => $scores,

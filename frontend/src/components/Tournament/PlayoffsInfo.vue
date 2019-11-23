@@ -48,6 +48,9 @@
           <span v-if="match.isFinished == 0">
             <router-link :to="'/match/' + match.matchId + '/spectate'">watch</router-link>
           </span>
+          <span v-else-if="match.isWalkover == 1">
+            walkover
+          </span>
           <span v-else>
             <router-link :to="'/match/' + match.matchId + '/summary'">summary</router-link>
           </span>
