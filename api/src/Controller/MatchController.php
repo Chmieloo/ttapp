@@ -245,12 +245,12 @@ class MatchController extends BaseController
         //$message .= ":trophy: ";
         //}
 
-        $message .= " Playoffs match started (" . $groupName . ", " . $matchName . ", " . $modeName . ") :trophy:\n";
-        $message .= "\n*" . $homeSlackName . "* vs *" . $awaySlackName . "*\n";
+        $message .= ">Playoffs match started (" . $groupName . ", " . $matchName . ", " . $modeName . ") :trophy: [ ";
         $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/ladders|ladder> | ";
-        $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule>\n";
+        $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule> ]\n";
+        $message .= ">*" . $homeSlackName . "* vs *" . $awaySlackName . "*";        
         if ($data['nextMatchId']) {
-            $message .= "next: *" . $nextHomePlayer . "* vs *" . $nextAwayPlayer . "*\n";
+            $message .= "\n>next: *" . $nextHomePlayer . "* vs *" . $nextAwayPlayer . "*\n";
         }
 
         $payload = [
