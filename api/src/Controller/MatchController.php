@@ -224,6 +224,7 @@ class MatchController extends BaseController
 
         $data = $gameRepository->loadById($matchId);
 
+        $gameId = $data['matchId'];
         $groupName = $data['groupName'];
         $matchName = $data['matchName'];
         $modeName = $data['modeName'];
@@ -245,10 +246,11 @@ class MatchController extends BaseController
         //$message .= ":trophy: ";
         //}
 
-        $message .= ">Playoffs match started (" . $groupName . ", " . $matchName . ", " . $modeName . ") :trophy: [ ";
+        $message .= ">:trophy: Playoffs match started (" . $groupName . ", " . $matchName . ", " . $modeName . ") [ ";
         $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/ladders|ladder> | ";
         $message .= "<" . $this->guiUrl . "/#/playoffs/" . $tournamentId . "/info|schedule> ]\n";
-        $message .= ">*" . $homeSlackName . "* vs *" . $awaySlackName . "*";        
+        $message .= ">*" . $homeSlackName . "* vs *" . $awaySlackName . "*\n";     
+        $message .= "> <" . $this->guiUrl . "/#/match/" . $gameId . "/spectate|Spectate>";   
         if ($data['nextMatchId']) {
             $message .= "\n>next: *" . $nextHomePlayer . "* vs *" . $nextAwayPlayer . "*\n";
         }
