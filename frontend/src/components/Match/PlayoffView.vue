@@ -123,15 +123,13 @@
             <table style="width: 90%; margin: 0 auto; padding-top: 50px;">
               <tr>
                 <td style="width: 50%; font-size: 45px; color: #97724e; font-weight: 600;">
-                  <div>{{ match.homePlayerDisplayName }}</div>
-                  <div style="color: #aaa;">elo.{{ match.currentHomeElo }}</div>
+                  <div style="margin-bottom: 10px;">{{ match.homePlayerDisplayName }}</div>
                   <div class="cutoutPic">
                     <img :src=match.homePlayerPic class="pic" />
                   </div>
                 </td>
                 <td style="width: 50%; font-size: 45px; color: #97724e; font-weight: 600;">
-                  <div>{{ match.awayPlayerDisplayName }}</div>
-                  <div style="color: #aaa;">elo.{{ match.currentAwayElo }}</div>
+                  <div style="margin-bottom: 10px;">{{ match.awayPlayerDisplayName }}</div>
                   <div class="cutoutPic">
                     <img :src=match.awayPlayerPic class="pic" />
                   </div>                  
@@ -749,7 +747,7 @@ export default {
 }
 
 div.cutoutPic {
-    width: 154px;
+    width: 160px;
     height: 154px;
     position:relative;
     overflow:hidden;
