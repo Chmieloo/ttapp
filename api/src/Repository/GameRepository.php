@@ -122,6 +122,7 @@ class GameRepository extends ServiceEntityRepository
             'select g.play_order as playOrder, g.name as matchName, g.id, gm.name, g.winner_id as winnerId, p1.name homePlayerName, p2.name as awayPlayerName, ' .
             'g.old_home_elo ohElo, g.new_home_elo nhElo, g.old_away_elo oaElo, g.new_away_elo naElo, ' .
             'p1.id as homePlayerId, p2.id awayPlayerId, gm.max_sets as maxSets, g.is_finished as isFinished, ' .
+            'p1.profile_pic_url as homePlayerPic, p2.profile_pic_url as awayPlayerPic, ' .
             'g.home_score as homeScoreTotal, g.away_score as awayScoreTotal, g.is_walkover as isWalkover, ' .
             'g.home_player_id as hpid, g.away_player_id as apid, ' .
             's1.home_points as s1hp, s1.away_points s1ap, ' .
@@ -1220,6 +1221,8 @@ class GameRepository extends ServiceEntityRepository
             'awayPlayerName' => $result['awayPlayerName'],
             'homePlayerDisplayName' => $homePlayerString ?? $result['homePlayerDisplayName'] ?? $result['homePlayerName'],
             'awayPlayerDisplayName' => $awayPlayerString ?? $result['awayPlayerDisplayName'] ?? $result['awayPlayerName'],
+            'homePlayerPic' => $result['homePlayerPic'],
+            'awayPlayerPic' => $result['awayPlayerPic'],
             'winnerId' => $result['winnerId'] ?: 0,
             'isFinished' => (int)$result['isFinished'] ?: 0,
             'homeScoreTotal' => $result['homeScoreTotal'],

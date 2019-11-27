@@ -78,7 +78,10 @@
     <div class="container-mid">
       <div v-if="startMessage" style="color: white; border-radius: 10px; padding: 10px; font-size: 20px; margin-bottom: 10px; background-color: #10880f;">
         {{ startMessage }}
-      </div>      
+      </div>    
+      <div v-if="match.isFinished" style="color: white; border-radius: 10px; padding: 10px; font-size: 20px; margin-bottom: 10px; background-color: #10880f;">
+        <router-link :to="'/playoffs/' + match.tournamentId + '/info'">BACK TO SCHEDULE</router-link>
+      </div>   
       <div class="midInfoHeader">SET SCORES</div>   
       <div class="midInfoValue">
         <div class="tableSetScores">
@@ -122,10 +125,16 @@
                 <td style="width: 50%; font-size: 45px; color: #97724e; font-weight: 600;">
                   <div>{{ match.homePlayerDisplayName }}</div>
                   <div style="color: #aaa;">elo.{{ match.currentHomeElo }}</div>
+                  <div class="cutoutPic">
+                    <img :src=match.homePlayerPic class="pic" />
+                  </div>
                 </td>
                 <td style="width: 50%; font-size: 45px; color: #97724e; font-weight: 600;">
                   <div>{{ match.awayPlayerDisplayName }}</div>
                   <div style="color: #aaa;">elo.{{ match.currentAwayElo }}</div>
+                  <div class="cutoutPic">
+                    <img :src=match.awayPlayerPic class="pic" />
+                  </div>                  
                 </td>
               </tr>
             </table>
@@ -731,6 +740,32 @@ export default {
   border: none;
   font-size: 60px;
   color: #f5f5f5;
+}
+
+.pic {
+    margin: 0 auto;
+    width: 150px;
+    margin-top: -20px;
+}
+
+div.cutoutPic {
+    width: 154px;
+    height: 154px;
+    position:relative;
+    overflow:hidden;
+    margin: 0 auto;
+}
+
+div.cutoutPic:before{
+    content:'';
+    position: absolute;
+    bottom: 0;
+    width: 146px;
+    height: 146px;
+    border-radius: 100%;
+    border: 4px solid white;
+    border-radius: 100%;
+    box-shadow: 0px 200px 0px 300px #1a303d;
 }
 
 .matchInfo {
