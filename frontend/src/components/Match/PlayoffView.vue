@@ -294,7 +294,7 @@ export default {
       }
     },
     setupClock () {
-      this.warmupSeconds = 180
+      this.warmupSeconds = 120
       var currentTime = Date.parse(new Date())
       this.warmupDeadline = new Date(currentTime + (this.warmupSeconds / 60) * 60 * 1000)
       this.clockInterval = setInterval(this.runClock, 1000)
