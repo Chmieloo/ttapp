@@ -897,7 +897,7 @@ class GameRepository extends ServiceEntityRepository
             // Update next matches in current tournament
 
             // 1. Winner as home
-            $query = 'update game g set g.home_player_id = :winnerId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
+            $query = 'update game g set g.home_player_id = :winnerId, g.server_id = :winnerId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
             $params = [
                 'winnerId' => $winnerId,
                 'code' => 'W.' . $matchNumber,
@@ -907,7 +907,7 @@ class GameRepository extends ServiceEntityRepository
             $stmt->execute($params);
 
             // 2. Winner as away
-            $query = 'update game g set g.away_player_id = :winnerId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
+            $query = 'update game g set g.away_player_id = :winnerId, g.server_id = :winnerId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
             $params = [
                 'winnerId' => $winnerId,
                 'code' => 'W.' . $matchNumber,
@@ -917,7 +917,7 @@ class GameRepository extends ServiceEntityRepository
             $stmt->execute($params);
 
             // 3. Loser as home
-            $query = 'update game g set g.home_player_id = :loserId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
+            $query = 'update game g set g.home_player_id = :loserId, g.server_id = :loserId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
             $params = [
                 'loserId' => $loserId,
                 'code' => 'L.' . $matchNumber,
@@ -926,7 +926,7 @@ class GameRepository extends ServiceEntityRepository
             $stmt = $em->getConnection()->prepare($query);
             $stmt->execute($params);
 
-            $query = 'update game g set g.away_player_id = :loserId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
+            $query = 'update game g set g.away_player_id = :loserId, g.server_id = :loserId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
             $params = [
                 'loserId' => $loserId,
                 'code' => 'L.' . $matchNumber,
