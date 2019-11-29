@@ -139,7 +139,7 @@
         <span class="header-title">{{ match.awayPlayerDisplayName }}</span>
       </div>
       <div class="container-mid">
-        <div class="midInfoHeader">BEST OF 4</div>
+        <div class="midInfoHeader">{{ match.modeName }}</div>
         <div class="midInfoHeader">SET SCORES</div>
         <div class="midInfoValue">
           <div class="tableSetScores">
