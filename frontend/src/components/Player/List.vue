@@ -10,7 +10,7 @@
           <th class="txt-right mw-100"><a @click="eloSort()">elo</a></th>
           <th class="txt-right" style="width: 100px;"><a @click="eloChangeSort()">change</a></th>
           <th class="txt-center mw-100"><a @click="gameSort()">m.played</a></th>
-          <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>                    
+          <th class="txt-center mw-100">m.won / m.drawn / m.lost</th>
           <th class="txt-center mw-100"><a @click="winSort()">m.win%</a></th>
         </tr>
         <tr v-for="(player, index) in this.filteredPlayers" v-bind:key="player.id" class="row-data">
@@ -18,7 +18,7 @@
           <td class="txt-left player-link"><router-link :to="'/player/' + player.id + '/info'">{{ player.name }}</router-link></td>
           <td class="txt-right">
             <span v-if="player.gamesPlayed >= 15" style="color: white;">{{ player.elo }}</span>
-            <span v-else>{{ player.elo }}</span>
+            <span v-else>?</span>
           </td>
           <td class="txt-right">
             {{ player.elo - player.oldElo }}
