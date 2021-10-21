@@ -6,6 +6,7 @@ use App\Entity\TournamentGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method TournamentGroup|null find($id, $lockMode = null, $lockVersion = null)
@@ -15,7 +16,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class TournamentGroupRepository extends ServiceEntityRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, TournamentGroup::class);
     }

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method Game|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,7 +19,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class GameRepository extends ServiceEntityRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Game::class);
     }

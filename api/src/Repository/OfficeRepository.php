@@ -6,6 +6,7 @@ use App\Entity\Office;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method Office|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,7 +18,7 @@ class OfficeRepository extends ServiceEntityRepository
     /** @var Connection  */
     private $connection;
 
-    public function __construct(RegistryInterface $registry, Connection $connection)
+    public function __construct(ManagerRegistry $registry, Connection $connection)
     {
         parent::__construct($registry, Office::class);
         $this->connection = $connection;

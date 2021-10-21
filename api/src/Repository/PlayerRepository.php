@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method Player|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,7 +20,7 @@ class PlayerRepository extends ServiceEntityRepository
     /** @var Connection  */
     private $connection;
 
-    public function __construct(RegistryInterface $registry, Connection $connection)
+    public function __construct(ManagerRegistry $registry, Connection $connection)
     {
         parent::__construct($registry, Player::class);
         $this->connection = $connection;

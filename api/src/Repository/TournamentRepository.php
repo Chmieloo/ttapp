@@ -9,6 +9,7 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\QueryBuilder;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method Tournament|null find($id, $lockMode = null, $lockVersion = null)
@@ -21,7 +22,7 @@ class TournamentRepository extends ServiceEntityRepository
     /** @var Connection  */
     private $connection;
 
-    public function __construct(RegistryInterface $registry, Connection $connection)
+    public function __construct(ManagerRegistry $registry, Connection $connection)
     {
         parent::__construct($registry, Tournament::class);
         $this->connection = $connection;

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use PDO;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method Spectators|null find($id, $lockMode = null, $lockVersion = null)
@@ -20,7 +21,7 @@ class SpectatorsRepository extends ServiceEntityRepository
 
     protected $connection;
 
-    public function __construct(RegistryInterface $registry, Connection $connection)
+    public function __construct(ManagerRegistry $registry, Connection $connection)
     {
         parent::__construct($registry, Spectators::class);
         $this->connection = $connection;
