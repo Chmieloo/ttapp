@@ -13,7 +13,7 @@
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
         "symfony/property-access": "4.2.*",
-        "symfony/serializer": "4.2.*",
+        "symfony/serializer": "4.4.*",
         "symfony/yaml": "4.2.*",
         "ext-pdo": "*"
     },
