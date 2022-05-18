@@ -7,9 +7,9 @@ services:
       - ./database:/var/lib/mysql
       - ./config/db:/docker-entrypoint-initdb.d/:ro
     ports:
-      - 3366:3306
+      - 3307:3306
     expose:
-      - 3366
+      - 3307
     environment:
       - MYSQL_ROOT_PASSWORD=abcd1234
       - MYSQL_USER=developer

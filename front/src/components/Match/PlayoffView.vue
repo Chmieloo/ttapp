@@ -1,5 +1,5 @@
 <template>
-  <div class="mainContainer" :key="componentKey">
+  <div class="mainContainer" :key="componentKey" v-if="this.match">
     <div class="matchInfo">MATCH MODE: {{ match.modeName }}</div>
     <div v-bind:class="flipped ? 'container-fr' : 'container-fl'">
       <div>
@@ -235,7 +235,7 @@
             <div class="loader-shadow"></div>
           </div>
         </div>
-        <table class="warmupTable1">
+        <table class="warmupTable1" v-if="this.match">
           <tr>
             <td class="left">
               <div class="label-sr">SPORTRADAR</div>

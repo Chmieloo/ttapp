@@ -2,7 +2,7 @@
   "name": "front",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
@@ -10,17 +10,17 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "less": "^4.1.2",
     "socket.io": "^4.5.0",
     "socket.io-client": "^4.5.0",
     "vue": "^3.2.33",
-    "vue-localstorage": "^0.6.2",
-    "vue-router": "^4.0.14",
-    "vuejs-dialog": "^1.4.2",
-    "vue-gamepad": "^1.1.1",
+    "vue-gamepad": "github:aaronkirkham/vue-gamepad#next",
     "vue-google-charts": "^0.4.0",
-    "less": "^4.1.2",
+    "vue-localstorage": "^0.6.2",
     "vue-plain-slider": "^1.1.1",
-    "vue-scrollto": "^2.20.0"
+    "vue-router": "^4.0.14",
+    "vue-scrollto": "^2.20.0",
+    "vuejs-dialog": "^1.4.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

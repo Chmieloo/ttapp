@@ -80,7 +80,7 @@
     </div>
     <div class="container-mid">
       <div
-        @click="toggleVisibility()"
+        @click="this.toggleVisibility"
         style="
           color: white;
           border-radius: 10px;
@@ -248,7 +248,7 @@
                     type="button"
                     value="cancel"
                     class="submit-button"
-                    @click="toggleVisibility()"
+                    @click="this.toggleVisibility()"
                   />
                 </div>
               </form>

@@ -3,7 +3,7 @@
     <div style="padding: 0px 10px">
       <span class="header-title"> {{ division }} LADDER </span>
     </div>
-    <table style="width: 100%">
+    <table style="width: 100%" v-if="this.matches">
       <tr>
         <td v-for="i in this.stages" v-bind:key="i" class="stageColumn">
           <div class="stageDiv">
@@ -142,8 +142,10 @@ export default {
   },
   mounted() {
     axios.get("/api/playoffs/0/group/" + this.$route.params.id).then((res) => {
-      this.matches = res.data;
-      this.division = res.data[0].division;
+      if (res.data.length > 0) {
+        this.matches = res.data;
+        this.division = res.data[0].division;
+      }
     });
   },
 };
