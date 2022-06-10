@@ -84,7 +84,7 @@
             >
           </span>
         </td>
-        <td style="padding-right: 20px; width: 70px">
+        <td style="padding-right: 20px; width: 120px">
           <router-link :to="'/match/' + match.matchId + '/view'"
             >score match</router-link
           >
