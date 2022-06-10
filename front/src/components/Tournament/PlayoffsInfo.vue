@@ -85,16 +85,9 @@
           </span>
         </td>
         <td style="padding-right: 20px; width: 70px">
-          <router-link :to="'/match/' + match.matchId + '/view'"
+          <router-link :to="'/match/' + match.matchId + '/score'"
             >play</router-link
           >
-        </td>
-        <td style="padding-right: 20px; width: 70px">
-          <span v-if="match.status == 3 && isConnected()">
-            <router-link :to="'/match/playoff/' + match.matchId + '/view'"
-              >play</router-link
-            >
-          </span>
         </td>
       </tr>
       <tr
