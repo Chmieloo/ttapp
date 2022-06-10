@@ -85,8 +85,8 @@
           </span>
         </td>
         <td style="padding-right: 20px; width: 70px">
-          <router-link :to="'/match/' + match.matchId + '/score'"
-            >play</router-link
+          <router-link :to="'/match/' + match.matchId + '/view'"
+            >score match</router-link
           >
         </td>
       </tr>
