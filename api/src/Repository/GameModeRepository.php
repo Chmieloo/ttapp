@@ -5,8 +5,7 @@ namespace App\Repository;
 use App\Entity\GameMode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PDO;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method GameMode|null find($id, $lockMode = null, $lockVersion = null)

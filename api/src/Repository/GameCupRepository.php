@@ -4,8 +4,7 @@ namespace App\Repository;
 
 use App\Entity\GameCup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method GameCup|null find($id, $lockMode = null, $lockVersion = null)

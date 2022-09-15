@@ -25,14 +25,13 @@ class PointController extends BaseController
      */
     public function addPoint(Request $request)
     {
-        $doctrine = $this->getDoctrine();
-        $em = $doctrine->getManager();
+        $em = $this->manager;
         $data = json_decode($request->getContent(), true);
 
         /** @var GameRepository $matchRepository */
-        $matchRepository = $this->getDoctrine()->getRepository(Game::class);
+        $matchRepository = $this->manager->getRepository(Game::class);
         /** @var ScoresRepository $scoreRepository */
-        $scoreRepository = $this->getDoctrine()->getRepository(Scores::class);
+        $scoreRepository = $this->manager->getRepository(Scores::class);
 
         $home = $data['home'];
         $away = $data['away'];
@@ -67,7 +66,7 @@ class PointController extends BaseController
         $scoreId = $scoreRepository->getScoreIdByMatchIdAndSetNumber($matchId, $match->getCurrentSet());
 
         /** @var Scores $score */
-        $score = $doctrine->getRepository(Scores::class)->find($scoreId);
+        $score = $em->getRepository(Scores::class)->find($scoreId);
 
         $now = new \DateTime(null, new \DateTimeZone('Europe/Berlin'));
         $now->format('Y-m-d H:i:s');
@@ -80,7 +79,7 @@ class PointController extends BaseController
         $em->persist($point);
         $em->flush();
 
-        $serverData = $doctrine->getRepository(Game::class)->getCurrentServerData($matchId);
+        $serverData = $em->getRepository(Game::class)->getCurrentServerData($matchId);
         if ($serverData) {
             $currentServer = $serverData['currentServerId'];
             $numServes = $serverData['numServes'];
@@ -106,7 +105,7 @@ class PointController extends BaseController
         $data = json_decode($request->getContent(), true);
 
         /** @var PointsRepository $pointRepository */
-        $pointRepository = $this->getDoctrine()->getRepository(Points::class);
+        $pointRepository = $this->manager->getRepository(Points::class);
 
         $home = $data['home'];
         $away = $data['away'];
@@ -115,8 +114,8 @@ class PointController extends BaseController
         # Delete last point (home / away) for given match id
         $pointRepository->removeLastPoint($home, $away, $matchId);
 
-        $doctrine = $this->getDoctrine();
-        $serverData = $doctrine->getRepository(Game::class)->getCurrentServerData($matchId);
+        $manager = $this->manager;
+        $serverData = $manager->getRepository(Game::class)->getCurrentServerData($matchId);
         if ($serverData) {
             $currentServer = $serverData['currentServerId'];
             $numServes = $serverData['numServes'];

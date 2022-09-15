@@ -5,9 +5,9 @@ namespace App\Repository;
 use App\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use PDO;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Player|null find($id, $lockMode = null, $lockVersion = null)
@@ -26,6 +26,9 @@ class PlayerRepository extends ServiceEntityRepository
         $this->connection = $connection;
     }
 
+    /**
+     * @throws Exception
+     */
     public function loadAllPlayers()
     {
         $sql = 'SELECT p.id, p.name, p.nickname, p.tournament_elo as elo, p.tournament_elo_previous as oldElo, 
@@ -44,9 +47,8 @@ class PlayerRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute();
 
-        $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $players = $stmt->executeQuery()->fetchAllAssociative();
 
         foreach ($players as &$player) {
             $gamesPlayed = (int) $player['gamesPlayed'];
@@ -57,10 +59,10 @@ class PlayerRepository extends ServiceEntityRepository
             $player['officeId'] = (int) $player['officeId'];
             $player['winPercentage'] = $gamesPlayed ? (float) number_format($player['wins'] / $gamesPlayed * 100, 2) : 0;
         }
-        
+
         return $players;
     }
-    
+
     public function findAllSimple()
     {
         return $this->createQueryBuilder('p')
@@ -74,6 +76,7 @@ class PlayerRepository extends ServiceEntityRepository
      * @param $playerId
      * @return mixed
      * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
     public function loadPlayerById($playerId)
     {
@@ -91,8 +94,7 @@ class PlayerRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute($params);
-        $player = $stmt->fetch(PDO::FETCH_ASSOC);
+        $player = $stmt->executeQuery($params)->fetchAllAssociative();
 
         if (!$player) {
             $player['winPercentage'] = 0;
@@ -106,6 +108,11 @@ class PlayerRepository extends ServiceEntityRepository
             $player['draws'] = 0;
             $player['losses'] = 0;
         }
+
+        $player['played'] = $player['played'] ?? 0;
+        $player['wins'] = $player['wins'] ?? 0;
+        $player['draws'] = $player['draws'] ?? 0;
+        $player['losses'] = $player['losses'] ?? 0;
 
         $player['winPercentage'] = $player['played'] > 0 ? number_format(($player['wins'] / $player['played']) * 100, 0) : 0;
         $player['notWinPercentage'] = 100 - $player['winPercentage'];
@@ -129,11 +136,8 @@ class PlayerRepository extends ServiceEntityRepository
         and t.is_official = 1
         order by g.date_played asc, g.id asc';
 
-        $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute($params);
-
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data = $stmt->executeQuery($params)->fetchAllAssociative();
         $eloHistory[] = ['order', 'ELO history'];
         $eloHistory[] = [0, 1500];
         $index = 1;
@@ -203,9 +207,7 @@ class PlayerRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -273,9 +275,7 @@ class PlayerRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt-> execute($params);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];

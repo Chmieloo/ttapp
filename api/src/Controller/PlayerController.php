@@ -23,7 +23,7 @@ class PlayerController extends BaseController
     public function getPlayerById($id)
     {
         /** @var PlayerRepository $playerRepository */
-        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $playerRepository = $this->manager->getRepository(Player::class);
         $player = $playerRepository->loadPlayerById($id);
 
         if (!$player) {
@@ -43,7 +43,7 @@ class PlayerController extends BaseController
     public function getPlayerResults($id)
     {
         /** @var PlayerRepository $playerRepository */
-        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $playerRepository = $this->manager->getRepository(Player::class);
         $player = $playerRepository->loadPlayerResults($id);
 
         if (!$player) {
@@ -56,7 +56,7 @@ class PlayerController extends BaseController
     public function getPlayerSchedule($id)
     {
         /** @var PlayerRepository $playerRepository */
-        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $playerRepository = $this->manager->getRepository(Player::class);
 
         $player = $playerRepository->loadPlayerSchedule($id);
 
@@ -71,7 +71,7 @@ class PlayerController extends BaseController
     public function getPlayers()
     {
         /** @var PlayerRepository $playerRepository */
-        $playerRepository = $this->getDoctrine()->getRepository(Player::class);
+        $playerRepository = $this->manager->getRepository(Player::class);
         $players = $playerRepository->loadAllPlayers();
 
         if (!$players) {

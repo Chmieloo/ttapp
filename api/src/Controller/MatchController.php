@@ -32,7 +32,7 @@ class MatchController extends BaseController
     public function getMatch($id)
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $data = $gameRepository->loadById($id);
 
         return $this->sendJsonResponse($data);
@@ -41,7 +41,7 @@ class MatchController extends BaseController
     public function getMatchTimeline($id)
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $data = $gameRepository->loadTimelineById($id);
 
         if (!$data) {
@@ -56,7 +56,7 @@ class MatchController extends BaseController
     public function getMatchSpectatorTimeline($id)
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $data = $gameRepository->loadSpectatorTimelineById($id);
 
         if (!$data) {
@@ -75,7 +75,7 @@ class MatchController extends BaseController
     public function setServer($id)
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         /** @var Game $match */
         $match = $gameRepository->updateServer($id);
 
@@ -95,12 +95,12 @@ class MatchController extends BaseController
      */
     public function finishSet($matchId)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->manager;
 
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         /** @var ScoresRepository $scoreRepository */
-        $scoreRepository = $this->getDoctrine()->getRepository(Scores::class);
+        $scoreRepository = $this->manager->getRepository(Scores::class);
 
         /** @var Game $match */
         $match = $gameRepository->find($matchId);
@@ -220,7 +220,7 @@ class MatchController extends BaseController
     public function startMessage($matchId)
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         $data = $gameRepository->loadById($matchId);
 
@@ -297,7 +297,7 @@ class MatchController extends BaseController
 
     public function saveMatch(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->manager;
 
         $data = json_decode($request->getContent(), true);
 
@@ -331,7 +331,7 @@ class MatchController extends BaseController
 
         /** @var Game $match */
         $match = $this
-            ->getDoctrine()
+            ->manager
             ->getRepository(Game::class)
             ->find($matchId);
 
@@ -444,11 +444,11 @@ class MatchController extends BaseController
 
     public function walkover($matchId, $playerId)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->manager->getManager();
 
         /** @var Game $match */
         $match = $this
-            ->getDoctrine()
+            ->manager
             ->getRepository(Game::class)
             ->find($matchId);
 
@@ -530,7 +530,7 @@ class MatchController extends BaseController
         $em->flush();
 
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $gameRepository->updatePlayoffs($matchId);
         $data = $gameRepository->loadById($matchId);
 
@@ -546,7 +546,7 @@ class MatchController extends BaseController
     public function recalculateElo()
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $data = $gameRepository->loadAllOrdered();
 
         if (!$data) {
@@ -647,7 +647,7 @@ class MatchController extends BaseController
         $gameId = $data['gameId'];
 
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $data = $gameRepository->loadById($gameId);
 
         $officeId = is_numeric($data['officeId']) ? $data['officeId'] : 1;
@@ -690,7 +690,7 @@ class MatchController extends BaseController
     public function getLiveMatches()
     {
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
         $data = $gameRepository->loadLive();
 
         return $this->sendJsonResponse($data);
@@ -724,7 +724,7 @@ class MatchController extends BaseController
     public function finalizeSpectators($gameId)
     {
         # remove all duplicated timestamps
-        $spectatorsRepository = $this->getDoctrine()->getRepository(Spectators::class);
+        $spectatorsRepository = $this->manager->getRepository(Spectators::class);
         $spectatorsRepository->finalizeGame($gameId);
     }
 
@@ -735,7 +735,7 @@ class MatchController extends BaseController
      */
     public function addSpectatorData(Request $request)
     {
-        $spectatorsRepository = $this->getDoctrine()->getRepository(Spectators::class);
+        $spectatorsRepository = $this->manager->getRepository(Spectators::class);
         $data = json_decode($request->getContent(), true);
 
         $gameId = $data['gameId'];
@@ -760,9 +760,7 @@ class MatchController extends BaseController
             );
         }
 
-        $doctrine = $this->getDoctrine();
-        $em = $doctrine->getManager();
-
+        $em = $this->manager;
 
         $spectatorsObject = $spectatorsRepository->loadByTimestamp($formattedDate);
         if ($spectatorsObject) {

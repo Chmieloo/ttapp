@@ -16,12 +16,12 @@ use Symfony\Component\HttpFoundation\Response;
 class OfficeController extends BaseController
 {
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function getOffices()
+    public function getOffices(): Response
     {
         /** @var OfficeRepository $officeRepository */
-        $officeRepository = $this->getDoctrine()->getRepository(Office::class);
+        $officeRepository = $this->manager->getRepository(Office::class);
 
         $offices = $officeRepository->loadAll();
 

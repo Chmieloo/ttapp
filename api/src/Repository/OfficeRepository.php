@@ -5,8 +5,7 @@ namespace App\Repository;
 use App\Entity\Office;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Office|null find($id, $lockMode = null, $lockVersion = null)

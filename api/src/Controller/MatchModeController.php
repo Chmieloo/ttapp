@@ -21,7 +21,7 @@ class MatchModeController extends BaseController
      */
     public function getMatchModeById($id)
     {
-        $matchMode = $this->getDoctrine()
+        $matchMode = $this->manager
             ->getRepository(GameMode::class)
             ->find($id);
 
@@ -37,7 +37,7 @@ class MatchModeController extends BaseController
      */
     public function getMatchModes()
     {
-        $matchModes = $this->getDoctrine()
+        $matchModes = $this->manager
             ->getRepository(GameMode::class)
             ->loadAll();
 

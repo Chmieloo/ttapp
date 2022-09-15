@@ -7,9 +7,9 @@ use App\Entity\TournamentGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use PDO;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Game|null find($id, $lockMode = null, $lockVersion = null)
@@ -535,9 +535,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         /** @var TournamentGroupRepository $tournamentGroupRepository */
         $tournamentGroupRepository = $this->getEntityManager()->getRepository(TournamentGroup::class);
@@ -606,9 +604,8 @@ class GameRepository extends ServiceEntityRepository
      * @param $ids
      * @param null $limit
      * @return array
-     * @throws DBALException
      */
-    public function loadUpcomingFixturesByTournamentIds($ids, $limit = null)
+    public function loadUpcomingFixturesByTournamentIds($ids, $limit = null): array
     {
         $matchData = [];
 
@@ -938,6 +935,9 @@ class GameRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function loadAllOrdered()
     {
         $sql = "select 
@@ -957,11 +957,8 @@ class GameRepository extends ServiceEntityRepository
             order by g.tournament_id, g.date_played, g.date_of_match, g.id asc";
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
+        return $stmt->executeQuery()->fetchAllAssociative();
     }
 
     private function hasManualScoring($id)

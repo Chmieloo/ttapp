@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\TournamentGroup;
 use App\Entity\Tournament;
+use App\Repository\TournamentGroupRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,9 +17,10 @@ class TournamentGroupController extends BaseController
      */
     public function getTournamentGroupsByTournamentId($id)
     {
-        $data = $this->getDoctrine()
+        $data = $this
+            ->manager
             ->getRepository(TournamentGroup::class)
-            ->getTournamentGroupsByTournamentId($id);
+            ->loadByTournamentId($id);
 
         if (!$data) {
             throw $this->createNotFoundException(

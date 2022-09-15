@@ -7,6 +7,7 @@ use App\Entity\Tournament;
 use App\Repository\GameRepository;
 use App\Repository\TournamentRepository;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,12 +16,12 @@ class TournamentController extends BaseController
 {
     /**
      * @return Response
-     * @throws DBALException
+     * @throws Exception
      */
-    public function getTournaments()
+    public function getTournaments(): Response
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
 
         $tournaments = $tournamentRepository->loadList();
 
@@ -40,7 +41,7 @@ class TournamentController extends BaseController
     public function getInfo()
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
 
         $tournaments = $tournamentRepository->loadInfo();
 
@@ -60,7 +61,7 @@ class TournamentController extends BaseController
     public function getStandings($id)
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         $standings = $tournamentRepository->getStandingsByTournamentId($id);
 
         return $this->sendJsonResponse($standings);
@@ -75,9 +76,9 @@ class TournamentController extends BaseController
     public function getTournamentResults($tournamentId, $numberOfResults)
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournaments = $tournamentId ?
@@ -107,9 +108,9 @@ class TournamentController extends BaseController
     public function getTournamentOverdueSchedule($tournamentId, $numberOfFixtures)
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournaments = $tournamentId ?
@@ -132,12 +133,12 @@ class TournamentController extends BaseController
      * @return Response
      * @throws DBALException
      */
-    public function getTournamentSchedule($tournamentId, $numberOfFixtures)
+    public function getTournamentSchedule($tournamentId, $numberOfFixtures): Response
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournaments = $tournamentId ?
@@ -162,9 +163,9 @@ class TournamentController extends BaseController
     public function getTodaysFixtures($tournamentId)
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournament = $tournamentId ?
@@ -217,8 +218,6 @@ class TournamentController extends BaseController
      */
     private function postScheduler($data, $officeId = 1)
     {
-        $this->getDoctrine()->getManager();
-
         if (isset($this->slackKey[$officeId])) {
             if ($this->slackKey) {
                 $data_string = json_encode($data);
@@ -244,9 +243,9 @@ class TournamentController extends BaseController
     public function getTournamentMatchesFullfeed($tournamentId)
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournament = $tournamentId ?
@@ -272,9 +271,9 @@ class TournamentController extends BaseController
     public function getTournamentPlayoffsData($tournamentId)
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournament = $tournamentId ?
@@ -293,12 +292,12 @@ class TournamentController extends BaseController
      * @throws DBALException
      * @internal param $numberOfFixtures
      */
-    public function getTournamentPlayoffsDivisionData($tournamentId, $groupId)
+    public function getTournamentPlayoffsDivisionData($tournamentId, $groupId): Response
     {
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournament = $tournamentId ?
@@ -320,9 +319,9 @@ class TournamentController extends BaseController
         $data = [];
 
         /** @var TournamentRepository $tournamentRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         /** @var GameRepository $gameRepository */
-        $gameRepository = $this->getDoctrine()->getRepository(Game::class);
+        $gameRepository = $this->manager->getRepository(Game::class);
 
         # If empty, load current
         $tournament = $tournamentId ?
@@ -370,7 +369,7 @@ class TournamentController extends BaseController
     public function leaders()
     {
         /** @var TournamentRepository $gameRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         $currentTournaments = $tournamentRepository->loadCurrentTournaments();
 
         $ids = [];
@@ -388,7 +387,7 @@ class TournamentController extends BaseController
     public function weekStatistics()
     {
         /** @var TournamentRepository $gameRepository */
-        $tournamentRepository = $this->getDoctrine()->getRepository(Tournament::class);
+        $tournamentRepository = $this->manager->getRepository(Tournament::class);
         $currentTournaments = $tournamentRepository->loadCurrentTournaments();
 
         $ids = [];

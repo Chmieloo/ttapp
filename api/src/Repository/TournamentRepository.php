@@ -6,10 +6,11 @@ use App\Entity\Tournament;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use PDO;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Tournament|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,7 +20,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class TournamentRepository extends ServiceEntityRepository
 {
-    /** @var Connection  */
+    /** @var Connection */
     private $connection;
 
     public function __construct(ManagerRegistry $registry, Connection $connection)
@@ -29,8 +30,9 @@ class TournamentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return mixed[]
+     * @return array
      * @throws DBALException
+     * @throws Exception
      */
     public function loadList()
     {
@@ -47,11 +49,8 @@ class TournamentRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
+        return $stmt->executeQuery()->fetchAllAssociative();
     }
 
     /**
@@ -70,9 +69,8 @@ class TournamentRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
 
         foreach ($result as &$item) {
             $item['tournamentId'] = (int)$item['tournamentId'];
@@ -86,7 +84,7 @@ class TournamentRepository extends ServiceEntityRepository
     /**
      * @return Tournament[]|null
      */
-    public function loadCurrentTournaments(): ? array
+    public function loadCurrentTournaments(): ?array
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.is_finished = 0 and t.is_playoffs = 0')
@@ -96,6 +94,7 @@ class TournamentRepository extends ServiceEntityRepository
 
     /**
      * @return Tournament|null
+     * @throws NonUniqueResultException
      */
     public function loadCurrentPlayoffsTournament(): ?Tournament
     {
@@ -149,9 +148,7 @@ class TournamentRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute($params);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         $groups = [];
         foreach ($result as $item) {
@@ -214,18 +211,16 @@ class TournamentRepository extends ServiceEntityRepository
         return $groups;
     }
 
+    /**
+     * @throws Exception
+     */
     public function loadGroupsByPlayoffsId($tournamentId)
     {
         $query = 'select id, name from tournament_group tg where tg.tournament_id = :tournamentId';
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt-> execute([
-            'tournamentId' => $tournamentId
-        ]);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
+        return $stmt->executeQuery(['tournamentId' => $tournamentId])->fetchAllAssociative();
     }
 
     protected function baseQueryLeadersPoints()
@@ -251,7 +246,7 @@ class TournamentRepository extends ServiceEntityRepository
             ->orderBy("points desc, p.name")
             ->setMaxResults(5);
 
-            return $qb;
+        return $qb;
     }
 
     public function baseQueryAvgAdvantage()
@@ -264,7 +259,8 @@ class TournamentRepository extends ServiceEntityRepository
                 "p.office_id as officeId"
             )
             ->from("player", "p")
-            ->join("p", "game", "g", "p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and g.is_walkover = 0")
+            ->join("p", "game", "g",
+                "p.id in (g.home_player_id, g.away_player_id) and g.is_finished = 1 and g.is_walkover = 0")
             ->join("g", "scores", "s", "g.id = s.game_id")
             ->join("g", "tournament", "t", "g.tournament_id = t.id and t.is_official = 1")
             ->groupBy("p.id")
@@ -290,13 +286,13 @@ class TournamentRepository extends ServiceEntityRepository
         # ALL TIME DATA
         $data = $this->baseQueryLeadersPoints()
             ->andWhere('g.office_id = 1')
-            ->execute()
-            ->fetchAll(PDO::FETCH_ASSOC);
+            ->executeQuery()
+            ->fetchAllAssociative();
         $result['allTimePointsLeaders'] = $data;
         $data = $this->baseQueryLeadersPoints()
             ->andWhere('g.office_id = 2')
-            ->execute()
-            ->fetchAll(PDO::FETCH_ASSOC);
+            ->executeQuery()
+            ->fetchAllAssociative();
         $result['allTimePointsLeaders'] = array_merge($result['allTimePointsLeaders'], $data);
 
         $result['currentTournamentPointsLeaders'] = [];
@@ -304,8 +300,8 @@ class TournamentRepository extends ServiceEntityRepository
             $data = $this->baseQueryLeadersPoints()
                 ->andWhere("t.id in (:tournamentId)")
                 ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
-                ->execute()
-                ->fetchAll(PDO::FETCH_ASSOC);
+                ->executeQuery()
+                ->fetchAllAssociative();
             $result['currentTournamentPointsLeaders'] = array_merge($result['currentTournamentPointsLeaders'], $data);
         }
 
@@ -369,7 +365,7 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5)";
 
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute([]);
+        $stmt->execute([]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['eloLeaders'] = $data;
 
@@ -435,7 +431,7 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5";
 
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt-> execute([]);
+        $stmt->execute([]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $result['spectatorsLeaders'] = $data;
 
@@ -551,7 +547,8 @@ class TournamentRepository extends ServiceEntityRepository
             $result[$officeId]['setsCount'] += $item['setsCount'];
             $result[$officeId]['totalPoints'] += $item['totalPoints'];
             $result[$officeId]['scouted'] += $item['scouted'];
-            $result[$officeId]['scoutedPercentage'] = number_format(($result[$officeId]['scouted'] / $result[$officeId]['gamesCount']) * 100, 2);
+            $result[$officeId]['scoutedPercentage'] = number_format(($result[$officeId]['scouted'] / $result[$officeId]['gamesCount']) * 100,
+                2);
         }
 
         $sql = "select * from (
