@@ -1402,7 +1402,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         return true;
     }
@@ -1423,7 +1423,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         return true;
     }
