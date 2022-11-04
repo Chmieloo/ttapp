@@ -311,7 +311,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         $result = $stmt->fetchAllAssociative();
 
@@ -682,7 +682,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         $result = $stmt->fetchAllAssociative();
 
@@ -739,7 +739,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         $result = $stmt->fetchAllAssociative();
 
@@ -898,7 +898,7 @@ class GameRepository extends ServiceEntityRepository
                 'tournamentId' => $tournamentId
             ];
             $stmt = $em->getConnection()->prepare($query);
-            $stmt->execute($params);
+            $stmt->executeQuery($params);
 
             // 2. Winner as away
             $query = 'update game g set g.away_player_id = :winnerId, g.server_id = :winnerId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
@@ -908,7 +908,7 @@ class GameRepository extends ServiceEntityRepository
                 'tournamentId' => $tournamentId
             ];
             $stmt = $em->getConnection()->prepare($query);
-            $stmt->execute($params);
+            $stmt->executeQuery($params);
 
             // 3. Loser as home
             $query = 'update game g set g.home_player_id = :loserId, g.server_id = :loserId where g.playoff_home_player_id = :code and g.tournament_id = :tournamentId';
@@ -918,7 +918,7 @@ class GameRepository extends ServiceEntityRepository
                 'tournamentId' => $tournamentId
             ];
             $stmt = $em->getConnection()->prepare($query);
-            $stmt->execute($params);
+            $stmt->executeQuery($params);
 
             $query = 'update game g set g.away_player_id = :loserId, g.server_id = :loserId where g.playoff_away_player_id = :code and g.tournament_id = :tournamentId';
             $params = [
@@ -927,7 +927,7 @@ class GameRepository extends ServiceEntityRepository
                 'tournamentId' => $tournamentId
             ];
             $stmt = $em->getConnection()->prepare($query);
-            $stmt->execute($params);
+            $stmt->executeQuery($params);
         }
     }
 
@@ -1335,7 +1335,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         return true;
     }
@@ -1363,7 +1363,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute([
+        $stmt->executeQuery([
             'matchId' => $matchId,
             'serverId' => $newServer
         ]);

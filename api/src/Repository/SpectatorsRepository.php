@@ -59,7 +59,7 @@ class SpectatorsRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
         return true;
     }
@@ -102,7 +102,7 @@ class SpectatorsRepository extends ServiceEntityRepository
             ->delete('spectators', 's')
             ->where('s.id in (:invalidIds)')
             ->setParameter('invalidIds', $invalidIds, Connection::PARAM_INT_ARRAY)
-            ->execute();
+            ->executeQuery();
 
         return true;
     }
