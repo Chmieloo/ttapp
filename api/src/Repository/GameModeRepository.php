@@ -29,9 +29,9 @@ class GameModeRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute();
+        $stmt->executeQuery();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         return $result;
     }

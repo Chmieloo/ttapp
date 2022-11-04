@@ -29,6 +29,21 @@ class TournamentRepository extends ServiceEntityRepository
         $this->connection = $connection;
     }
 
+    public function loadById($id)
+    {
+        $sql =
+            'select id, name, is_finished, is_playoffs, start_time, is_official, parent_tournament, office_id
+            from tournament
+            where id = :tid';
+
+        $params['tid'] = $id;
+
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+
+        return $stmt->executeQuery($params)->fetchAllAssociative();
+    }
+
     /**
      * @return array
      * @throws DBALException
@@ -311,21 +326,21 @@ class TournamentRepository extends ServiceEntityRepository
                 ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
                 ->andWhere("t.id in (:tournamentId)")
                 ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
-                ->execute()
-                ->fetchAll(PDO::FETCH_ASSOC);
+                ->executeQuery()
+                ->fetchAllAssociative();
             $result['lastWeekPointsLeaders'] = array_merge($result['lastWeekPointsLeaders'], $data);
         }
 
         # ALL TIME DATA
         $data = $this->baseQueryAvgAdvantage()
             ->andWhere('g.office_id = 1')
-            ->execute()
-            ->fetchAll(PDO::FETCH_ASSOC);
+            ->executeQuery()
+            ->fetchAllAssociative();
         $result['avgDiffAllTime'] = $data;
         $data = $this->baseQueryAvgAdvantage()
             ->andWhere('g.office_id = 2')
-            ->execute()
-            ->fetchAll(PDO::FETCH_ASSOC);
+            ->executeQuery()
+            ->fetchAllAssociative();
         $result['avgDiffAllTime'] = array_merge($result['avgDiffAllTime'], $data);
 
 
@@ -334,8 +349,8 @@ class TournamentRepository extends ServiceEntityRepository
             $data = $this->baseQueryAvgAdvantage()
                 ->andWhere("t.id in (:tournamentId)")
                 ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
-                ->execute()
-                ->fetchAll(PDO::FETCH_ASSOC);
+                ->executeQuery()
+                ->fetchAllAssociative();
             $result['avgDiffCurrentTournament'] = array_merge($result['avgDiffCurrentTournament'], $data);
         }
 
@@ -346,8 +361,8 @@ class TournamentRepository extends ServiceEntityRepository
                 ->andWhere("g.date_played between subdate(curdate(),dayofweek(curdate())+5) and subdate(curdate(),dayofweek(curdate())-1)")
                 ->andWhere("t.id in (:tournamentId)")
                 ->setParameter("tournamentId", $tournamentId, PDO::PARAM_INT)
-                ->execute()
-                ->fetchAll(PDO::FETCH_ASSOC);
+                ->executeQuery()
+                ->fetchAllAssociative();
             $result['avgDiffLastWeek'] = array_merge($result['avgDiffLastWeek'], $data);
         }
 
@@ -364,9 +379,11 @@ class TournamentRepository extends ServiceEntityRepository
                 order by tournament_elo desc
                 limit 0,5)";
 
+
+        $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute([]);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data = $stmt->executeQuery()->fetchAllAssociative();
+
         $result['eloLeaders'] = $data;
 
         $result['eloLeadersTournament'] = [];
@@ -390,7 +407,7 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5";
 
             $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAllAssociative();
             $result['eloLeadersTournament'] = array_merge($result['eloLeadersTournament'], $data);
         }
 
@@ -416,7 +433,7 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5";
 
             $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAllAssociative();
             $result['eloLeadersLastWeek'] = array_merge($result['eloLeadersLastWeek'], $data);
         }
 
@@ -431,8 +448,8 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5";
 
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute([]);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->executeQuery([]);
+        $data = $stmt->fetchAllAssociative();
         $result['spectatorsLeaders'] = $data;
 
         $result['spectatorsLeadersTournament'] = [];
@@ -450,7 +467,7 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5";
 
             $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAllAssociative();
             $result['spectatorsLeadersTournament'] = array_merge($result['spectatorsLeadersTournament'], $data);
         }
 
@@ -470,7 +487,7 @@ class TournamentRepository extends ServiceEntityRepository
                 limit 0,5";
 
             $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAllAssociative();
             $result['spectatorsLeadersLastWeek'] = array_merge($result['spectatorsLeadersLastWeek'], $data);
         }
 
@@ -512,8 +529,11 @@ class TournamentRepository extends ServiceEntityRepository
                 and tournament_id in (:tournamentIds)
                 group by g.id";
 
+        $stmt = $em->getConnection()->prepare($sql);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
+
         $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAllAssociative();
 
         $playersCache = [];
 
@@ -568,7 +588,7 @@ class TournamentRepository extends ServiceEntityRepository
                 order by x.elodiff asc";
 
         $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-        $eloData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $eloData = $stmt->fetchAllAssociative();
 
         foreach ($eloData as $item) {
             $officeId = $item['officeId'];
@@ -596,7 +616,7 @@ class TournamentRepository extends ServiceEntityRepository
                 order by x.elodiff desc";
 
         $stmt = $em->getConnection()->executeQuery($sql, $params, $types);
-        $eloData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $eloData = $stmt->fetchAllAssociative();
 
         foreach ($eloData as $item) {
             $officeId = $item['officeId'];

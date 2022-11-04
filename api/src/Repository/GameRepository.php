@@ -178,13 +178,12 @@ class GameRepository extends ServiceEntityRepository
         $baseSql .= 'group by g.id ';
         $baseSql .= 'order by g.date_of_match, g.id asc ';
 
-        $params = ['tournamentids' => $ids];
+        $params['tournamentids'] = $ids;
         $types = ['tournamentids' => Connection::PARAM_INT_ARRAY];
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         if (is_numeric($limit) && $limit) {
             $result = array_slice($result, 0, $limit);
@@ -250,7 +249,7 @@ class GameRepository extends ServiceEntityRepository
         $types = ['tournamentIds' => Connection::PARAM_INT_ARRAY];
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -314,7 +313,7 @@ class GameRepository extends ServiceEntityRepository
         $stmt = $em->getConnection()->prepare($baseSql);
         $stmt->execute($params);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -403,9 +402,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         if (is_numeric($limit) && $limit) {
             $result = array_slice($result, 0, $limit);
@@ -621,7 +618,7 @@ class GameRepository extends ServiceEntityRepository
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->executeQuery($baseSql, $params, $types);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -687,7 +684,7 @@ class GameRepository extends ServiceEntityRepository
         $stmt = $em->getConnection()->prepare($baseSql);
         $stmt->execute($params);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
 
         foreach ($result as $match) {
@@ -744,7 +741,7 @@ class GameRepository extends ServiceEntityRepository
         $stmt = $em->getConnection()->prepare($baseSql);
         $stmt->execute($params);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -795,9 +792,9 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         foreach ($result as $match) {
             $matchId = $match['id'];
@@ -1467,8 +1464,8 @@ class GameRepository extends ServiceEntityRepository
                     order by 2 asc";
 
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute($params);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->executeQuery($params);
+        $data = $stmt->fetchAllAssociative();
 
         $homePoints = 0;
         $awayPoints = 0;
@@ -1543,9 +1540,9 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAllAssociative();
 
         $setsData = [];
         $currentSet = 1;

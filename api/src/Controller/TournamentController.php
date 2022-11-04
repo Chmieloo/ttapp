@@ -36,9 +36,8 @@ class TournamentController extends BaseController
 
     /**
      * @return Response
-     * @throws DBALException
      */
-    public function getInfo()
+    public function getInfo(): Response
     {
         /** @var TournamentRepository $tournamentRepository */
         $tournamentRepository = $this->manager->getRepository(Tournament::class);
@@ -117,6 +116,7 @@ class TournamentController extends BaseController
             [$tournamentRepository->find($tournamentId)] :
             $tournamentRepository->loadCurrentTournaments();
 
+        var_dump($tournaments);
         $ids = [];
         foreach ($tournaments as $tournament) {
             $ids[] = $tournament->getId();

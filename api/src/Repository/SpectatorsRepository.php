@@ -74,9 +74,9 @@ class SpectatorsRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute($params);
+        $stmt->executeQuery($params);
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAllAssociative();
 
         $invalidIds = [];
         $timestamps = [];
