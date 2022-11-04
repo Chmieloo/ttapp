@@ -174,7 +174,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->post2Slack($payload, $officeId);
+            //$this->post2Slack($payload, $officeId);
             $this->finalizeSpectators($matchId);
 
             return $this->sendJsonResponse($data);
@@ -265,7 +265,7 @@ class MatchController extends BaseController
             'icon_emoji' => ':table_tennis_paddle_and_ball:'
         ];
 
-        $this->post2Slack($payload, 1);
+        //$this->post2Slack($payload, 1);
 
         return $this->sendJsonResponse($data);
     }
@@ -427,7 +427,7 @@ class MatchController extends BaseController
                 'icon_emoji' => ':table_tennis_paddle_and_ball:'
             ];
 
-            $this->post2Slack($payload, $officeId);
+            //$this->post2Slack($payload, $officeId);
         } else {
             $message = null;
         }
@@ -524,7 +524,7 @@ class MatchController extends BaseController
             'username' => 'tabletennisbot',
             'icon_emoji' => ':table_tennis_paddle_and_ball:'
         ];
-        $this->post2Slack($payload, $officeId);
+        //$this->post2Slack($payload, $officeId);
 
         $em->persist($match);
         $em->flush();
@@ -644,6 +644,7 @@ class MatchController extends BaseController
     public function broadcast(Request $request)
     {
         $data = json_decode($request->getContent(), true);
+        var_dump($data);
         $gameId = $data['gameId'];
 
         /** @var GameRepository $gameRepository */
