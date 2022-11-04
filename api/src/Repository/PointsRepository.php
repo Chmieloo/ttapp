@@ -44,7 +44,7 @@ class PointsRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($selectSql);
-        $result = $stmt->executeQuery($params)->fetchAllAssociative();
+        $result = current($stmt->executeQuery($params)->fetchAllAssociative());
 
         $pointId = (int)$result['pointId'];
 
@@ -57,7 +57,7 @@ class PointsRepository extends ServiceEntityRepository
 
             $em = $this->getEntityManager();
             $stmt = $em->getConnection()->prepare($deleteSql);
-            $stmt-> execute($params);
+            $stmt->executeQuery($params);
 
             return true;
         } else {

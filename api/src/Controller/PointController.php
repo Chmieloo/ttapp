@@ -28,8 +28,6 @@ class PointController extends BaseController
         $em = $this->manager;
         $data = json_decode($request->getContent(), true);
 
-        var_dump($data);
-
         /** @var GameRepository $matchRepository */
         $matchRepository = $this->manager->getRepository(Game::class);
         /** @var ScoresRepository $scoreRepository */
