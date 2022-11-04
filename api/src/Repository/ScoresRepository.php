@@ -37,7 +37,7 @@ class ScoresRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $result = $stmt->executeQuery($params)->fetchAllAssociative();
+        $result = current($stmt->executeQuery($params)->fetchAllAssociative());
 
         return $result['id'];
     }
