@@ -857,9 +857,8 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($sql);
-        $stmt->execute($params);
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         if ($result['p1groupId'] != $result['p2groupId']) {
             $group = null;
@@ -1009,8 +1008,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute([]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
 
         foreach ($result as $row) {
             $matchId = $row['id'];

@@ -25,16 +25,12 @@ class OfficeRepository extends ServiceEntityRepository
 
     public function loadAll()
     {
-        $query = $this->connection->createQueryBuilder()
-            ->select(
-                "id",
-                "name",
-                "is_default as isDefault"
-            )
-            ->from("office", "o")
-            ->orderBy("id");
+        $sql = "select id, name, is_default from office order by id";
 
-        $result = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
+
         foreach ($result as &$item) {
             $item['isDefault'] = (int)$item['isDefault'];
         }
