@@ -971,8 +971,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = current($stmt->executeQuery($params)->fetchAllAssociative());
 
         return $result['pts'] ? 1 : 0;
     }
@@ -1077,13 +1076,13 @@ class GameRepository extends ServiceEntityRepository
                 left join points p on s.id = p.score_id
                 where g.id = :matchId";
 
+        $params = [
+            'matchId' => $matchId
+        ];
+
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute([
-            'matchId' => $matchId
-        ]);
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = current($stmt->executeQuery($params)->fetchAllAssociative());
 
         return $result;
     }
@@ -1107,9 +1106,7 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = current($stmt->executeQuery($params)->fetchAllAssociative());
 
         if (!$result['id']) {
             return [];
@@ -1272,9 +1269,8 @@ class GameRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
+        $match = current($stmt->executeQuery($params)->fetchAllAssociative());
 
-        $match = $stmt->fetch(PDO::FETCH_ASSOC);
         $homePlayerString = '';
         $awayPlayerString = '';
 
@@ -1347,13 +1343,15 @@ class GameRepository extends ServiceEntityRepository
     public function updateServer($matchId)
     {
         $query = 'select home_player_id, away_player_id, server_id from game g where g.id = :matchId';
+
+        $params = [
+            'matchId' => $matchId
+        ];
+
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute([
-            'matchId' => $matchId
-        ]);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $newServer = $result['server_id'] == $result['home_player_id'] ?
             $result['away_player_id'] :
@@ -1440,9 +1438,10 @@ class GameRepository extends ServiceEntityRepository
 
         # if there is no spectator data, just return empty array
         $query = "select count(s.id) as hasSpectators from spectators s where s.game_id = :gameId";
+
+        $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($query);
-        $stmt->execute($params);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = $stmt->executeQuery($params)->fetchAllAssociative();
 
         if (!$data['hasSpectators']) {
             return [

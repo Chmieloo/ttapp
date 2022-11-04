@@ -44,9 +44,8 @@ class PointsRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($selectSql);
-        $stmt-> execute($params);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $pointId = (int)$result['pointId'];
 
         if ($pointId) {

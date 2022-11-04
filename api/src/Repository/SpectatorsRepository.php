@@ -42,8 +42,7 @@ class SpectatorsRepository extends ServiceEntityRepository
 
         $em = $this->getEntityManager();
         $stmt = $em->getConnection()->prepare($baseSql);
-        $stmt->execute($params);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->executeQuery($params)->fetchAllAssociative();
 
         return $result;
     }
