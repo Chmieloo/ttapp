@@ -32,7 +32,7 @@ class OfficeRepository extends ServiceEntityRepository
         $result = $stmt->executeQuery()->fetchAllAssociative();
 
         foreach ($result as &$item) {
-            $item['isDefault'] = (int)$item['isDefault'];
+            $item['isDefault'] = (int)$item['is_default'];
         }
 
         return $result;
